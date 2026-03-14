@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LaVida Admin Dashboard</title>
+  <style>
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    body{
+      font-family:Arial, Helvetica, sans-serif;
+      background:linear-gradient(135deg,#050505,#0f172a,#111827);
+      color:white;
+      min-height:100vh;
+      padding:20px;
+    }
+
+    .container{
+      max-width:900px;
+      margin:0 auto;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:15px;
+      margin-bottom:25px;
+      flex-wrap:wrap;
+    }
+
+    .title h1{
+      font-size:30px;
+      margin-bottom:6px;
+    }
+
+    .title p{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .btn{
+      display:inline-block;
+      padding:12px 18px;
+      border-radius:12px;
+      text-decoration:none;
+      font-weight:700;
+      color:white;
+      background:linear-gradient(90deg,#0ea5e9,#22c55e);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:18px;
+      margin-bottom:25px;
+    }
+
+    .card{
+      background:rgba(17,24,39,0.95);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:18px;
+      padding:22px;
+      box-shadow:0 16px 30px rgba(0,0,0,0.25);
+    }
+
+    .card h3{
+      font-size:15px;
+      color:#cbd5e1;
+      margin-bottom:10px;
+      font-weight:600;
+    }
+
+    .card .number{
+      font-size:30px;
+      font-weight:800;
+      color:white;
+    }
+
+    .section{
+      background:rgba(17,24,39,0.95);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:18px;
+      padding:22px;
+      margin-bottom:20px;
+    }
+
+    .section h2{
+      font-size:20px;
+      margin-bottom:14px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:10px;
+    }
+
+    th, td{
+      padding:12px;
+      text-align:left;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      font-size:14px;
+    }
+
+    th{
+      color:#cbd5e1;
+    }
+
+    .status{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      background:rgba(34,197,94,0.18);
+      color:#86efac;
+    }
+
+    .links{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:14px;
+      margin-top:10px;
+    }
+
+    .small-btn{
+      display:block;
+      text-align:center;
+      padding:14px;
+      border-radius:12px;
+      text-decoration:none;
+      font-weight:700;
+      color:white;
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.1);
+    }
+
+    .note{
+      color:#cbd5e1;
+      font-size:14px;
+      line-height:1.6;
+      margin-top:10px;
+    }
+
+    @media(max-width:700px){
+      .title h1{
+        font-size:24px;
+      }
+
+      th, td{
+        font-size:13px;
+        padding:10px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="topbar">
+      <div class="title">
+        <h1>LaVida Admin Dashboard</h1>
+        <p>DMI first phase control panel for assignments, printing, and tracking.</p>
+      </div>
+      <a href="index.html" class="btn">Back to Home</a>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Total Orders</h3>
+        <div class="number">12</div>
+      </div>
+
+      <div class="card">
+        <h3>Pending Prints</h3>
+        <div class="number">5</div>
+      </div>
+
+      <div class="card">
+        <h3>Completed Orders</h3>
+        <div class="number">7</div>
+      </div>
+
+      <div class="card">
+        <h3>Estimated Revenue</h3>
+        <div class="number">MWK 3,000</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Recent Orders</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Pages</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Chisomo</td>
+            <td>10</td>
+            <td>MWK 2,500</td>
+            <td><span class="status">Printed</span></td>
+          </tr>
+          <tr>
+            <td>Tiwonge</td>
+            <td>6</td>
+            <td>MWK 1,500</td>
+            <td><span class="status">Pending</span></td>
+          </tr>
+          <tr>
+            <td>Mike</td>
+            <td>4</td>
+            <td>MWK 1,000</td>
+            <td><span class="status">Printed</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="note">
+        Later, this section can be connected to Google Sheets so new assignment submissions appear here automatically.
+      </p>
+    </div>
+
+    <div class="section">
+      <h2>Quick Actions</h2>
+      <div class="links">
+        <a href="YOUR_GOOGLE_FORM_LINK" target="_blank" class="small-btn">Open Submission Form</a>
+        <a href="printing.html" class="small-btn">Open Printing Page</a>
+        <a href="#" class="small-btn">Open Google Sheet</a>
+      </div>
+
+      <p class="note">
+        Replace <strong>YOUR_GOOGLE_FORM_LINK</strong> with your real Google Form link.  
+        You can also replace <strong>#</strong> with your Google Sheet link later.
+      </p>
+    </div>
+  </div>
+
+</body>
+</html>
