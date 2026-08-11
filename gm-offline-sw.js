@@ -1,4 +1,4 @@
-const CACHE_NAME = "lavida-connect-independent-v230";
+const CACHE_NAME = "lavida-connect-independent-v231";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -58,3 +58,4 @@ self.addEventListener("fetch", (event) => {
       .catch(() => caches.match(event.request).then((cached) => cached || caches.match("./index.html")))
   );
 });
+

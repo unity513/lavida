@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -1251,7 +1251,7 @@
     const { Chess } = window.Chess365Rules || Chess365Rules;
     const SUPABASE_URL = "https://cgvpoddtqswmtzvyrmwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndnBvZGR0cXN3bXR6dnlybXdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDE0OTMsImV4cCI6MjA5MTkxNzQ5M30.Ut_5jGo8L66zi8zxqR25nV_gkDBYLrT7p3Fx-4G5wGQ";
-    const PUBLIC_APP_URL = String(window.VITE_PUBLIC_APP_URL || "https://connect.lavida.agency").replace(/\/+$/,"");
+    const PUBLIC_APP_URL = String(window.VITE_PUBLIC_APP_URL || "https://app.lavida.agency").replace(/\/+$/,"");
     const db = window.LavidaAuth.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const $ = (id) => document.getElementById(id);
     const esc = (value) => String(value ?? "").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -3809,6 +3809,7 @@
   </script>
 </body>
 </html>
+
 
 
 
