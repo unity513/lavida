@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#061433">
+  <title>Market 365 Products | LAVIDA Connect</title>
+  <style>
+    :root{--navy:#061433;--blue:#0b2a5e;--gold:#d99a24;--gold2:#f4c542;--ink:#071126;--muted:#64748b;--line:#d9e2ef;--soft:#f6f8fb;--white:#fff;--good:#0f8a5f;--warn:#b7791f;--bad:#b42318}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--soft);color:var(--ink)} button,input,select,textarea{font:inherit} button{border:0;border-radius:7px;background:var(--navy);color:var(--white);font-weight:900;padding:11px 14px;cursor:pointer} button.secondary{background:#eef3fb;color:var(--navy)} button.ghost{background:transparent;color:var(--navy);border:1px solid var(--line)} button.danger{background:var(--bad)} button:disabled{opacity:.55;cursor:not-allowed} input,select,textarea{width:100%;border:1px solid var(--line);border-radius:7px;background:var(--white);padding:11px;color:var(--ink)} textarea{min-height:88px;resize:vertical} a{color:inherit;text-decoration:none}
+    .admin-header{position:sticky;top:0;z-index:1100;min-height:68px;padding:calc(8px + env(safe-area-inset-top,0px)) 16px 8px;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:var(--white);box-shadow:0 12px 34px rgba(6,20,51,.18)}.admin-brand{min-width:0;line-height:1}.admin-brand strong{display:block;color:var(--white);font-size:24px;line-height:1;letter-spacing:1px;white-space:nowrap}.admin-brand span{display:block;margin-top:4px;color:var(--gold2);font-size:12px;line-height:1;letter-spacing:1.2px;white-space:nowrap}.admin-header-actions{display:flex;align-items:center;gap:8px}.admin-header-actions button{width:44px;height:44px;display:grid;place-items:center;border:0;border-radius:12px;background:var(--white);color:var(--navy);padding:0}.admin-header-actions svg{width:24px;height:24px;stroke:currentColor}.admin-desktop-actions{display:none;gap:8px}.admin-desktop-actions a,.admin-desktop-actions button{min-height:42px;display:flex;align-items:center;background:var(--white);color:var(--navy);border-radius:10px;padding:0 12px;font-weight:900}.admin-header-menu{position:fixed;top:calc(76px + env(safe-area-inset-top,0px));right:14px;z-index:1200;width:min(240px,calc(100vw - 28px));padding:8px;border:1px solid var(--line);border-radius:14px;background:var(--white);box-shadow:0 16px 35px rgba(0,0,0,.18)}.admin-header-menu a,.admin-header-menu button{width:100%;min-height:46px;display:flex;align-items:center;padding:0 14px;border:0;border-radius:10px;background:transparent;color:var(--navy);font:inherit;font-weight:800;text-decoration:none;text-align:left}.admin-header-menu a:hover,.admin-header-menu button:hover{background:var(--soft)}.admin-header-menu button{color:var(--bad)}
+    main{max-width:1180px;margin:auto;padding:16px 16px 50px}.status{display:inline-flex;border-radius:999px;background:#eef3fb;color:var(--navy);padding:5px 9px;font-size:12px;font-weight:900}.status.ok{background:#e8fff5;color:#08734e}.status.warn{background:#fff7d6;color:#7a5200}.status.bad{background:#fff0ed;color:var(--bad)}
+    .panel{background:var(--white);border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:16px;box-shadow:0 10px 24px rgba(6,20,51,.07)} .panel-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:12px}.panel h1,.panel h2{margin:0;color:var(--navy)} .muted{color:var(--muted)} .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.grid.two{grid-template-columns:repeat(2,1fr)} .grid.full{grid-template-columns:1fr}.checks{display:flex;flex-wrap:wrap;gap:10px}.checks label{display:flex;gap:6px;align-items:center;background:#f7f9fd;border:1px solid var(--line);border-radius:7px;padding:9px}.checks input{width:auto}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px} table{width:100%;border-collapse:collapse;min-width:900px} th,td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top;font-size:13px} th{background:var(--navy);color:var(--gold2);text-transform:uppercase;font-size:11px}.thumb{width:58px;height:48px;border-radius:6px;object-fit:cover;background:#e7edf6}.notice{background:#fff7d6;border:1px solid #f0d57b;border-radius:8px;padding:11px;color:#5d4300}.hidden{display:none!important}.progress{height:8px;background:#e8eef7;border-radius:99px;overflow:hidden}.progress span{display:block;height:100%;width:0;background:var(--gold);transition:.2s}
+    @media(min-width:768px){#adminMoreButton{display:none}.admin-desktop-actions{display:flex}}
+    @media(max-width:850px){.grid,.grid.two{grid-template-columns:1fr}.panel-head{display:block}.panel{padding:14px}.panel h1{font-size:clamp(26px,7vw,38px);line-height:1.08}.panel h2{font-size:22px}}
+  </style>
+</head>
+<body>
+  <header class="admin-header">
+    <a class="admin-brand" href="./marketplace-admin.html"><strong>LAVIDA</strong><span>Connect Admin</span></a>
+    <div class="admin-header-actions">
+      <div class="admin-desktop-actions">
+        <a href="./marketplace.html">Public Connect</a>
+        <a href="./user-management.html">User Management</a>
+        <a href="./marketplace-orders-admin.html">Orders Management</a>
+        <button id="logoutBtnDesktop" type="button">Log Out</button>
+      </div>
+      <button id="adminMoreButton" type="button" aria-label="Open admin menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+    </div>
+  </header>
+  <div id="adminHeaderMenu" class="admin-header-menu" hidden>
+    <a href="./marketplace.html">Public Connect</a>
+    <a href="./user-management.html">User Management</a>
+    <a href="./marketplace-orders-admin.html">Orders Management</a>
+    <button id="logoutBtn" type="button">Log Out</button>
+  </div>
+  <main>
+    <section id="authPanel" class="panel">
+      <div class="panel-head"><div><h1>Market 365 Products</h1><p class="muted">Authorised staff can publish products without changing POS stock until an order is approved.</p></div><span id="authStatus" class="status warn">Checking access</span></div>
+      <div id="loginBox" class="grid two hidden">
+        <input id="email" type="email" placeholder="Staff email">
+        <input id="password" type="password" placeholder="Password">
+        <button id="loginBtn" type="button">Sign In</button>
+      </div>
+    </section>
+
+    <section id="productPanel" class="panel hidden">
+      <div class="panel-head"><div><h2>Add or Edit Product</h2><p class="muted">Link to POS stock or create a Connect-only product.</p></div><span id="saveStatus" class="status">Ready</span></div>
+      <div class="grid">
+        <input id="productName" placeholder="Product name">
+        <input id="category" list="categoryOptions" placeholder="Category">
+        <datalist id="categoryOptions"></datalist>
+        <input id="price" type="number" step="0.01" min="0" placeholder="Connect selling price">
+        <input id="originalPrice" type="number" step="0.01" min="0" placeholder="Original price optional">
+        <input id="unit" placeholder="Unit of measurement">
+        <input id="quantity" type="number" step="1" min="0" placeholder="Available quantity or stock limit">
+        <input id="minQty" type="number" step="1" min="1" placeholder="Minimum order quantity">
+        <input id="maxQty" type="number" step="1" min="1" placeholder="Maximum order quantity">
+        <input id="sellerName" placeholder="Seller name">
+        <input id="sellerBranch" placeholder="Seller branch">
+        <input id="businessId" placeholder="Business ID optional">
+      </div>
+      <div class="grid two" style="margin-top:10px">
+        <select id="posProduct"><option value="">Connect-only product</option></select>
+        <select id="status">
+          <option value="draft">Draft</option>
+          <option value="published">Published</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="archived">Archived</option>
+        </select>
+      </div>
+      <textarea id="description" style="margin-top:10px" placeholder="Product description"></textarea>
+      <textarea id="deliveryNote" style="margin-top:10px" placeholder="Delivery note"></textarea>
+      <div class="grid" style="margin-top:10px">
+        <input id="freeDeliveryMinimum" type="number" step="1" min="0" placeholder="Free delivery minimum quantity">
+        <input id="freeDeliveryArea" placeholder="Free delivery area">
+        <input id="deliveryPricingMethod" placeholder="Delivery pricing method">
+      </div>
+      <div class="grid two" style="margin-top:10px">
+        <input id="imageFile" type="file" accept="image/png,image/jpeg,image/webp">
+        <input id="imageUrl" placeholder="Image URL saved after upload">
+      </div>
+      <div id="imagePreviewWrap" class="hidden" style="margin-top:10px"><img id="imagePreview" class="thumb" style="width:120px;height:92px" alt="Product image preview"></div>
+      <div class="progress" style="margin-top:10px"><span id="uploadProgress"></span></div>
+      <div class="checks" style="margin-top:10px">
+        <label><input id="marketplaceOnly" type="checkbox" checked> Connect-only product</label>
+        <label><input id="pickupEnabled" type="checkbox" checked> Pickup available</label>
+        <label><input id="deliveryEnabled" type="checkbox"> Delivery available</label>
+        <label><input id="featured" type="checkbox"> Featured</label>
+        <label><input id="published" type="checkbox"> Publish</label>
+      </div>
+      <div class="actions">
+        <button id="saveProductBtn" type="button">Save Product</button>
+        <button id="newProductBtn" class="secondary" type="button">New Product</button>
+        <button id="kuchePresetBtn" class="secondary" type="button">Prepare Kuche Kuche</button>
+        <button id="removeImageBtn" class="ghost" type="button">Remove Image</button>
+      </div>
+    </section>
+
+    <section id="productsPanel" class="panel hidden">
+      <div class="panel-head"><div><h2>Published and Draft Products</h2><p class="muted">Use Publish/Unpublish without changing POS prices or physical stock.</p></div><button id="reloadProductsBtn" class="secondary" type="button">Refresh</button></div>
+      <div class="table-wrap"><table><thead><tr><th>Image</th><th>Product</th><th>Category</th><th>Price</th><th>Qty</th><th>Pickup/Delivery</th><th>Status</th><th>Actions</th></tr></thead><tbody id="productsBody"></tbody></table></div>
+    </section>
+
+    <section id="ordersPanel" class="panel hidden">
+      <div class="panel-head"><div><h2>Connect Orders</h2><p class="muted">Review customer orders before POS sale conversion.</p></div><button id="reloadOrdersBtn" class="secondary" type="button">Refresh Orders</button></div>
+      <div class="table-wrap"><table><thead><tr><th>Reference</th><th>Customer</th><th>Fulfilment</th><th>Total</th><th>Status</th><th>Payment</th><th>Created</th></tr></thead><tbody id="ordersBody"></tbody></table></div>
+    </section>
+
+    <section id="settingsPanel" class="panel hidden">
+      <div class="panel-head"><div><h2>Connect Settings</h2><p class="muted">Customer-facing location, support, delivery and payment instructions.</p></div><span id="settingsStatus" class="status">Ready</span></div>
+      <div class="grid">
+        <input id="settingName" placeholder="Connect name" value="LAVIDA Connect">
+        <input id="pickupLocation" placeholder="Pickup location">
+        <input id="contactPhone" placeholder="Contact phone">
+        <input id="whatsapp" placeholder="WhatsApp number">
+        <input id="deliveryFee" type="number" step="0.01" min="0" placeholder="Delivery fee">
+        <input id="expiryMinutes" type="number" step="1" min="5" placeholder="Order expiry minutes">
+      </div>
+      <textarea id="paymentInstructions" style="margin-top:10px" placeholder="Payment instructions"></textarea>
+      <textarea id="supportMessage" style="margin-top:10px" placeholder="Support message"></textarea>
+      <div class="checks" style="margin-top:10px">
+        <label><input id="marketOpen" type="checkbox" checked> Connect open</label>
+        <label><input id="deliveryAvailable" type="checkbox"> Delivery available</label>
+      </div>
+      <div class="actions"><button id="saveSettingsBtn" type="button">Save Settings</button></div>
+    </section>
+
+    <section id="categoriesPanel" class="panel hidden">
+      <div class="panel-head"><div><h2>Categories</h2><p class="muted">Only active categories appear publicly.</p></div><button id="saveCategoryBtn" class="secondary" type="button">Add Category</button></div>
+      <div class="grid"><input id="categoryName" placeholder="New category name"><input id="categoryImage" placeholder="Category image URL optional"><input id="categorySort" type="number" value="0" placeholder="Sort order"></div>
+      <div class="table-wrap" style="margin-top:10px"><table><thead><tr><th>Name</th><th>Sort</th><th>Active</th></tr></thead><tbody id="categoriesBody"></tbody></table></div>
+    </section>
+  </main>
+  <script src="./vendor/supabase-js.js"></script>
+  <script src="./lavida-auth.js"></script>
+  <script>
+    const SUPABASE_URL = "https://cgvpoddtqswmtzvyrmwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndnBvZGR0cXN3bXR6dnlybXdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDE0OTMsImV4cCI6MjA5MTkxNzQ5M30.Ut_5jGo8L66zi8zxqR25nV_gkDBYLrT7p3Fx-4G5wGQ";
+    const db = window.LavidaAuth.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const $ = (id) => document.getElementById(id);
+    const esc = (value) => String(value ?? "").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const money = (value) => "MWK " + Number(value || 0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    let session = null;
+    let role = "";
+    let selectedId = "";
+    let posProducts = [];
+    let marketplaceProducts = [];
+    let categories = [];
+    const DELIVERY_STATEMENT = "Free delivery is available within Biwi and surrounding areas for orders of 10 bottles or more. For other locations, the applicable delivery fee will be calculated according to the distance range from the seller's location and confirmed before the order is approved.";
+
+    function roleAllowed(value){ return ["owner","admin","executive","manager"].includes(String(value || "").toLowerCase()); }
+    function setStatus(id, text, type){ const el=$(id); if(el){ el.textContent=text; el.className=`status ${type||""}`; } }
+    function showApp(){
+      ["productPanel","productsPanel","ordersPanel","settingsPanel","categoriesPanel"].forEach((id)=>$(id).classList.remove("hidden"));
+      $("loginBox").classList.add("hidden");
+    }
+    async function loadRole(){
+      try{
+        role = await window.LavidaAuth.loadRole(db, session) || "";
+      }catch(error){
+        window.LavidaAuth.debug("market admin role load failed", error);
+        role = "";
+        setStatus("authStatus", window.LavidaAuth.friendlyError(error, "LAVIDA could not verify your access. Please try again."), "bad");
+        $("loginBox").classList.remove("hidden");
+        return false;
+      }
+      if(!roleAllowed(role)){
+        setStatus("authStatus", "Your LAVIDA account does not have access to this page.", "bad");
+        $("loginBox").classList.remove("hidden");
+        return false;
+      }
+      setStatus("authStatus", `${role} access`, "ok");
+      showApp();
+      return true;
+    }
+    async function login(){
+      const email = $("email").value.trim();
+      const password = $("password").value;
+      try{
+        session = await window.LavidaAuth.signIn(db, email, password);
+        if(await loadRole()) await loadAll();
+      }catch(error){
+        setStatus("authStatus", window.LavidaAuth.friendlyError(error, "We could not sign you in. Please try again."), "bad");
+      }
+    }
+    async function init(){
+      window.LavidaAuth.rememberReturnTo();
+      try{
+        session = await window.LavidaAuth.getSession(db);
+        if(!session){ setStatus("authStatus", "Sign in with your LAVIDA account to continue.", "warn"); $("loginBox").classList.remove("hidden"); return; }
+        if(await loadRole()) await loadAll();
+      }catch(error){
+        window.LavidaAuth.debug("market admin session check failed", error);
+        setStatus("authStatus", window.LavidaAuth.friendlyError(error, "LAVIDA could not check your session. Please try again."), "bad");
+        $("loginBox").classList.remove("hidden");
+      }
+    }
+    async function loadAll(){ await Promise.all([loadPosProducts(), loadCategories(), loadProducts(), loadOrders(), loadSettings()]); }
+    async function loadPosProducts(){
+      try{
+        const {data} = await db.from("products").select("id,barcode,name,category,selling_price,stock_qty,current_stock_quantity,sale_unit").order("name").limit(1000);
+        posProducts = data || [];
+        $("posProduct").innerHTML = `<option value="">Connect-only product</option>` + posProducts.map((p)=>`<option value="${esc(p.id || p.barcode)}">${esc(p.name || p.barcode)} - stock ${esc(p.current_stock_quantity ?? p.stock_qty ?? 0)}</option>`).join("");
+      }catch(error){}
+    }
+    async function loadCategories(){
+      const defaults = ["Alcoholic Beverages / Beer", "Groceries", "Drinks", "Electronics", "Home supplies", "Personal care", "Fashion", "Services", "Other"];
+      try{
+        const {data} = await db.from("marketplace_categories").select("*").order("sort_order").order("name");
+        categories = (data || []).map((row)=>row.name).filter(Boolean);
+      }catch(error){ categories = []; }
+      categories = Array.from(new Set([...defaults, ...categories])).sort();
+      $("categoryOptions").innerHTML = categories.map((name)=>`<option value="${esc(name)}"></option>`).join("");
+      $("categoriesBody").innerHTML = categories.map((name, index)=>`<tr><td>${esc(name)}</td><td>${esc(index * 10)}</td><td><span class="status ok">Active</span></td></tr>`).join("");
+    }
+    async function loadProducts(){
+      try{
+        const {data,error} = await db.from("marketplace_products").select("*").order("updated_at",{ascending:false}).limit(500);
+        if(error) throw error;
+        marketplaceProducts = data || [];
+      }catch(error){
+        console.error("Marketplace product load failed", error);
+        const missing = /does not exist|schema cache|marketplace_products/i.test(error?.message || "");
+        $("productsBody").innerHTML = `<tr><td colspan="8">${missing ? "Connect product table is not installed yet. Run the SQL migration." : esc(error?.message || "Products could not be loaded.")}</td></tr>`;
+        return;
+      }
+      $("productsBody").innerHTML = marketplaceProducts.map((p)=>`<tr>
+        <td>${p.image_url ? `<img class="thumb" src="${esc(p.image_url)}" alt="">` : ""}</td>
+        <td><b>${esc(p.name)}</b><br><span class="muted">${esc(p.description || "")}</span></td>
+        <td>${esc(p.category || "")}</td>
+        <td>${esc(money(p.selling_price))}</td>
+        <td>${esc(p.available_quantity ?? "POS stock")}</td>
+        <td>${esc(p.delivery_pricing_method || "pickup / delivery")}</td>
+        <td><span class="status ${p.published ? "ok" : "warn"}">${esc(p.status || (p.published ? "published" : "draft"))}</span></td>
+        <td><button class="secondary" data-edit="${esc(p.id)}">Edit</button> <button data-toggle="${esc(p.id)}">${p.published ? "Unpublish" : "Publish"}</button></td>
+      </tr>`).join("") || `<tr><td colspan="8">No marketplace products yet.</td></tr>`;
+    }
+    async function loadOrders(){
+      try{
+        const {data} = await db.from("marketplace_orders").select("*").order("created_at",{ascending:false}).limit(100);
+        $("ordersBody").innerHTML = (data || []).map((o)=>`<tr><td>${esc(o.order_reference || o.id)}</td><td>${esc(o.customer_name || "")}<br>${esc(o.phone || "")}</td><td>${esc(o.fulfilment_method || "")}</td><td>${esc(money(o.grand_total))}</td><td><span class="status warn">${esc(String(o.order_status || "").replaceAll("_"," "))}</span></td><td>${esc(String(o.payment_status || "pending").replaceAll("_"," "))}</td><td>${esc(new Date(o.created_at).toLocaleString())}</td></tr>`).join("") || `<tr><td colspan="7">No marketplace orders yet.</td></tr>`;
+      }catch(error){ $("ordersBody").innerHTML = `<tr><td colspan="7">Orders table is not installed yet.</td></tr>`; }
+    }
+    async function loadSettings(){
+      try{
+        const {data} = await db.from("marketplace_settings").select("*").limit(1).maybeSingle();
+        if(!data) return;
+        $("settingName").value = data.marketplace_name || "LAVIDA Connect";
+        $("pickupLocation").value = data.pickup_location || data.pickup_address || "";
+        $("contactPhone").value = data.contact_phone || data.contact_number || "";
+        $("whatsapp").value = data.whatsapp_number || "";
+        $("deliveryFee").value = data.delivery_fee || data.default_delivery_fee || 0;
+        $("expiryMinutes").value = data.order_expiry_minutes || 60;
+        $("paymentInstructions").value = data.payment_instructions || "";
+        $("supportMessage").value = data.support_message || "";
+        $("marketOpen").checked = data.is_open !== false;
+        $("deliveryAvailable").checked = Boolean(data.delivery_available);
+      }catch(error){}
+    }
+    function fillFromPos(){
+      const id = $("posProduct").value;
+      const p = posProducts.find((row)=>String(row.id || row.barcode) === String(id));
+      $("marketplaceOnly").checked = !p;
+      if(!p) return;
+      $("productName").value = p.name || "";
+      $("category").value = p.category || $("category").value || "";
+      $("price").value = Number(p.selling_price || 0) || "";
+      $("unit").value = p.sale_unit || "unit";
+      $("quantity").value = Number(p.current_stock_quantity ?? p.stock_qty ?? 0) || 0;
+    }
+    function clearForm(){
+      selectedId="";
+      ["productName","category","price","originalPrice","unit","quantity","minQty","maxQty","sellerName","sellerBranch","businessId","imageUrl","description"].forEach((id)=>$(id).value="");
+      $("deliveryNote").value = DELIVERY_STATEMENT;
+      $("freeDeliveryMinimum").value = "10";
+      $("freeDeliveryArea").value = "Biwi and surrounding areas";
+      $("deliveryPricingMethod").value = "distance_range";
+      $("status").value="draft";
+      $("marketplaceOnly").checked=true;
+      $("pickupEnabled").checked=true;
+      $("deliveryEnabled").checked=true;
+      $("featured").checked=false;
+      $("published").checked=false;
+      $("posProduct").value="";
+      $("imageFile").value = "";
+      updateImagePreview("");
+      setStatus("saveStatus","Ready","");
+    }
+    function editProduct(id){
+      const p = marketplaceProducts.find((row)=>String(row.id)===String(id));
+      if(!p) return;
+      selectedId = p.id;
+      $("productName").value = p.name || "";
+      $("description").value = p.description || "";
+      $("category").value = p.category || "";
+      $("price").value = p.selling_price || "";
+      $("originalPrice").value = p.original_price || "";
+      $("unit").value = p.unit || "";
+      $("quantity").value = p.available_quantity ?? "";
+      $("minQty").value = p.minimum_order_quantity || "";
+      $("maxQty").value = p.maximum_order_quantity || "";
+      $("sellerName").value = p.seller_name || "";
+      $("sellerBranch").value = p.seller_branch || "";
+      $("businessId").value = p.business_id || "";
+      $("deliveryNote").value = p.delivery_note || DELIVERY_STATEMENT;
+      $("freeDeliveryMinimum").value = p.free_delivery_minimum_quantity || 10;
+      $("freeDeliveryArea").value = p.free_delivery_area || "Biwi and surrounding areas";
+      $("deliveryPricingMethod").value = p.delivery_pricing_method || "distance_range";
+      $("imageUrl").value = p.image_url || "";
+      $("status").value = p.status || "draft";
+      $("marketplaceOnly").checked = !p.linked_pos_product_id;
+      $("pickupEnabled").checked = true;
+      $("deliveryEnabled").checked = true;
+      $("featured").checked = false;
+      $("published").checked = Boolean(p.published);
+      $("posProduct").value = p.linked_pos_product_id || "";
+      updateImagePreview(p.image_url || "");
+      scrollTo({top:0,behavior:"smooth"});
+    }
+    async function compressImage(file){
+      if(!file) return null;
+      if(!/^image\/(png|jpeg|webp)$/.test(file.type)) throw new Error("Unsupported image type.");
+      if(file.size > 12 * 1024 * 1024) throw new Error("Image is too large.");
+      const bitmap = await createImageBitmap(file);
+      const max = 1400;
+      const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+      canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      return await new Promise((resolve)=>canvas.toBlob(resolve, "image/jpeg", .82));
+    }
+    async function uploadImage(){
+      const file = $("imageFile").files[0];
+      if(!file) return $("imageUrl").value.trim();
+      $("uploadProgress").style.width = "25%";
+      const blob = await compressImage(file);
+      $("uploadProgress").style.width = "55%";
+      const safeName = file.name.replace(/[^\w.-]+/g,"_").replace(/\.[^.]+$/, "");
+      const path = `products/${session.user.id}-${Date.now()}-${safeName}.jpg`;
+      const buckets = ["marketplace-products", "marketplace-product-images"];
+      let uploadedBucket = "";
+      let lastError = null;
+      for(const bucket of buckets){
+        const { error } = await db.storage.from(bucket).upload(path, blob, { contentType:"image/jpeg", upsert:false });
+        if(!error){
+          uploadedBucket = bucket;
+          break;
+        }
+        lastError = error;
+        if(!/bucket not found|not found/i.test(error.message || "")) break;
+      }
+      if(!uploadedBucket){
+        const message = /bucket not found|not found/i.test(lastError?.message || "")
+          ? "Product image bucket is missing. Run the marketplace storage bucket SQL, then try again."
+          : lastError?.message || "Image upload failed.";
+        throw new Error(message);
+      }
+      $("uploadProgress").style.width = "80%";
+      const publicUrl = db.storage.from(uploadedBucket).getPublicUrl(path).data.publicUrl;
+      $("uploadProgress").style.width = "100%";
+      $("imageUrl").value = publicUrl;
+      updateImagePreview(publicUrl);
+      return publicUrl;
+    }
+    function updateImagePreview(url){
+      const value = String(url || "").trim();
+      $("imagePreviewWrap").classList.toggle("hidden", !value);
+      if(value) $("imagePreview").src = value;
+    }
+    function fieldValue(id){
+      return String($(id)?.value ?? "").trim();
+    }
+    function numberValue(id){
+      const cleaned = fieldValue(id).replace(/,/g, "");
+      const value = Number(cleaned);
+      return Number.isFinite(value) ? value : NaN;
+    }
+    function validUrl(value){
+      if(!value) return true;
+      try { const url = new URL(value); return ["http:","https:","data:"].includes(url.protocol); } catch(error){ return false; }
+    }
+    async function saveProduct(){
+      if(!roleAllowed(role)) return setStatus("saveStatus","Access denied","bad");
+      if($("saveProductBtn").disabled) return;
+      const name = fieldValue("productName") || fieldValue("name");
+      const category = fieldValue("category") || fieldValue("productCategory");
+      const price = numberValue("price");
+      const linked = fieldValue("posProduct");
+      const quantity = fieldValue("quantity") === "" ? null : numberValue("quantity");
+      const minQty = fieldValue("minQty") === "" ? 1 : numberValue("minQty");
+      const maxQty = fieldValue("maxQty") === "" ? null : numberValue("maxQty");
+      const unit = fieldValue("unit");
+      if(!name) return setStatus("saveStatus","Product name is required","bad");
+      if(!category) return setStatus("saveStatus","Category is required","bad");
+      if(!(price > 0)) return setStatus("saveStatus","Selling price must be greater than zero","bad");
+      if(!unit) return setStatus("saveStatus","Unit is required","bad");
+      if(quantity !== null && quantity < 0) return setStatus("saveStatus","Quantity cannot be negative","bad");
+      if(minQty < 1) return setStatus("saveStatus","Minimum order quantity must be at least 1","bad");
+      if(maxQty !== null && maxQty < minQty) return setStatus("saveStatus","Maximum order quantity cannot be lower than the minimum","bad");
+      if(linked && !posProducts.some((p)=>String(p.id || p.barcode) === String(linked))) return setStatus("saveStatus","Selected POS product was not found","bad");
+      if(!linked && quantity === null) return setStatus("saveStatus","Quantity is required for Connect-only products","bad");
+      if(!validUrl($("imageUrl").value.trim())) return setStatus("saveStatus","Image URL is not valid","bad");
+      setStatus("saveStatus","Saving...","warn");
+      $("saveProductBtn").disabled = true;
+      try{
+        const imageUrl = await uploadImage();
+        if(!imageUrl) throw new Error("Product image is required.");
+        const payload = {
+          name,
+          category,
+          description: $("description").value.trim(),
+          image_url: imageUrl,
+          selling_price: price,
+          original_price: Number($("originalPrice").value || 0) || null,
+          unit,
+          available_quantity: quantity,
+          minimum_order_quantity: minQty,
+          maximum_order_quantity: maxQty,
+          linked_pos_product_id: linked || null,
+          seller_name: $("sellerName").value.trim() || null,
+          seller_branch: $("sellerBranch").value.trim() || null,
+          business_id: $("businessId").value.trim() || null,
+          delivery_note: $("deliveryNote").value.trim() || DELIVERY_STATEMENT,
+          free_delivery_minimum_quantity: Number($("freeDeliveryMinimum").value || 10),
+          free_delivery_area: $("freeDeliveryArea").value.trim() || "Biwi and surrounding areas",
+          delivery_pricing_method: $("deliveryPricingMethod").value.trim() || "distance_range",
+          status: $("published").checked ? "published" : $("status").value,
+          is_active: $("status").value !== "inactive" && $("status").value !== "archived",
+          published: $("published").checked || $("status").value === "published" || $("status").value === "active",
+          updated_at: new Date().toISOString()
+        };
+        if(!selectedId) payload.created_by = session.user.id;
+        payload.updated_by = session.user.id;
+        const query = selectedId ? db.from("marketplace_products").update(payload).eq("id", selectedId) : db.from("marketplace_products").insert(payload);
+        const {error} = await query;
+        if(error) throw error;
+        setStatus("saveStatus","Product saved successfully.","ok");
+        clearForm();
+        await loadProducts();
+      }catch(error){
+        console.error("Marketplace product save failed", error);
+        const missing = /does not exist|schema cache|marketplace_products/i.test(error?.message || "");
+        setStatus("saveStatus", missing ? "Connect product table is not installed yet. Run the SQL migration." : (error.message || "Product could not be saved."), "bad");
+      }finally{
+        $("saveProductBtn").disabled = false;
+      }
+    }
+    async function togglePublish(id){
+      const p = marketplaceProducts.find((row)=>String(row.id)===String(id));
+      if(!p) return;
+      const next = !p.published;
+      const {error} = await db.from("marketplace_products").update({ published: next, is_active: true, status: next ? "published" : "inactive", updated_by: session.user.id, updated_at: new Date().toISOString() }).eq("id", id);
+      if(error) alert(error.message);
+      await loadProducts();
+    }
+    async function saveSettings(){
+      setStatus("settingsStatus","Saving...","warn");
+      const payload = {
+        marketplace_name: $("settingName").value.trim() || "LAVIDA Connect",
+        pickup_location: $("pickupLocation").value.trim(),
+        contact_phone: $("contactPhone").value.trim(),
+        whatsapp_number: $("whatsapp").value.trim(),
+        delivery_fee: Number($("deliveryFee").value || 0),
+        order_expiry_minutes: Number($("expiryMinutes").value || 60),
+        payment_instructions: $("paymentInstructions").value.trim(),
+        support_message: $("supportMessage").value.trim(),
+        is_open: $("marketOpen").checked,
+        delivery_available: $("deliveryAvailable").checked,
+        updated_at: new Date().toISOString()
+      };
+      try{
+        const {data} = await db.from("marketplace_settings").select("id").limit(1).maybeSingle();
+        const result = data?.id ? await db.from("marketplace_settings").update(payload).eq("id", data.id) : await db.from("marketplace_settings").insert(payload);
+        if(result.error) throw result.error;
+        setStatus("settingsStatus","Saved","ok");
+      }catch(error){ setStatus("settingsStatus","Save failed","bad"); }
+    }
+    async function saveCategory(){
+      const name = $("categoryName").value.trim();
+      if(!name) return;
+      try{
+        const {error} = await db.from("marketplace_categories").insert({ name, image_url:$("categoryImage").value.trim() || null, sort_order:Number($("categorySort").value || 0), is_active:true });
+        if(error) throw error;
+      }catch(error){
+        if(!categories.includes(name)) categories.push(name);
+      }
+      $("categoryName").value = "";
+      await loadCategories();
+    }
+    function prepareKucheKuche(){
+      clearForm();
+      const product = posProducts.find((p)=>/kuche/i.test(`${p.name || ""} ${p.barcode || ""}`));
+      if(product){
+        $("posProduct").value = product.id || product.barcode || "";
+        fillFromPos();
+      }
+      $("productName").value = "Kuche Kuche Beer";
+      $("category").value = "Alcoholic Beverages / Beer";
+      $("price").value = "3000";
+      $("unit").value = "Bottle";
+      $("minQty").value = "1";
+      $("maxQty").value = "";
+      $("sellerName").value = "GrandMaster Liquor Shop";
+      $("sellerBranch").value = "Biwi, Lilongwe";
+      $("description").value = "Kuche Kuche is a refreshing lager beer available from GrandMaster Liquor Shop in Biwi, Lilongwe. Sold per bottle and best served chilled. Place your order through LAVIDA Connect for collection or delivery, subject to availability. This product is for adults only.";
+      $("deliveryNote").value = DELIVERY_STATEMENT;
+      $("freeDeliveryMinimum").value = "10";
+      $("freeDeliveryArea").value = "Biwi and surrounding areas";
+      $("deliveryPricingMethod").value = "distance_range";
+      $("status").value = "published";
+      $("published").checked = true;
+      $("deliveryEnabled").checked = true;
+      $("pickupEnabled").checked = true;
+      setStatus("saveStatus", product ? "Kuche Kuche prepared with linked POS stock. Add image, then save." : "Kuche Kuche prepared. Link POS product if available, add image, then save.", "warn");
+    }
+    document.addEventListener("click",(event)=>{
+      const edit = event.target.closest("[data-edit]"); if(edit) editProduct(edit.dataset.edit);
+      const toggle = event.target.closest("[data-toggle]"); if(toggle) togglePublish(toggle.dataset.toggle);
+    });
+    $("loginBtn").addEventListener("click", login);
+    function toggleAdminMenu(force){
+      const menu = $("adminHeaderMenu");
+      const open = typeof force === "boolean" ? force : menu.hidden;
+      menu.hidden = !open;
+      $("adminMoreButton").setAttribute("aria-expanded", String(open));
+    }
+    async function logout(){ await window.LavidaAuth.signOut(db); location.href = "./marketplace.html#home"; }
+    $("adminMoreButton").addEventListener("click", (event)=>{ event.stopPropagation(); toggleAdminMenu(); });
+    document.addEventListener("click", (event)=>{ if(!$("adminHeaderMenu").contains(event.target) && !$("adminMoreButton").contains(event.target)) toggleAdminMenu(false); });
+    $("logoutBtn").addEventListener("click", logout);
+    $("logoutBtnDesktop").addEventListener("click", logout);
+    $("posProduct").addEventListener("change", fillFromPos);
+    $("saveProductBtn").addEventListener("click", saveProduct);
+    $("newProductBtn").addEventListener("click", clearForm);
+    $("kuchePresetBtn").addEventListener("click", prepareKucheKuche);
+    $("removeImageBtn").addEventListener("click", ()=>{ $("imageUrl").value=""; $("imageFile").value=""; updateImagePreview(""); });
+    $("imageUrl").addEventListener("input", ()=>updateImagePreview($("imageUrl").value));
+    $("imageFile").addEventListener("change", ()=>{
+      const file = $("imageFile").files[0];
+      if(file) updateImagePreview(URL.createObjectURL(file));
+    });
+    $("reloadProductsBtn").addEventListener("click", loadProducts);
+    $("reloadOrdersBtn").addEventListener("click", loadOrders);
+    $("saveSettingsBtn").addEventListener("click", saveSettings);
+    $("saveCategoryBtn").addEventListener("click", saveCategory);
+    init();
+    clearForm();
+  </script>
+</body>
+</html>

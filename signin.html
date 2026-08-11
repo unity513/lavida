@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#03163d">
+  <title>Sign In | LAVIDA Connect</title>
+  <style>
+    :root{--navy:#03163d;--navy2:#061f54;--gold:#f5b821;--ink:#071126;--muted:#667085;--line:#dfe5ee;--page:#f3f5f8;--bad:#b42318;--good:#08783e}
+    *{box-sizing:border-box}html{min-height:100%;background:var(--navy)}body{margin:0;min-height:100vh;background:linear-gradient(180deg,var(--navy) 0 42%,var(--page) 42% 100%);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;padding:calc(20px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(28px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:grid;place-items:center}button,input{font:inherit}a{color:inherit}.shell{width:min(440px,100%);display:grid;gap:18px}.brand{color:#fff}.brand strong{display:block;color:#fff;font-size:31px;line-height:1;font-weight:950;letter-spacing:.5px}.brand span{display:block;color:var(--gold);font-size:15px;font-weight:900;letter-spacing:1.4px;margin-top:6px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 18px 45px rgba(3,22,61,.18)}h1{margin:0;color:var(--navy);font-size:30px;line-height:1.05}p{margin:8px 0 0;color:#59657a;line-height:1.45}.form{display:grid;gap:14px;margin-top:20px}.field{display:grid;gap:7px;color:var(--navy);font-size:13px;font-weight:900}.input-wrap{position:relative}.field input{width:100%;min-height:52px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:0 14px;color:var(--ink);font-size:16px}.field input:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3px rgba(245,184,33,.24)}.field.with-eye input{padding-right:54px}.eye-button{position:absolute;right:5px;top:5px;width:42px;height:42px;border:0;border-radius:10px;background:transparent;color:var(--navy);display:grid;place-items:center}.eye-button svg{width:22px;height:22px;stroke:currentColor}.primary{width:100%;min-height:52px;border:0;border-radius:12px;background:var(--navy);color:#fff;font-weight:950;font-size:16px}.primary:disabled{opacity:.68;cursor:wait}.links{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:14px;font-weight:900;color:var(--navy)}.links a{min-height:36px;display:inline-flex;align-items:center}.message{min-height:22px;margin:0;color:var(--muted);font-weight:800}.message.bad{color:var(--bad)}.message.ok{color:var(--good)}.footer{text-align:center;color:#dbe5f6;font-size:13px}.footer a{color:#fff;font-weight:900}@media(max-width:380px){.card{padding:18px}.brand strong{font-size:28px}h1{font-size:27px}.links{display:grid}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="brand"><strong>LAVIDA</strong><span>Connect</span></header>
+    <section class="card" aria-labelledby="title">
+      <h1 id="title">Welcome back</h1>
+      <p>Sign in once to continue shopping, printing, community and Games 365 with your LAVIDA Connect account.</p>
+      <form id="signinForm" class="form" novalidate>
+        <label class="field" for="email">Email address
+          <input id="email" type="email" autocomplete="email" inputmode="email" required>
+        </label>
+        <label class="field with-eye" for="password">Password
+          <span class="input-wrap"><input id="password" type="password" autocomplete="current-password" required><button class="eye-button" type="button" data-toggle-password="password" aria-label="Show password"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle></svg></button></span>
+        </label>
+        <p id="message" class="message" aria-live="polite"></p>
+        <button id="signinButton" class="primary" type="submit">Sign In</button>
+        <nav class="links" aria-label="Authentication links">
+          <a id="forgotLink" href="forgot-password.html">Forgot password?</a>
+          <a id="registerLink" href="register.html">Create account</a>
+        </nav>
+      </form>
+    </section>
+    <p class="footer"><a href="marketplace.html#home">Back to LAVIDA Connect</a></p>
+  </main>
+  <script src="./vendor/supabase-js.js"></script>
+  <script src="./lavida-auth.js"></script>
+  <script>
+    (function(){
+      "use strict";
+      const SUPABASE_URL = "https://cgvpoddtqswmtzvyrmwj.supabase.co";
+      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndnBvZGR0cXN3bXR6dnlybXdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDE0OTMsImV4cCI6MjA5MTkxNzQ5M30.Ut_5jGo8L66zi8zxqR25nV_gkDBYLrT7p3Fx-4G5wGQ";
+      const db = window.LavidaAuth.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const $ = (id) => document.getElementById(id);
+      function setMessage(text,type){$("message").textContent=text||"";$("message").className=`message ${type||""}`.trim();}
+      function returnTarget(){const params=new URLSearchParams(location.search);return params.get("returnTo")||sessionStorage.getItem("lavida_auth_return_to")||"marketplace.html#home";}
+      function withReturn(url){const target=returnTarget();return `${url}?returnTo=${encodeURIComponent(target)}`;}
+      $("forgotLink").href = withReturn("forgot-password.html");
+      $("registerLink").href = withReturn("register.html");
+      document.querySelectorAll("[data-toggle-password]").forEach((button)=>button.addEventListener("click",()=>{
+        const input = $(button.dataset.togglePassword);
+        const showing = input.type === "text";
+        input.type = showing ? "password" : "text";
+        button.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+      }));
+      $("signinForm").addEventListener("submit",async(event)=>{
+        event.preventDefault();
+        const email=$("email").value.trim();
+        const password=$("password").value;
+        if(!email){setMessage("Enter your email address.","bad");return;}
+        if(!password){setMessage("Enter your password.","bad");return;}
+        $("signinButton").disabled=true;$("signinButton").textContent="Signing in...";
+        try{
+          await window.LavidaAuth.signIn(db,email,password);
+          const destination = window.LavidaAuth.safeDestination(returnTarget(),"marketplace.html#home");
+          sessionStorage.removeItem("lavida_auth_return_to");
+          setMessage("Signed in. Taking you back to LAVIDA Connect.","ok");
+          location.href = destination;
+        }catch(error){
+          window.LavidaAuth.debug("dedicated sign in failed",error,{email});
+          setMessage(window.LavidaAuth.friendlyError(error,"We could not sign you in. Please try again."),"bad");
+        }finally{
+          $("signinButton").disabled=false;$("signinButton").textContent="Sign In";
+        }
+      });
+      window.LavidaAuth.getSession(db).then((session)=>{
+        if(session?.user){
+          const destination = window.LavidaAuth.safeDestination(returnTarget(),"marketplace.html#home");
+          sessionStorage.removeItem("lavida_auth_return_to");
+          location.replace(destination);
+        }
+      }).catch(()=>{});
+    })();
+  </script>
+</body>
+</html>

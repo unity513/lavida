@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#03163d">
+  <title>LAVIDA Community | LAVIDA Connect</title>
+  <style>
+    :root{--navy:#03163d;--navy2:#071f4d;--gold:#f5b821;--green:#0aa64b;--ink:#071126;--muted:#667085;--line:#dfe5ee;--page:#f4f6fa;--white:#fff;--bad:#b42318;--blue:#0b6bff}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--page);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;padding-bottom:calc(102px + env(safe-area-inset-bottom,0px))}button,input,select,textarea{font:inherit}button{cursor:pointer}a{text-decoration:none;color:inherit}svg{stroke:currentColor}
+    .topbar{position:sticky;top:0;z-index:80;min-height:78px;background:linear-gradient(135deg,#03163d,#061f54);display:grid;grid-template-columns:280px minmax(260px,1fr) 220px;gap:20px;align-items:center;padding:calc(12px + env(safe-area-inset-top,0px)) 28px 12px;box-shadow:0 12px 30px rgba(3,22,61,.22)}.brand strong{display:block;color:#fff;font-size:26px;line-height:1;font-weight:950}.brand strong span{color:var(--gold)}.brand small{display:block;color:#fff;font-size:13px;margin-top:5px;letter-spacing:.2px}.search{position:relative}.search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:22px;height:22px;color:#fff}.search input{width:100%;height:48px;border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(255,255,255,.06);color:#fff;padding:0 18px 0 50px;outline:none}.search input::placeholder{color:#cdd6e6}.top-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px}.top-icon{width:42px;height:42px;border:0;background:transparent;color:#fff;display:grid;place-items:center;position:relative}.top-icon svg{width:24px;height:24px}.badge{position:absolute;top:2px;right:2px;min-width:20px;height:20px;border-radius:999px;background:var(--gold);color:var(--navy);font-size:12px;font-weight:950;display:grid;place-items:center}.top-avatar{width:46px;height:46px;border-radius:999px;border:2px solid rgba(255,255,255,.7);background:linear-gradient(135deg,#1b376e,#c88913);color:#fff;display:grid;place-items:center;font-weight:950}
+    .app-shell{display:grid;grid-template-columns:280px minmax(420px,1fr) 430px;gap:24px;max-width:1480px;margin:0 auto;padding:18px 28px 24px}.left-rail,.right-rail{display:grid;gap:12px;align-self:start;position:sticky;top:96px}.nav-card,.widget,.composer,.post-card{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 24px rgba(3,22,61,.06)}.nav-card{padding:8px}.nav-item{min-height:52px;border-radius:10px;display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:center;padding:0 14px;color:var(--navy);font-weight:900}.nav-item svg{width:23px;height:23px}.nav-item.active{background:var(--navy);color:#fff}.pos-card{margin-top:10px;border:1px solid #f1c45d;border-radius:12px;background:#fffaf0;padding:12px;display:grid;grid-template-columns:32px 1fr 18px;gap:10px;align-items:center;color:var(--navy)}.pos-card b{display:block}.pos-card small{display:block;color:#5b6577;line-height:1.35}.quick-actions{padding:16px}.quick-actions h3,.widget h3{margin:0 0 12px;color:var(--navy);font-size:17px}.quick-button{width:100%;min-height:42px;border:0;background:#fff;color:var(--navy);display:grid;grid-template-columns:32px 1fr;gap:10px;align-items:center;text-align:left;font-weight:850}.quick-button span:first-child{width:28px;height:28px;border-radius:8px;background:#eef3fb;color:var(--blue);display:grid;place-items:center}.promo{overflow:hidden;background:linear-gradient(135deg,var(--navy),#062a70);color:#fff;padding:16px;border-radius:12px}.promo h3{margin:0;color:var(--gold);font-size:20px}.promo p{margin:6px 0 12px;color:#dbe4f2;line-height:1.35}.promo button{height:38px;border:0;border-radius:999px;background:var(--gold);color:var(--navy);font-weight:950;padding:0 24px}.promo-art{height:120px;margin:14px -16px -16px;background:radial-gradient(circle at 26% 72%,#f3bb5c 0 18px,transparent 19px),radial-gradient(circle at 50% 60%,#e6a63a 0 20px,transparent 21px),radial-gradient(circle at 74% 72%,#f0c071 0 18px,transparent 19px),linear-gradient(180deg,transparent 35%,rgba(255,255,255,.18) 36% 100%)}
+    .main{min-width:0}.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:10px 0 12px}.page-head h1{margin:0;color:var(--navy);font-size:32px;line-height:1}.page-head p{margin:6px 0 0;color:var(--navy);font-size:18px}.tabs{display:flex;gap:9px;overflow:auto;padding-bottom:14px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{flex:0 0 auto;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--navy);min-height:42px;padding:0 16px;font-weight:900}.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}.composer{padding:0;margin-bottom:12px}.composer-top{display:grid;grid-template-columns:54px 1fr 46px;gap:12px;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}.avatar{width:52px;height:52px;border-radius:999px;background:var(--navy);color:var(--gold);display:grid;place-items:center;font-weight:950}.prompt{min-height:44px;border:0;background:transparent;color:#566174;text-align:left;font-weight:850}.image-button{width:42px;height:42px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--navy);display:grid;place-items:center}.composer-form{display:none;padding:14px 18px;border-bottom:1px solid var(--line);gap:10px}.composer.open .composer-form{display:grid}.composer textarea{width:100%;min-height:84px;border:1px solid var(--line);border-radius:12px;background:#f8fafc;padding:12px;resize:vertical}.composer-fields{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}.composer select,.composer input{height:44px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:0 12px}.primary{height:44px;border:1px solid var(--navy);border-radius:10px;background:var(--navy);color:#fff;font-weight:950;padding:0 18px}.composer-actions{display:grid;grid-template-columns:repeat(4,1fr);padding:10px 18px}.composer-actions button{height:44px;border:0;border-right:1px solid var(--line);background:#fff;color:var(--navy);font-weight:900}.composer-actions button:last-child{border-right:0}.composer-actions .photo{color:#0bb84f}.composer-actions .video{color:#ff3b30}.composer-actions .activity{color:#e89b00}.composer-actions .poll{color:#4443d0}
+    .feed{display:grid;gap:12px}.post-card{overflow:hidden}.post-body{padding:16px 18px}.post-top{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:start}.post-name{font-weight:950;color:var(--navy);font-size:16px}.verified{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:999px;background:var(--blue);color:#fff;font-size:11px;margin-left:4px}.post-meta{font-size:13px;color:#677286;font-weight:800;margin-top:2px}.post-menu{border:0;background:#fff;color:var(--navy);font-size:22px;font-weight:950}.category{display:inline-flex;margin-top:12px;border-radius:999px;background:#e8f9ed;color:#07823e;padding:6px 12px;font-size:12px;font-weight:950}.category.technology{background:#eaf2ff;color:#0962d4}.post-text{margin:12px 0;color:#071126;line-height:1.55}.media-grid{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:10px;margin-top:12px}.media-tile{height:130px;border-radius:10px;overflow:hidden;background:#f3f6fb;border:1px solid var(--line)}.media-tile img{width:100%;height:100%;object-fit:cover;display:block}.event-card{display:grid;grid-template-columns:82px 1fr;gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;background:#fbfcff;margin-top:12px;padding:12px}.event-date{border:1px solid var(--line);border-radius:9px;background:#fff;text-align:center;color:var(--navy);font-weight:950;padding:6px}.event-date span{display:block;color:#d98400;font-size:12px}.post-actions{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}.post-actions button{min-height:48px;border:0;border-right:1px solid var(--line);background:#fff;color:var(--navy);font-weight:900}.post-actions button:last-child{border-right:0}.post-actions button.active{color:#e0002a}.comments{display:grid;gap:8px;padding:0 18px 16px}.comment{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:9px;color:#344054}.comment b{color:var(--navy)}.comment-form{display:grid;grid-template-columns:1fr auto;gap:8px}.comment-form input{min-height:42px;border:1px solid var(--line);border-radius:10px;padding:0 12px}.comment-form button{border:1px solid var(--navy);border-radius:10px;background:#fff;color:var(--navy);font-weight:950;padding:0 16px}
+    .widget{padding:16px}.widget-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.widget-head h3{margin:0}.widget-head a{color:#0068ff;font-weight:900;font-size:13px}.profile-widget{display:grid;gap:14px}.profile-row{display:grid;grid-template-columns:70px 1fr;gap:14px;align-items:center}.large-avatar{width:70px;height:70px;border-radius:999px;background:linear-gradient(135deg,#09265e,#d89400);color:#fff;display:grid;place-items:center;font-size:24px;font-weight:950}.status{display:inline-flex;margin-top:6px;border-radius:999px;background:#dff7e8;color:#08783e;padding:5px 12px;font-weight:950;font-size:12px}.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.profile-stats b{display:block;color:var(--navy);font-size:18px}.profile-stats span{font-size:12px;color:#667085}.mini-list{display:grid;gap:10px}.mini-row{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px}.mini-row:last-child{border-bottom:0;padding-bottom:0}.mini-avatar,.group-icon{width:42px;height:42px;border-radius:999px;background:var(--navy);color:var(--gold);display:grid;place-items:center;font-weight:950}.mini-row b{display:block;color:var(--navy)}.mini-row small{display:block;color:#667085}.small-button{min-height:34px;border:1px solid var(--navy);border-radius:8px;background:#fff;color:var(--navy);font-weight:950;padding:0 12px}.event-row{display:grid;grid-template-columns:52px 1fr;gap:10px;border-bottom:1px solid var(--line);padding:10px 0}.event-row:last-child{border-bottom:0}.date-chip{border-radius:9px;border:1px solid var(--line);text-align:center;font-weight:950;color:var(--navy);padding:6px 0}.date-chip span{display:block;background:var(--gold);color:#fff;border-radius:6px;margin:0 6px 3px;font-size:10px}.guidelines{margin-top:8px;line-height:1.45;color:#344054}.outline{width:100%;height:42px;border:1px solid var(--navy);border-radius:9px;background:#fff;color:var(--navy);font-weight:950}.notice{border:1px solid #f0d57b;background:#fff7d6;color:#5d4300;border-radius:10px;padding:10px;line-height:1.4}.notice.ok{border-color:#b7e2c7;background:#effff4;color:#096b36}.notice.bad{border-color:#f5aaa2;background:#fff0ed;color:var(--bad)}.hidden{display:none!important}
+    .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:70;background:#fff;border-top:1px solid var(--line);box-shadow:0 -8px 22px rgba(3,22,61,.08);display:grid;grid-template-columns:repeat(5,1fr);padding:8px max(10px,calc(8px + env(safe-area-inset-right,0px))) calc(15px + env(safe-area-inset-bottom,0px)) max(10px,calc(8px + env(safe-area-inset-left,0px)))}.bottom-nav a{min-height:52px;color:var(--navy);display:grid;place-items:center;gap:2px;font-size:11px;font-weight:850;border-radius:12px}.bottom-nav svg{width:22px;height:22px}.bottom-nav .active{background:var(--navy);color:#fff}.bottom-nav .active svg{color:var(--gold)}
+    @media(max-width:1180px){.topbar{grid-template-columns:1fr auto}.search{grid-column:1/-1;order:3}.app-shell{grid-template-columns:1fr}.left-rail,.right-rail{position:static}.left-rail{display:none}.right-rail{grid-template-columns:repeat(2,minmax(0,1fr))}.widget.guideline-widget{grid-column:1/-1}}@media(max-width:700px){body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}.topbar{padding-inline:18px;gap:12px}.brand strong{font-size:24px}.brand small{font-size:12px}.top-actions{gap:4px}.top-icon{display:none}.search{display:none}.app-shell{padding:14px 12px}.page-head h1{font-size:28px}.page-head p{font-size:15px}.right-rail{grid-template-columns:1fr}.composer-fields{grid-template-columns:1fr}.composer-actions{grid-template-columns:repeat(2,1fr)}.composer-actions button:nth-child(2){border-right:0}.composer-actions button:nth-child(-n+2){border-bottom:1px solid var(--line)}.media-grid{grid-template-columns:1fr}.media-tile{height:150px}.bottom-nav{grid-template-columns:repeat(5,1fr);padding-inline:4px}.bottom-nav a{font-size:10px}.bottom-nav svg{width:20px;height:20px}.post-actions{grid-template-columns:repeat(2,1fr)}.post-actions button:nth-child(2){border-right:0}.post-actions button:nth-child(-n+2){border-bottom:1px solid var(--line)}}@media(max-width:390px){.bottom-nav a{font-size:9px}.page-head{display:block}.composer-top{grid-template-columns:46px 1fr}.image-button{display:none}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="marketplace.html#home"><strong>LAVIDA <span>Connect</span></strong><small>All Services. One Family.</small></a>
+    <label class="search" for="globalSearch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input id="globalSearch" type="search" placeholder="Search people, posts, groups, events..."></label>
+    <div class="top-actions">
+      <button class="top-icon" type="button" aria-label="Messages"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path></svg></button>
+      <button class="top-icon" type="button" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg><span class="badge">3</span></button>
+      <div id="topAvatar" class="top-avatar">LC</div>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <aside class="left-rail">
+      <nav class="nav-card" aria-label="LAVIDA Connect services">
+        <a class="nav-item" href="marketplace.html#home"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"></path></svg>Home</a>
+        <a class="nav-item" href="marketplace.html#market"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 6h15l-2 9H8L6 6Z"></path><path d="M6 6 5 3H2"></path></svg>Market 365</a>
+        <a class="nav-item active" href="community.html"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path></svg>Community</a>
+        <a class="nav-item" href="chess365.html#play-computer"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M8 22h8"></path><path d="M7 18h10l-1 4H8l-1-4Z"></path><path d="M10 4h4v4h3l-2 10H9L7 8h3V4Z"></path></svg>Chess 365</a>
+        <a class="nav-item" href="marketplace.html#orders"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 3h12v18H6z"></path><path d="M9 7h6M9 11h6M9 15h3"></path></svg>My Orders</a>
+        <a class="nav-item" href="marketplace.html#notifications"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg>Notifications</a>
+        <a class="nav-item" href="marketplace.html#account"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>Account</a>
+      </nav>
+      <section class="nav-card quick-actions">
+        <h3>Quick Actions</h3>
+        <button class="quick-button" type="button" data-open-composer><span>+</span>Create Post</button>
+        <button class="quick-button" type="button" data-quick="Create Group"><span>G</span>Create Group</button>
+        <button class="quick-button" type="button" data-quick="Create Event"><span>E</span>Create Event</button>
+        <button class="quick-button" type="button" data-quick="Find People"><span>P</span>Find People</button>
+      </section>
+      <section class="promo">
+        <h3>Grow Together</h3>
+        <p>Connect, share ideas and build opportunities.</p>
+        <button type="button" data-quick="Invite Friends">Invite Friends</button>
+        <div class="promo-art" aria-hidden="true"></div>
+      </section>
+    </aside>
+
+    <section class="main">
+      <div class="page-head">
+        <div><h1>Community</h1><p>Connect. Share. Grow.</p></div>
+      </div>
+      <nav id="categoryTabs" class="tabs" aria-label="Community categories"></nav>
+
+      <section id="composer" class="composer">
+        <div class="composer-top">
+          <div id="profileAvatar" class="avatar">LC</div>
+          <button class="prompt" type="button" data-open-composer>What's on your mind?</button>
+          <button class="image-button" type="button" data-open-composer aria-label="Add photo"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="M21 15l-5-5L5 21"></path></svg></button>
+        </div>
+        <div class="composer-form">
+          <textarea id="postText" placeholder="Post an update, opportunity, announcement or community story..."></textarea>
+          <div class="composer-fields">
+            <select id="postCategory"></select>
+            <select id="postMediaType"><option value="none">No media</option><option value="image">Photo layout</option><option value="event">Event card</option></select>
+            <button id="publishPostButton" class="primary" type="button">Post</button>
+          </div>
+          <div id="composerNotice" class="notice">Posts, likes, comments and reports save on this device until Community database tables are connected.</div>
+        </div>
+        <div class="composer-actions">
+          <button class="photo" type="button" data-media="image">Photo</button>
+          <button class="video" type="button" data-media="image">Video</button>
+          <button class="activity" type="button" data-open-composer>Feeling/Activity</button>
+          <button class="poll" type="button" data-open-composer>Poll</button>
+        </div>
+      </section>
+
+      <div id="feed" class="feed"></div>
+    </section>
+
+    <aside class="right-rail">
+      <section class="widget profile-widget">
+        <div class="widget-head"><h3>Your Profile</h3><a href="marketplace.html#account">View Profile</a></div>
+        <div class="profile-row">
+          <div id="sideAvatar" class="large-avatar">LC</div>
+          <div><h3 id="profileName" style="margin:0;color:var(--navy)">Community Member</h3><div id="profileEmail" class="muted">@lavida</div><span class="status">Active</span></div>
+        </div>
+        <div class="profile-stats"><div><b>245</b><span>Connections</span></div><div><b id="profilePosts">0</b><span>Posts</span></div><div><b id="profileGroups">0</b><span>Groups</span></div></div>
+      </section>
+
+      <section class="widget">
+        <div class="widget-head"><h3>Suggested Connections</h3><a href="#">See All</a></div>
+        <div id="connectionsList" class="mini-list"></div>
+      </section>
+
+      <section class="widget">
+        <div class="widget-head"><h3>Upcoming Events</h3><a href="#">See All</a></div>
+        <div id="eventsList"></div>
+      </section>
+
+      <section class="widget">
+        <div class="widget-head"><h3>Popular Groups</h3><a href="#">See All</a></div>
+        <div id="groupsList" class="mini-list"></div>
+      </section>
+
+      <section class="widget guideline-widget">
+        <h3>Community Guidelines</h3>
+        <p class="guidelines">Be respectful. No hate speech.<br>No spam or scams.<br>Let's keep our community safe and positive.</p>
+        <button class="outline" type="button" data-guidelines>Read Guidelines</button>
+        <div id="moderationNotice" class="notice hidden" style="margin-top:10px"></div>
+      </section>
+    </aside>
+  </main>
+
+  <nav class="bottom-nav" aria-label="LAVIDA Connect bottom navigation">
+    <a href="marketplace.html#home"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"></path></svg>Home</a>
+    <a href="marketplace.html#market"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 6h15l-2 9H8L6 6Z"></path><path d="M6 6 5 3H2"></path></svg>Market 365</a>
+    <a class="active" href="community.html"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>Community</a>
+    <a href="marketplace.html#orders"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 3h12v18H6z"></path><path d="M9 7h6M9 11h6M9 15h3"></path></svg>My Orders</a>
+    <a href="marketplace.html#account"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>Account</a>
+  </nav>
+
+  <script src="./vendor/supabase-js.js"></script>
+  <script>
+    if("scrollRestoration" in history) history.scrollRestoration = "manual";
+    const SUPABASE_URL = "https://cgvpoddtqswmtzvyrmwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndnBvZGR0cXN3bXR6dnlybXdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDE0OTMsImV4cCI6MjA5MTkxNzQ5M30.Ut_5jGo8L66zi8zxqR25nV_gkDBYLrT7p3Fx-4G5wGQ";
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const STORE_KEY = "lavida_community_social_v2";
+    const categories = ["For You","Business","Jobs","Education","Events","Sports","Technology","Buy and Sell"];
+    const svgImage = (title,color) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="640" height="420"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="${color}"/><stop offset="1" stop-color="#fff4d0"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><circle cx="122" cy="92" r="38" fill="#03163d" opacity=".85"/><rect x="70" y="150" width="500" height="180" rx="24" fill="#ffffff" opacity=".78"/><text x="50%" y="230" text-anchor="middle" font-family="Arial" font-size="34" font-weight="800" fill="#03163d">${title}</text><text x="50%" y="275" text-anchor="middle" font-family="Arial" font-size="20" fill="#667085">LAVIDA Community</text></svg>`)}`;
+    const seed = {
+      posts:[
+        {id:"p1",author:"Thandiwe Banda",handle:"@thandiwe.banda",role:"Business",verified:true,category:"Business",text:"Launching my new eco-friendly packaging business in Lilongwe. We create sustainable packaging for local businesses. Let's build a greener Malawi together.",media:"image",likes:156,comments:[{author:"Lydia",text:"This is exactly what small businesses need."}],createdAt:"2h",liked:false},
+        {id:"p2",author:"Malawi Developers Community",handle:"@malawidevs",role:"Technology",verified:false,category:"Technology",text:"Our next meetup is this Saturday. Topic: Building scalable LAVIDA applications. Join us and let's learn together.",media:"event",likes:89,comments:[],createdAt:"4h",liked:false}
+      ],
+      groups:[["MW","Malawi Entrepreneurs","2.6K members"],["TM","Tech Malawi","3.1K members"],["AF","Agri & Farmers","1.8K members"],["YC","Youth Connect","4.7K members"]],
+      events:[["JUN","20","Business Networking","Fri, 20 June 2026 - 09:00 AM"],["JUN","24","Youth Leadership Seminar","Tue, 24 June 2026 - 10:00 AM"],["JUN","30","Community Clean Up","Mon, 30 June 2026 - 07:00 AM"]],
+      connections:[["LP","Lydia Phiri","Business Owner"],["MC","Mike Chirwa","Entrepreneur"],["GK","Grace Kamoto","Student"]],
+      reports:[]
+    };
+    const $ = (id) => document.getElementById(id);
+    const esc = (value) => String(value ?? "").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    let state = loadState(), activeCategory = "For You", session = null;
+    function loadState(){try{return {...seed,...JSON.parse(localStorage.getItem(STORE_KEY) || "{}")}}catch{return structuredClone(seed)}}
+    function saveState(){localStorage.setItem(STORE_KEY,JSON.stringify(state))}
+    function initials(value){return String(value || "LC").split(/\s+/).filter(Boolean).map(part=>part[0]).join("").slice(0,3).toUpperCase() || "LC"}
+    function notice(id,text,type){const el=$(id);if(!el)return;el.textContent=text;el.className=`notice ${type || ""}`}
+    function renderTabs(){$("categoryTabs").innerHTML=categories.map(c=>`<button class="tab ${c===activeCategory?"active":""}" type="button" data-category="${esc(c)}">${esc(c)}</button>`).join("")+`<button class="tab" type="button" data-category="For You">...</button>`;$("postCategory").innerHTML=categories.filter(c=>c!=="For You").map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("")}
+    function mediaHtml(post){
+      if(post.media==="event")return `<div class="event-card"><div class="event-date"><span>JUN</span>17</div><div><b>Malawi Devs Meetup</b><br><small>Sat, 17 June 2026 - 10:00 AM<br>Bingu International Convention Centre</small></div></div>`;
+      if(post.media==="image")return `<div class="media-grid"><div class="media-tile"><img src="${svgImage("Local business","#d6f5df")}" alt=""></div><div class="media-tile"><img src="${svgImage("Packaging","#f7ddb8")}" alt=""></div><div class="media-tile"><img src="${svgImage("Products","#dfe9ff")}" alt=""></div></div>`;
+      return "";
+    }
+    function renderFeed(){
+      const posts=state.posts.filter(p=>activeCategory==="For You"||p.category===activeCategory);
+      $("profilePosts").textContent=state.posts.length;$("profileGroups").textContent=state.groups.length;
+      $("feed").innerHTML=posts.map(post=>`<article class="post-card" data-post="${esc(post.id)}"><div class="post-body"><div class="post-top"><div class="avatar">${esc(initials(post.author))}</div><div><div class="post-name">${esc(post.author)}${post.verified?'<span class="verified">V</span>':""}</div><div class="post-meta">${esc(post.handle || "")} - ${esc(post.createdAt || "now")}</div></div><button class="post-menu" type="button" data-post-report="${esc(post.id)}">...</button></div><span class="category ${post.category==="Technology"?"technology":""}">${esc(post.category)}</span><p class="post-text">${esc(post.text)}</p>${mediaHtml(post)}</div><div class="post-actions"><button class="${post.liked?"active":""}" type="button" data-like="${esc(post.id)}">Like ${esc(post.likes)}</button><button type="button" data-focus-comment="${esc(post.id)}">Comment</button><button type="button" data-quick="Share Post">Share</button><button type="button" data-quick="Save Post">Save</button></div><div class="comments">${(post.comments||[]).map(c=>`<div class="comment"><b>${esc(c.author)}:</b> ${esc(c.text)}</div>`).join("")}<div class="comment-form"><input id="comment-${esc(post.id)}" placeholder="Write a comment..."><button type="button" data-comment="${esc(post.id)}">Send</button></div></div></article>`).join("")||`<section class="post-card"><div class="post-body"><div class="notice">No posts in ${esc(activeCategory)} yet. Start the conversation.</div></div></section>`}
+    function renderSide(){
+      $("connectionsList").innerHTML=state.connections.map(([abbr,name,role])=>`<div class="mini-row"><span class="mini-avatar">${esc(abbr)}</span><div><b>${esc(name)}</b><small>${esc(role)}</small></div><button class="small-button" type="button" data-quick="Connect with ${esc(name)}">Connect</button></div>`).join("");
+      $("groupsList").innerHTML=state.groups.map(([abbr,name,members])=>`<div class="mini-row"><span class="group-icon">${esc(abbr)}</span><div><b>${esc(name)}</b><small>${esc(members)}</small></div><button class="small-button" type="button" data-quick="Join ${esc(name)}">Join</button></div>`).join("");
+      $("eventsList").innerHTML=state.events.map(([mon,day,name,time])=>`<div class="event-row"><div class="date-chip"><span>${esc(mon)}</span>${esc(day)}</div><div><b>${esc(name)}</b><br><small>${esc(time)}</small></div></div>`).join("");
+    }
+    function currentAuthor(){
+      const email=session?.user?.email||localStorage.getItem("lavida_connect_customer_email")||"";
+      const name=email?email.split("@")[0].replace(/[._-]+/g," ").replace(/\b\w/g,c=>c.toUpperCase()):"Community Member";
+      return {name,email};
+    }
+    function updateProfile(){
+      const author=currentAuthor(), abbr=initials(author.name);
+      ["profileAvatar","sideAvatar","topAvatar"].forEach(id=>$(id).textContent=abbr);
+      $("profileName").textContent=author.name;$("profileEmail").textContent=author.email?`@${author.email.split("@")[0]}`:"@lavida";
+    }
+    async function loadSession(){try{const result=await db.auth.getSession();session=result?.data?.session||null}catch(error){console.warn("LAVIDA Community auth unavailable",error)}updateProfile()}
+    function openComposer(media){$("composer").classList.add("open");if(media)$("postMediaType").value=media;$("postText").focus({preventScroll:true})}
+    function publishPost(){
+      const text=$("postText").value.trim();if(!text)return notice("composerNotice","Write something before posting.","bad");
+      const author=currentAuthor();state.posts.unshift({id:`local-${Date.now()}`,author:author.name,handle:author.email?`@${author.email.split("@")[0]}`:"@lavida",role:"Community member",verified:false,category:$("postCategory").value,text,media:$("postMediaType").value,likes:0,comments:[],createdAt:"now",liked:false});
+      $("postText").value="";$("composer").classList.remove("open");saveState();renderFeed();notice("composerNotice","Post added to the Community feed on this device.","ok");
+    }
+    document.addEventListener("click",event=>{
+      const category=event.target.closest("[data-category]");if(category){activeCategory=category.dataset.category;renderTabs();renderFeed();return}
+      if(event.target.closest("[data-open-composer]")){openComposer();return}
+      const media=event.target.closest("[data-media]");if(media){openComposer(media.dataset.media);return}
+      const like=event.target.closest("[data-like]");if(like){const post=state.posts.find(p=>p.id===like.dataset.like);if(post){post.liked=!post.liked;post.likes=Math.max(0,Number(post.likes||0)+(post.liked?1:-1));saveState();renderFeed()}return}
+      const comment=event.target.closest("[data-comment]");if(comment){const input=$(`comment-${comment.dataset.comment}`),post=state.posts.find(p=>p.id===comment.dataset.comment),text=input?.value.trim();if(post&&text){post.comments.push({author:currentAuthor().name,text});saveState();renderFeed()}return}
+      const focus=event.target.closest("[data-focus-comment]");if(focus){$(`comment-${focus.dataset.focusComment}`)?.focus();return}
+      const report=event.target.closest("[data-post-report]");if(report){state.reports.push({target:report.dataset.postReport,createdAt:new Date().toISOString()});saveState();notice("moderationNotice","Report captured for Community moderation review.","ok");return}
+      const quick=event.target.closest("[data-quick]");if(quick){notice("composerNotice",`${quick.dataset.quick} is ready for backend connection in the next phase.`,"ok");return}
+      if(event.target.closest("[data-guidelines]"))notice("moderationNotice","Guidelines opened: be respectful, avoid spam, protect users, and report harmful content.","ok");
+    });
+    $("publishPostButton").addEventListener("click",publishPost);
+    $("globalSearch").addEventListener("input",event=>{const q=event.target.value.trim().toLowerCase();document.querySelectorAll(".post-card").forEach(card=>card.hidden=q&&!card.textContent.toLowerCase().includes(q))});
+    function setupNativeBackButton(){const appPlugin=window.Capacitor?.Plugins?.App;if(!appPlugin?.addListener)return;appPlugin.addListener("backButton",()=>{if($("composer").classList.contains("open")){$("composer").classList.remove("open");return}history.length>1?history.back():location.href="marketplace.html#home"});}
+    setupNativeBackButton();
+    renderTabs();renderFeed();renderSide();loadSession();setTimeout(()=>scrollTo({top:0,behavior:"auto"}),80);
+  </script>
+</body>
+</html>

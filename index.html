@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#061433">
+  <meta name="application-name" content="LAVIDA Connect">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <title>LAVIDA Connect</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #061433;
+      color: #f4c542;
+      font-family: Arial, sans-serif;
+    }
+    a {
+      color: #f4c542;
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>LAVIDA Connect</h1>
+    <p><a id="openLink" href="./marketplace.html">Open LAVIDA Connect</a></p>
+  </main>
+  <script>
+    const LAVIDA_CACHE_NAME = "lavida-connect-independent-v230";
+    async function refreshLavidaAppShell(){
+      if("caches" in window){
+        const keys = await caches.keys();
+        await Promise.all(keys
+          .filter((key) => /lavida|grandmaster/i.test(key) && key !== LAVIDA_CACHE_NAME)
+          .map((key) => caches.delete(key)));
+      }
+      if("serviceWorker" in navigator){
+        const registration = await navigator.serviceWorker.register("./gm-offline-sw.js");
+        if(registration.waiting) registration.waiting.postMessage({ type: "SKIP_WAITING" });
+        registration.update?.();
+      }
+    }
+    const redirectTarget = `./marketplace.html${window.location.search || ""}${window.location.hash || ""}`;
+    document.getElementById("openLink").href = redirectTarget;
+    refreshLavidaAppShell().finally(() => {
+      window.location.replace(redirectTarget);
+    });
+  </script>
+</body>
+</html>

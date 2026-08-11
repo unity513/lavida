@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#061433">
+  <title>Print 365 Admin | LAVIDA Connect</title>
+  <style>
+    :root{--navy:#061433;--blue:#0b2a5e;--gold:#f4c542;--ink:#071126;--muted:#64748b;--line:#d9e2ef;--soft:#f6f8fb;--white:#fff;--good:#0f8a5f;--warn:#b7791f;--bad:#b42318}
+    *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--soft);color:var(--ink)}button,input,select,textarea{font:inherit}button{border:0;border-radius:7px;background:var(--navy);color:#fff;font-weight:900;padding:11px 14px;cursor:pointer}button.secondary{background:#eef3fb;color:var(--navy)}button.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}button.danger{background:var(--bad)}button:disabled{opacity:.55;cursor:not-allowed}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:7px;background:#fff;padding:11px;color:var(--ink)}textarea{min-height:88px;resize:vertical}a{color:inherit;text-decoration:none}
+    .admin-header{position:sticky;top:0;z-index:20;min-height:68px;padding:calc(8px + env(safe-area-inset-top,0px)) 16px 8px;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;box-shadow:0 12px 34px rgba(6,20,51,.18)}.admin-brand strong{display:block;color:#fff;font-size:24px;line-height:1;letter-spacing:1px}.admin-brand span{display:block;margin-top:4px;color:var(--gold);font-size:12px;letter-spacing:1.2px}.admin-actions{display:flex;gap:8px;align-items:center}.admin-actions a,.admin-actions button{min-height:42px;display:flex;align-items:center;background:#fff;color:var(--navy);border-radius:10px;padding:0 12px;font-weight:900}
+    main{max-width:1220px;margin:auto;padding:16px 16px 50px}.panel{background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:16px;box-shadow:0 10px 24px rgba(6,20,51,.07)}.panel-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:12px}.panel h1,.panel h2,.panel h3{margin:0;color:var(--navy)}.muted{color:var(--muted)}.status{display:inline-flex;border-radius:999px;background:#eef3fb;color:var(--navy);padding:5px 9px;font-size:12px;font-weight:900}.status.ok{background:#e8fff5;color:#08734e}.status.warn{background:#fff7d6;color:#7a5200}.status.bad{background:#fff0ed;color:var(--bad)}.hidden{display:none!important}.notice{background:#fff7d6;border:1px solid #f0d57b;border-radius:8px;padding:11px;color:#5d4300}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.grid.two{grid-template-columns:repeat(2,1fr)}.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.summary-card{border:1px solid var(--line);border-radius:8px;background:#f8fafc;padding:13px}.summary-card span{display:block;color:var(--muted);font-size:12px;font-weight:800}.summary-card strong{display:block;color:var(--navy);font-size:26px;margin-top:4px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px}table{width:100%;border-collapse:collapse;min-width:980px}th,td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top;font-size:13px}th{background:var(--navy);color:var(--gold);text-transform:uppercase;font-size:11px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.detail-layout{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.detail-block{border:1px solid var(--line);border-radius:8px;padding:12px;background:#f8fafc;margin-bottom:12px}.history{display:grid;gap:8px}.history-row{display:flex;gap:8px}.dot{width:10px;height:10px;border-radius:50%;background:var(--gold);margin-top:5px;flex:0 0 auto}
+    @media(max-width:900px){.admin-actions{display:none}.grid,.grid.two,.summary-grid,.detail-layout{grid-template-columns:1fr}.panel-head{display:block}main{padding-inline:12px}table{min-width:760px}}
+  </style>
+</head>
+<body>
+  <header class="admin-header">
+    <a class="admin-brand" href="./printing-admin.html"><strong>LAVIDA</strong><span>Print 365 Admin</span></a>
+    <nav class="admin-actions">
+      <a href="./marketplace.html#print365">Public Print 365</a>
+      <a href="./user-management.html">User Management</a>
+      <a href="./marketplace-admin.html">Market 365 Admin</a>
+      <button id="logoutBtn" type="button">Log Out</button>
+    </nav>
+  </header>
+  <main>
+    <section id="authPanel" class="panel">
+      <div class="panel-head"><div><h1>Print 365 Dashboard</h1><p class="muted">Manage printing orders, payment verification, files, prices and job status.</p></div><span id="authStatus" class="status warn">Checking access</span></div>
+      <div id="loginBox" class="grid two hidden">
+        <input id="email" type="email" placeholder="Staff email">
+        <input id="password" type="password" placeholder="Password">
+        <button id="loginBtn" type="button">Sign In</button>
+      </div>
+    </section>
+
+    <section id="summaryPanel" class="panel hidden">
+      <div class="summary-grid" id="summaryCards"></div>
+    </section>
+
+    <section id="pricesPanel" class="panel hidden">
+      <div class="panel-head"><div><h2>Printing Prices</h2><p class="muted">Frontend estimates are loaded from this admin-controlled table.</p></div><button id="reloadPricesBtn" class="secondary" type="button">Refresh Prices</button></div>
+      <div class="grid">
+        <select id="priceService"></select>
+        <input id="priceName" placeholder="Display name">
+        <input id="priceAmount" type="number" min="0" step="1" placeholder="Amount MWK">
+        <select id="priceUnit"><option value="per_page">Per page</option><option value="per_order">Per order</option><option value="per_file">Per file</option><option value="per_copy">Per copy</option><option value="custom">Custom</option></select>
+        <button id="savePriceBtn" type="button">Save Price</button>
+        <span id="priceStatus" class="status">Ready</span>
+      </div>
+      <div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>Service</th><th>Name</th><th>Amount</th><th>Unit</th><th>Active</th><th>Actions</th></tr></thead><tbody id="pricesBody"></tbody></table></div>
+    </section>
+
+    <section id="ordersPanel" class="panel hidden">
+      <div class="panel-head"><div><h2>Printing Orders</h2><p class="muted">Review documents, verify payment and move jobs through production.</p></div><button id="reloadOrdersBtn" class="secondary" type="button">Refresh Orders</button></div>
+      <div class="grid">
+        <input id="orderSearch" type="search" placeholder="Search order number, customer or phone">
+        <select id="statusFilter"><option value="">All statuses</option></select>
+        <select id="paymentFilter"><option value="">All payments</option><option value="awaiting_payment">Awaiting payment</option><option value="pending_verification">Pending verification</option><option value="verified">Verified</option><option value="rejected">Rejected</option></select>
+      </div>
+      <div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Production</th><th>Method</th><th>Submitted</th><th>Action</th></tr></thead><tbody id="ordersBody"></tbody></table></div>
+    </section>
+
+    <section id="detailPanel" class="panel hidden">
+      <div class="panel-head"><div><h2 id="detailTitle">Order details</h2><p id="detailSubtitle" class="muted"></p></div><span id="detailStatus" class="status">Selected</span></div>
+      <div class="detail-layout">
+        <div>
+          <div class="detail-block"><h3>Files and instructions</h3><div id="filesBox"></div><div id="itemsBox"></div></div>
+          <div class="detail-block"><h3>History</h3><div id="historyBox" class="history"></div></div>
+        </div>
+        <div>
+          <div class="detail-block">
+            <h3>Payment</h3>
+            <div id="paymentBox"></div>
+            <textarea id="paymentRejectReason" placeholder="Reason when rejecting payment"></textarea>
+            <div class="actions"><button id="verifyPaymentBtn" type="button">Verify Payment</button><button id="rejectPaymentBtn" class="danger" type="button">Reject Payment</button></div>
+          </div>
+          <div class="detail-block">
+            <h3>Production</h3>
+            <select id="productionStatus"></select>
+            <input id="estimatedCompletion" type="datetime-local">
+            <textarea id="statusReason" placeholder="Reason or customer-facing status note"></textarea>
+            <div class="actions"><button id="saveStatusBtn" type="button">Save Status</button><button id="readyPickupBtn" class="secondary" type="button">Ready for Pickup</button><button id="completeOrderBtn" class="secondary" type="button">Completed</button></div>
+          </div>
+          <div class="detail-block">
+            <h3>Price and delivery</h3>
+            <input id="revisedTotal" type="number" min="0" step="1" placeholder="Revised total MWK">
+            <textarea id="revisionReason" placeholder="Required reason for revised quote"></textarea>
+            <input id="deliveryFee" type="number" min="0" step="1" placeholder="Delivery fee MWK">
+            <div class="actions"><button id="savePriceRevisionBtn" type="button">Save Revised Quote</button><button id="saveDeliveryBtn" class="secondary" type="button">Save Delivery Fee</button></div>
+          </div>
+          <div class="detail-block">
+            <h3>Internal notes and contact</h3>
+            <textarea id="adminNote" placeholder="Internal note"></textarea>
+            <div class="actions"><button id="saveNoteBtn" type="button">Add Note</button><a id="callCustomerLink" class="status ok" href="#">Call customer</a><button id="jobSheetBtn" class="secondary" type="button">Print Job Sheet</button></div>
+          </div>
+        </div>
+      </div>
+      <div id="detailNotice" class="notice hidden"></div>
+    </section>
+  </main>
+  <script src="./vendor/supabase-js.js"></script>
+  <script src="./lavida-auth.js"></script>
+  <script>
+    const SUPABASE_URL = "https://cgvpoddtqswmtzvyrmwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndnBvZGR0cXN3bXR6dnlybXdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDE0OTMsImV4cCI6MjA5MTkxNzQ5M30.Ut_5jGo8L66zi8zxqR25nV_gkDBYLrT7p3Fx-4G5wGQ";
+    const db = window.LavidaAuth.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const $ = (id) => document.getElementById(id);
+    const esc = (value) => String(value ?? "").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const money = (value) => "MWK " + Number(value || 0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    const STATUSES = ["draft","awaiting_payment","payment_under_review","payment_confirmed","reviewing_document","approved_for_printing","printing","ready_for_pickup","out_for_delivery","completed","cancelled","rejected"];
+    let session = null, role = "", orders = [], selectedOrder = null, services = [], prices = [];
+    function statusLabel(value){return String(value || "").replaceAll("_"," ").replace(/\b\w/g,(c)=>c.toUpperCase());}
+    function roleAllowed(value){return ["owner","admin","executive","manager","printing_admin"].includes(String(value || "").toLowerCase());}
+    function setStatus(id,text,type){$(id).textContent=text;$(id).className=`status ${type||""}`;}
+    function showPanels(){["summaryPanel","pricesPanel","ordersPanel"].forEach((id)=>$(id).classList.remove("hidden"));$("loginBox").classList.add("hidden");}
+    async function loadRole(){
+      const email = session?.user?.email || "";
+      try{role=await window.LavidaAuth.loadRole(db,session) || "";}catch(error){window.LavidaAuth.debug("print admin role load failed",error,{email});role="";setStatus("authStatus",window.LavidaAuth.friendlyError(error,"LAVIDA could not verify your access. Please try again."),"bad");$("loginBox").classList.remove("hidden");return false;}
+      if(!roleAllowed(role)){setStatus("authStatus","Your LAVIDA account does not have access to this page.","bad");$("loginBox").classList.remove("hidden");return false;}
+      setStatus("authStatus",`${role} access`,"ok");showPanels();return true;
+    }
+    async function login(){try{session=await window.LavidaAuth.signIn(db,$("email").value.trim(),$("password").value);if(await loadRole())loadAll();}catch(error){setStatus("authStatus",window.LavidaAuth.friendlyError(error,"We could not sign you in. Please try again."),"bad");}}
+    async function init(){window.LavidaAuth.rememberReturnTo();try{session=await window.LavidaAuth.getSession(db);if(!session){setStatus("authStatus","Sign in with your LAVIDA account to continue.","warn");$("loginBox").classList.remove("hidden");return;}if(await loadRole())loadAll();}catch(error){window.LavidaAuth.debug("print admin session check failed",error);setStatus("authStatus",window.LavidaAuth.friendlyError(error,"LAVIDA could not check your session. Please try again."),"bad");$("loginBox").classList.remove("hidden");}}
+    async function loadAll(){await Promise.all([loadPrices(),loadOrders()]);}
+    async function loadPrices(){
+      try{
+        const [{data:serviceRows},{data:priceRows}]=await Promise.all([db.from("printing_services").select("*").order("sort_order"),db.from("printing_service_prices").select("*").order("service_code")]);
+        services=serviceRows||[];prices=priceRows||[];
+        $("priceService").innerHTML=services.map((s)=>`<option value="${esc(s.service_code)}">${esc(s.service_name)}</option>`).join("");
+        $("pricesBody").innerHTML=prices.map((p)=>`<tr><td>${esc(p.service_code)}</td><td>${esc(p.display_name)}</td><td>${esc(money(p.amount_mwk))}</td><td>${esc(p.pricing_unit)}</td><td>${p.active?"Yes":"No"}</td><td><button class="secondary" data-edit-price="${esc(p.id)}">Edit</button></td></tr>`).join("") || `<tr><td colspan="6">No prices yet.</td></tr>`;
+      }catch(error){$("pricesBody").innerHTML=`<tr><td colspan="6">${esc(error.message || "Prices unavailable. Run the Print 365 migration.")}</td></tr>`;}
+    }
+    function filteredOrders(){
+      const q=$("orderSearch").value.trim().toLowerCase(), status=$("statusFilter").value, payment=$("paymentFilter").value;
+      return orders.filter((o)=>`${o.order_number} ${o.customer_name} ${o.customer_phone}`.toLowerCase().includes(q) && (!status || o.production_status===status) && (!payment || o.payment_status===payment));
+    }
+    function renderSummary(){
+      const today = new Date().toDateString();
+      const count = (fn) => orders.filter(fn).length;
+      const revenue = orders.filter((o)=>new Date(o.created_at).toDateString()===today && o.payment_status==="verified").reduce((sum,o)=>sum+Number(o.grand_total_mwk||0),0);
+      const cards = [["New Orders",count((o)=>["awaiting_payment","payment_under_review","reviewing_document"].includes(o.production_status))],["Awaiting Payment Verification",count((o)=>o.payment_status==="pending_verification")],["Ready for Printing",count((o)=>o.production_status==="approved_for_printing")],["Currently Printing",count((o)=>o.production_status==="printing")],["Ready for Pickup",count((o)=>o.production_status==="ready_for_pickup")],["Completed Orders",count((o)=>o.production_status==="completed")],["Today's Printing Revenue",money(revenue)]];
+      $("summaryCards").innerHTML=cards.map(([label,value])=>`<article class="summary-card"><span>${esc(label)}</span><strong>${esc(value)}</strong></article>`).join("");
+    }
+    async function loadOrders(){
+      try{
+        const {data,error}=await db.from("printing_orders").select("*").order("created_at",{ascending:false}).limit(200);
+        if(error) throw error;
+        orders=data||[];renderSummary();renderOrders();
+      }catch(error){$("ordersBody").innerHTML=`<tr><td colspan="8">${esc(error.message || "Orders unavailable. Run the Print 365 migration.")}</td></tr>`;}
+    }
+    function renderOrders(){
+      $("statusFilter").innerHTML=`<option value="">All statuses</option>`+STATUSES.map((s)=>`<option value="${esc(s)}">${esc(statusLabel(s))}</option>`).join("");
+      $("productionStatus").innerHTML=STATUSES.map((s)=>`<option value="${esc(s)}">${esc(statusLabel(s))}</option>`).join("");
+      const rows=filteredOrders();
+      $("ordersBody").innerHTML=rows.map((o)=>`<tr><td><b>${esc(o.order_number)}</b><br>${esc(o.primary_service||"Printing")}</td><td>${esc(o.customer_name)}<br>${esc(o.customer_phone)}</td><td>${esc(money(o.grand_total_mwk))}</td><td><span class="status warn">${esc(statusLabel(o.payment_status))}</span></td><td><span class="status">${esc(statusLabel(o.production_status))}</span></td><td>${esc(o.fulfilment_method)}</td><td>${esc(new Date(o.created_at).toLocaleString())}</td><td><button data-open-order="${esc(o.id)}">Manage</button></td></tr>`).join("") || `<tr><td colspan="8">No matching printing orders.</td></tr>`;
+    }
+    async function openOrder(id){
+      const {data,error}=await db.from("printing_orders").select("*,printing_order_items(*),printing_order_files(*),printing_order_status_history(*),printing_payments(*),printing_delivery_details(*),printing_admin_notes(*)").eq("id",id).single();
+      if(error){alert(error.message);return;}
+      selectedOrder=data;$("detailPanel").classList.remove("hidden");$("detailTitle").textContent=data.order_number;$("detailSubtitle").textContent=`${data.customer_name} | ${data.customer_phone} | ${money(data.grand_total_mwk)}`;$("detailStatus").textContent=statusLabel(data.production_status);$("productionStatus").value=data.production_status;$("estimatedCompletion").value=data.estimated_completion_time?new Date(data.estimated_completion_time).toISOString().slice(0,16):"";$("revisedTotal").value=data.revised_total_mwk || "";$("deliveryFee").value=data.delivery_fee_mwk || ""; $("callCustomerLink").href=`tel:${String(data.customer_phone||"").replace(/[^\d+]/g,"")}`;
+      $("filesBox").innerHTML=(data.printing_order_files||[]).map((f)=>`<p><b>${esc(f.file_name)}</b><br><span class="muted">${esc(f.file_type||"")} | ${esc(f.file_size_bytes||0)} bytes</span><br><button class="secondary" data-download-file="${esc(f.storage_path)}">Download File</button></p>`).join("") || `<p class="muted">No files found.</p>`;
+      $("itemsBox").innerHTML=(data.printing_order_items||[]).map((i)=>`<div class="detail-block"><b>${esc(i.file_name)}</b><br>${esc(i.page_count)} pages x ${esc(i.copies)} copies | ${esc(i.colour_mode)} | ${esc(i.sides)} | ${esc(i.paper_size)}<br>${i.binding_required?"Binding | ":""}${i.lamination_required?"Lamination | ":""}${i.express_required?"Express | ":""}<br><span class="muted">${esc(i.additional_instructions||"")}</span></div>`).join("");
+      $("paymentBox").innerHTML=(data.printing_payments||[]).map((p)=>`<p><b>${esc(statusLabel(p.payment_method))}</b><br>Reference: ${esc(p.transaction_reference||"None")}<br>Status: ${esc(statusLabel(p.verification_status))}${p.proof_path?`<br><button class="secondary" data-download-file="${esc(p.proof_path)}">Download Proof</button>`:""}</p>`).join("") || `<p class="muted">No payment record.</p>`;
+      $("historyBox").innerHTML=(data.printing_order_status_history||[]).sort((a,b)=>new Date(b.changed_at)-new Date(a.changed_at)).map((h)=>`<div class="history-row"><span class="dot"></span><div><b>${esc(statusLabel(h.new_status))}</b><br><small>${esc(new Date(h.changed_at).toLocaleString())}${h.reason?` - ${esc(h.reason)}`:""}</small></div></div>`).join("") || `<p class="muted">No history yet.</p>`;
+      $("detailPanel").scrollIntoView({behavior:"smooth",block:"start"});
+    }
+    async function downloadFile(path){const {data,error}=await db.storage.from("printing-order-files").createSignedUrl(path,300);if(error){alert(error.message);return;}location.href=data.signedUrl;}
+    function detailNotice(text,type){$("detailNotice").textContent=text;$("detailNotice").className=`notice ${type||""}`;}
+    async function saveStatus(nextStatus){
+      if(!selectedOrder)return;
+      const status=nextStatus || $("productionStatus").value, reason=$("statusReason").value.trim();
+      const payload={production_status:status,estimated_completion_time:$("estimatedCompletion").value?new Date($("estimatedCompletion").value).toISOString():null,internal_status_reason:reason||null};
+      if(status==="payment_confirmed")payload.payment_status="verified";
+      const {error}=await db.from("printing_orders").update(payload).eq("id",selectedOrder.id);if(error){detailNotice(error.message,"bad");return;}
+      await db.from("printing_order_status_history").insert({order_id:selectedOrder.id,changed_by:session.user.id,previous_status:selectedOrder.production_status,new_status:status,reason});
+      detailNotice("Status saved.","");await loadOrders();await openOrder(selectedOrder.id);
+    }
+    async function verifyPayment(){
+      if(!selectedOrder)return;
+      const {error}=await db.from("printing_payments").update({verification_status:"verified",verified_by:session.user.id,verified_at:new Date().toISOString(),rejection_reason:null}).eq("order_id",selectedOrder.id);
+      if(error){detailNotice(error.message,"bad");return;}
+      await db.from("printing_orders").update({payment_status:"verified",production_status:"payment_confirmed"}).eq("id",selectedOrder.id);
+      await saveStatus("payment_confirmed");
+    }
+    async function rejectPayment(){
+      if(!selectedOrder)return;
+      const reason=$("paymentRejectReason").value.trim();if(!reason){detailNotice("Add a rejection reason first.","bad");return;}
+      const {error}=await db.from("printing_payments").update({verification_status:"rejected",rejection_reason:reason}).eq("order_id",selectedOrder.id);
+      if(error){detailNotice(error.message,"bad");return;}
+      await db.from("printing_orders").update({payment_status:"rejected",production_status:"awaiting_payment",internal_status_reason:reason}).eq("id",selectedOrder.id);
+      await db.from("printing_order_status_history").insert({order_id:selectedOrder.id,changed_by:session.user.id,previous_status:selectedOrder.production_status,new_status:"awaiting_payment",reason});
+      detailNotice("Payment rejected and customer notification queued.","");await loadOrders();await openOrder(selectedOrder.id);
+    }
+    async function savePriceRevision(){
+      if(!selectedOrder)return;
+      const revised=Number($("revisedTotal").value||0), reason=$("revisionReason").value.trim();if(!(revised>0)||!reason){detailNotice("A revised amount and reason are required.","bad");return;}
+      const {error}=await db.from("printing_orders").update({revised_total_mwk:revised,grand_total_mwk:revised,price_revision_reason:reason,quotation_status:"pending_customer_acceptance"}).eq("id",selectedOrder.id);
+      if(error){detailNotice(error.message,"bad");return;}
+      await db.from("printing_order_status_history").insert({order_id:selectedOrder.id,changed_by:session.user.id,new_status:selectedOrder.production_status,reason:`Price revised: ${reason}`,metadata:{original_total:selectedOrder.grand_total_mwk,revised_total:revised}});
+      detailNotice("Revised quote saved. Customer must accept before printing begins.","");await loadOrders();await openOrder(selectedOrder.id);
+    }
+    async function saveDelivery(){
+      if(!selectedOrder)return;
+      const fee=Number($("deliveryFee").value||0);
+      await db.from("printing_orders").update({delivery_fee_mwk:fee,grand_total_mwk:Number(selectedOrder.printing_subtotal_mwk||0)+Number(selectedOrder.additional_services_mwk||0)+fee}).eq("id",selectedOrder.id);
+      const {error}=await db.from("printing_delivery_details").upsert({order_id:selectedOrder.id,location:selectedOrder.printing_delivery_details?.[0]?.location || "To be confirmed",phone_number:selectedOrder.printing_delivery_details?.[0]?.phone_number || selectedOrder.customer_phone,delivery_fee_mwk:fee,fee_status:"confirmed"},{onConflict:"order_id"});
+      if(error){detailNotice(error.message,"bad");return;}
+      detailNotice("Delivery fee saved.","");await loadOrders();await openOrder(selectedOrder.id);
+    }
+    async function saveNote(){if(!selectedOrder)return;const note=$("adminNote").value.trim();if(!note)return;const {error}=await db.from("printing_admin_notes").insert({order_id:selectedOrder.id,admin_user_id:session.user.id,note});if(error){detailNotice(error.message,"bad");return;}$("adminNote").value="";detailNotice("Internal note saved.","");await openOrder(selectedOrder.id);}
+    async function savePrice(){
+      const payload={service_code:$("priceService").value,display_name:$("priceName").value.trim(),amount_mwk:Number($("priceAmount").value||0),pricing_unit:$("priceUnit").value,active:true,updated_by:session.user.id};
+      if(!payload.service_code || !payload.display_name || payload.amount_mwk<0){setStatus("priceStatus","Complete the price fields","bad");return;}
+      const {error}=await db.from("printing_service_prices").upsert(payload,{onConflict:"service_code"});if(error){setStatus("priceStatus",error.message,"bad");return;}setStatus("priceStatus","Saved","ok");loadPrices();
+    }
+    function editPrice(id){const p=prices.find((row)=>row.id===id);if(!p)return;$("priceService").value=p.service_code;$("priceName").value=p.display_name;$("priceAmount").value=p.amount_mwk;$("priceUnit").value=p.pricing_unit;}
+    function printJobSheet(){if(!selectedOrder)return;const html=`<h1>Print 365 Job Sheet</h1><p><b>${esc(selectedOrder.order_number)}</b></p><p>${esc(selectedOrder.customer_name)} | ${esc(selectedOrder.customer_phone)}</p><p>Total: ${esc(money(selectedOrder.grand_total_mwk))}</p>${$("itemsBox").innerHTML}`;const w=window.open("","_blank");w.document.write(html);w.document.close();w.print();}
+    document.addEventListener("click",(event)=>{const open=event.target.closest("[data-open-order]");if(open)openOrder(open.dataset.openOrder);const download=event.target.closest("[data-download-file]");if(download)downloadFile(download.dataset.downloadFile);const price=event.target.closest("[data-edit-price]");if(price)editPrice(price.dataset.editPrice);});
+    ["orderSearch","statusFilter","paymentFilter"].forEach((id)=>$(id).addEventListener("input",renderOrders));
+    $("loginBtn").addEventListener("click",login);$("logoutBtn").addEventListener("click",async()=>{await window.LavidaAuth.signOut(db);location.href="./marketplace.html#home";});$("reloadOrdersBtn").addEventListener("click",loadOrders);$("reloadPricesBtn").addEventListener("click",loadPrices);$("savePriceBtn").addEventListener("click",savePrice);$("verifyPaymentBtn").addEventListener("click",verifyPayment);$("rejectPaymentBtn").addEventListener("click",rejectPayment);$("saveStatusBtn").addEventListener("click",()=>saveStatus());$("readyPickupBtn").addEventListener("click",()=>saveStatus("ready_for_pickup"));$("completeOrderBtn").addEventListener("click",()=>saveStatus("completed"));$("savePriceRevisionBtn").addEventListener("click",savePriceRevision);$("saveDeliveryBtn").addEventListener("click",saveDelivery);$("saveNoteBtn").addEventListener("click",saveNote);$("jobSheetBtn").addEventListener("click",printJobSheet);
+    init();
+  </script>
+</body>
+</html>

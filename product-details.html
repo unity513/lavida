@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#03163d">
+  <title>LAVIDA Product Details</title>
+  <style>
+    :root{--navy:#03163d;--gold:#f5b821;--green:#08783e;--ink:#071126;--muted:#667085;--line:#dfe5ee;--page:#f3f5f8;--white:#fff;--bad:#b42318}
+    *{box-sizing:border-box} body{margin:0;background:var(--page);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;padding-bottom:calc(34px + env(safe-area-inset-bottom,0px))} button{font:inherit;cursor:pointer} a{text-decoration:none;color:inherit}
+    .topbar{position:sticky;top:0;z-index:20;min-height:84px;background:var(--navy);color:#fff;display:grid;grid-template-columns:50px 1fr 106px;align-items:center;padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,calc(12px + env(safe-area-inset-right,0px))) 12px max(16px,calc(12px + env(safe-area-inset-left,0px)));box-shadow:0 8px 22px rgba(3,22,61,.2)}.topbar h1{margin:0;text-align:center;font-size:18px}.icon{width:48px;height:48px;border:0;border-radius:14px;background:transparent;color:#fff;display:grid;place-items:center;position:relative}.icon svg{width:26px;height:26px;stroke:currentColor}.right{display:flex;justify-content:flex-end;gap:8px}.details-menu{position:fixed;top:calc(88px + env(safe-area-inset-top,0px));right:14px;z-index:1300;width:min(240px,calc(100vw - 28px));padding:8px;border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 16px 35px rgba(0,0,0,.18)}.details-menu a,.details-menu button{width:100%;min-height:46px;display:flex;align-items:center;padding:0 14px;border:0;border-radius:10px;background:transparent;color:var(--navy);font:inherit;font-weight:850;text-align:left}.details-menu a:hover,.details-menu button:hover{background:var(--page)}
+    .wrap{max-width:980px;margin:0 auto;background:#fff;min-height:calc(100vh - 84px)}.hero{width:100%;aspect-ratio:1.12/1;background:#eef2f7;overflow:hidden}.hero img{width:100%;height:100%;object-fit:cover;display:block}.hero img.contain{object-fit:contain;padding:28px;background:#071f4d}.body{padding:22px max(22px,calc(16px + env(safe-area-inset-right,0px))) calc(34px + env(safe-area-inset-bottom,0px)) max(22px,calc(16px + env(safe-area-inset-left,0px)))}.title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.category{display:inline-flex;background:#ffe09a;color:#7b4e00;border-radius:999px;padding:6px 13px;font-size:13px;font-weight:900;margin-bottom:12px}.name{font-size:28px;line-height:1.12;margin:0 0 14px;font-weight:950}.price-row{display:flex;justify-content:space-between;gap:14px;align-items:baseline;margin-bottom:18px}.price{font-size:24px;color:var(--green);font-weight:950}.stock{color:var(--green);font-weight:900}.description{font-size:16px;line-height:1.55;margin:0 0 18px;color:#111827}.favorite{flex:0 0 46px;width:46px;height:46px;border:0;border-radius:999px;background:#f3f6fb;color:var(--navy);display:grid;place-items:center}.favorite svg{width:27px;height:27px;stroke:currentColor}
+    .facts{border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:0 -22px;padding:12px 22px}.fact{display:grid;grid-template-columns:30px minmax(110px,1fr) minmax(0,1.2fr);gap:10px;align-items:center;padding:10px 0}.fact svg{width:20px;height:20px;stroke:var(--navy)}.fact span{color:#1f2937}.fact b{text-align:right;font-weight:500}
+    .buybox{padding-top:22px;padding-bottom:18px}.qty-label{font-weight:900;margin-bottom:12px}.stepper{display:grid;grid-template-columns:56px 1fr 56px;height:54px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;max-width:310px}.stepper button{border:0;background:#fff;color:var(--navy);font-size:30px}.stepper input{width:100%;border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);text-align:center;font-size:18px;font-weight:900}.actions{display:grid;gap:12px;margin-top:22px;margin-bottom:calc(16px + env(safe-area-inset-bottom,0px))}.primary,.buy,.back{height:58px;border-radius:10px;font-weight:950;font-size:18px}.primary{border:0;background:var(--navy);color:#fff}.buy{border:0;background:var(--green);color:#fff}.back{border:1px solid var(--line);background:#fff;color:var(--navy)}.notice{margin-top:12px;padding:12px;border-radius:10px;background:#fff7d6;border:1px solid #f0d57b;color:#5d4300}.bad{background:#fff0ed;border-color:#f5aaa2;color:var(--bad)}.empty{padding:30px;text-align:center;color:var(--muted)}.hidden{display:none!important}
+    @media(min-width:820px){.wrap{margin:22px auto;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 18px 45px rgba(3,22,61,.1)}.product{display:grid;grid-template-columns:48% 52%}.hero{height:100%;aspect-ratio:auto}.body{padding:30px}.facts{margin:0 -30px;padding:12px 30px}.actions{grid-template-columns:1fr 1fr}.back{grid-column:1/-1}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <button id="backTop" class="icon" type="button" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2"><path d="m15 18-6-6 6-6"></path></svg></button>
+    <h1>Product Details</h1>
+    <div class="right">
+      <button id="shareButton" class="icon" type="button" aria-label="Share"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.6 10.5 6.8-4M8.6 13.5l6.8 4"></path></svg></button>
+      <button id="detailsMenuButton" class="icon" type="button" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+    </div>
+  </header>
+  <div id="detailsHeaderMenu" class="details-menu" hidden>
+    <a href="marketplace.html#home">Home</a>
+    <a href="marketplace.html#market">Market 365</a>
+    <a href="community.html">Community</a>
+    <a href="chess365.html">Chess 365</a>
+    <a href="marketplace.html#orders">My Orders</a>
+    <a href="marketplace.html#account">Account</a>
+  </div>
+  <main id="app" class="wrap"><div class="empty">Loading product details...</div></main>
+  <script src="./vendor/supabase-js.js"></script>
+  <script>
+    const SUPABASE_URL = "https://cgvpoddtqswmtzvyrmwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndnBvZGR0cXN3bXR6dnlybXdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDE0OTMsImV4cCI6MjA5MTkxNzQ5M30.Ut_5jGo8L66zi8zxqR25nV_gkDBYLrT7p3Fx-4G5wGQ";
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const CART_KEY = "lavida_marketplace_cart_v1";
+    const $ = (id) => document.getElementById(id);
+    const esc = (value) => String(value ?? "").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const money = (value) => "MWK " + Number(value || 0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    let product = null;
+    let cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+    function productName(p){return p.marketplace_name || p.name || "Product"}
+    function productPrice(p){return Number(p.marketplace_price ?? p.selling_price ?? 0)}
+    function productCategory(p){return p.marketplace_category || p.category || "Product"}
+    function productDescription(p){return p.marketplace_description || p.description || "Available from LAVIDA Connect."}
+    function availableQty(p){return Number(p.available_for_new_orders ?? p.available_quantity ?? p.stock_qty ?? 0)}
+    function minQty(p){return Math.max(1,Number(p.minimum_order_quantity || 1))}
+    function maxQty(p){const max=Number(p.maximum_order_quantity || 0);const available=availableQty(p);return Math.max(minQty(p),Math.min(max>0?max:available,available||max||999999))}
+    function isDigital(p){return /digital|usdt|crypto|asset|wallet/i.test(`${productCategory(p)} ${p.unit || ""} ${productName(p)}`)}
+    function placeholder(p){return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="900" height="760"><rect width="100%" height="100%" fill="#03163d"/><text x="50%" y="46%" fill="#fff" font-family="Arial" font-size="72" font-weight="800" text-anchor="middle">LAVIDA</text><text x="50%" y="58%" fill="#f5b821" font-family="Arial" font-size="34" text-anchor="middle">Connect</text><text x="50%" y="70%" fill="#fff" font-family="Arial" font-size="26" text-anchor="middle">${esc(productName(p))}</text></svg>`)}`}
+    function imageUrl(p){return p.marketplace_image_url || p.image_url || placeholder(p)}
+    function updateBadge(){}
+    function saveCart(){localStorage.setItem(CART_KEY,JSON.stringify(cart));updateBadge()}
+    function qtyValue(){return Math.max(minQty(product),Math.min(maxQty(product),Number($("quantity")?.value || minQty(product))))}
+    function addToCart(){if(!product)return;const qty=qtyValue();const existing=cart.find(item=>String(item.product_id)===String(product.id));if(existing)existing.quantity=Math.min(maxQty(product),Number(existing.quantity||0)+qty);else cart.push({product_id:product.id,product_name:productName(product),unit_price:productPrice(product),quantity:qty,unit:product.unit||"unit",image_url:imageUrl(product)});saveCart();const notice=$("notice");notice.className="notice";notice.textContent="Added to cart."}
+    function detailRows(p){const rows=[["box", "Unit", p.unit || "Unit"],["box", "Available quantity", availableQty(p)],["box", "Minimum order", minQty(p)],["truck", "Free delivery from", p.free_delivery_minimum_quantity ? `${p.free_delivery_minimum_quantity} ${p.unit || "units"}` : "Ask seller"],["pin", "Free delivery area", p.free_delivery_area || p.branch_location || "Biwi and surrounding areas"],["truck", "Delivery method", p.delivery_fee_type === "distance_range" ? "Distance range pricing" : (p.delivery_fee_type || "Confirm with seller")],["user", "Seller", p.seller_name || p.business_name || "GrandMaster Shop"],["pin", "Branch", p.branch_location || p.pickup_location || "Biwi, Lilongwe"]];
+      if(Number(p.maximum_order_quantity || 0)>0)rows.splice(2,0,["box","Maximum order",p.maximum_order_quantity]);
+      if(isDigital(p))return [["box","Unit",p.unit||"Digital unit"],["box","Available digital quantity",availableQty(p)],["box","Minimum purchase quantity",minQty(p)],["truck","Digital transaction notice",p.digital_delivery_notice||"Wallet transfer after order confirmation"],["pin","Wallet transfer information",p.wallet_transfer_note||"Confirm payment details with seller"],["pin","Supported blockchain network",p.blockchain_network||"Confirm before payment"],["user","Seller",p.seller_name||p.business_name||"GrandMaster Shop"],["pin","Branch",p.branch_location||"Online"]];
+      return rows}
+    function icon(name){const map={box:'<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5M12 22V12"></path>',truck:'<path d="M10 17h4V5H2v12h3"></path><path d="M14 8h4l4 4v5h-3"></path><circle cx="7.5" cy="17.5" r="2.5"></circle><circle cx="16.5" cy="17.5" r="2.5"></circle>',pin:'<path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12Z"></path><circle cx="12" cy="9" r="2.5"></circle>',user:'<circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path>'};return `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">${map[name]||map.box}</svg>`}
+    function render(){if(!product){$("app").innerHTML='<div class="empty">Product not found or no longer available.</div>';return}const qty=availableQty(product);const disabled=qty<=0;$("app").innerHTML=`<section class="product"><div class="hero"><img class="${isDigital(product)?"contain":""}" src="${esc(imageUrl(product))}" alt="${esc(productName(product))}"></div><div class="body"><div class="title-row"><div><span class="category">${esc(productCategory(product))}</span><h2 class="name">${esc(productName(product))}</h2></div><button class="favorite" type="button" aria-label="Save product"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"></path></svg></button></div><div class="price-row"><div class="price">${esc(money(productPrice(product)))}</div><div class="stock">${qty>0?`${esc(qty)} available`:"Out of stock"}</div></div><p class="description">${esc(productDescription(product))}</p><div class="facts">${detailRows(product).map(row=>`<div class="fact">${icon(row[0])}<span>${esc(row[1])}</span><b>${esc(row[2])}</b></div>`).join("")}</div><div class="buybox"><div class="qty-label">Quantity</div><div class="stepper"><button id="minusQty" type="button">-</button><input id="quantity" type="number" min="${esc(minQty(product))}" max="${esc(maxQty(product))}" value="${esc(minQty(product))}"><button id="plusQty" type="button">+</button></div><div id="notice" class="hidden"></div><div class="actions"><button id="addToCart" class="primary" type="button" ${disabled?"disabled":""}>Add to Cart</button><button id="buyNow" class="buy" type="button" ${disabled?"disabled":""}>Buy Now</button><button id="backMarket" class="back" type="button">Back to Connect</button></div></div></div></section>`;
+      $("minusQty").addEventListener("click",()=>{$("quantity").value=Math.max(minQty(product),qtyValue()-1)});
+      $("plusQty").addEventListener("click",()=>{$("quantity").value=Math.min(maxQty(product),qtyValue()+1)});
+      $("quantity").addEventListener("change",()=>{$("quantity").value=qtyValue()});
+      $("addToCart").addEventListener("click",addToCart);
+      $("buyNow").addEventListener("click",()=>{addToCart();location.href="marketplace.html#cart"});
+      $("backMarket").addEventListener("click",()=>{history.length>1?history.back():location.href="marketplace.html#market"});
+    }
+    async function loadProduct(){const productId=new URLSearchParams(location.search).get("id");if(!productId){render();return}try{const{data,error}=await db.from("marketplace_public_products").select("*").eq("id",productId).maybeSingle();if(error)throw error;product=data||null}catch(e){product=null}render()}
+    $("backTop").addEventListener("click",()=>{history.length>1?history.back():location.href="marketplace.html"});
+    function setupNativeBackButton(){const appPlugin=window.Capacitor?.Plugins?.App;if(!appPlugin?.addListener)return;appPlugin.addListener("backButton",()=>{if(!$("detailsHeaderMenu").hidden){toggleDetailsMenu(false);return}history.length>1?history.back():location.href="marketplace.html#market"});}
+    function toggleDetailsMenu(force){const menu=$("detailsHeaderMenu");const open=typeof force==="boolean"?force:menu.hidden;menu.hidden=!open;$("detailsMenuButton").setAttribute("aria-expanded",String(open))}
+    $("detailsMenuButton").addEventListener("click",(event)=>{event.stopPropagation();toggleDetailsMenu()});
+    $("detailsHeaderMenu").addEventListener("click",()=>toggleDetailsMenu(false));
+    document.addEventListener("click",(event)=>{if(!$("detailsHeaderMenu").contains(event.target)&&!$("detailsMenuButton").contains(event.target))toggleDetailsMenu(false)});
+    $("shareButton").addEventListener("click",async()=>{try{if(navigator.share)await navigator.share({title:product?productName(product):"LAVIDA Connect",url:location.href});else await navigator.clipboard.writeText(location.href)}catch(e){}});
+    updateBadge();
+    setupNativeBackButton();
+    loadProduct();
+  </script>
+</body>
+</html>

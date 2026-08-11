@@ -1,0 +1,1062 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#03163d">
+  <title>LAVIDA Connect</title>
+  <style>
+    :root{--navy:#03163d;--navy2:#071f4d;--gold:#f5b821;--green:#08783e;--ink:#071126;--muted:#667085;--line:#dfe5ee;--page:#f3f5f8;--white:#fff;--bad:#b42318}
+    *{box-sizing:border-box} body{margin:0;background:var(--page);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;padding-bottom:calc(118px + env(safe-area-inset-bottom,0px))} button,input,select,textarea{font:inherit} button{cursor:pointer} a{text-decoration:none;color:inherit}
+    .marketplace-header{position:sticky;top:0;z-index:1000;min-height:86px;padding:calc(16px + env(safe-area-inset-top,0px)) max(18px,calc(14px + env(safe-area-inset-right,0px))) 12px max(18px,calc(14px + env(safe-area-inset-left,0px)));display:flex;align-items:center;justify-content:space-between;background:var(--navy);box-shadow:0 8px 22px rgba(3,22,61,.2)}.marketplace-brand strong{display:block;color:#fff;font-size:26px;line-height:1;letter-spacing:1px;font-weight:900}.marketplace-brand span{display:block;color:var(--gold);font-size:14px;letter-spacing:1.5px;margin-top:4px;font-weight:800}.header-actions{display:flex;align-items:center;gap:8px}.icon-button{width:48px;height:48px;border:0;background:transparent;color:#fff;display:grid;place-items:center;position:relative;border-radius:14px}.icon-button svg{width:27px;height:27px;stroke:currentColor}.cart-badge,.notification-badge{position:absolute;top:4px;right:1px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--gold);color:var(--navy);font-size:12px;font-weight:900;display:grid;place-items:center}.notification-badge{top:5px;right:5px}.header-menu{position:fixed;top:86px;right:14px;bottom:calc(94px + env(safe-area-inset-bottom,0px));z-index:1300;width:min(250px,calc(100vw - 28px));padding:16px 8px 14px;border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 16px 35px rgba(0,0,0,.18);overflow-y:auto}.header-menu a,.header-menu button{width:100%;min-height:46px;display:flex;align-items:center;gap:10px;padding:0 14px;border:0;border-radius:10px;background:transparent;color:var(--navy);font:inherit;font-weight:850;text-align:left}.header-menu a:hover,.header-menu button:hover{background:var(--page)}.menu-section-label{display:block;padding:3px 14px 7px;color:#7a8496;font-size:11px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}.menu-admin-section{border-top:1px solid var(--line);margin-top:8px;padding-top:8px}.menu-auth-section{padding:0}.menu-auth-section button:disabled{opacity:.72;cursor:wait}.menu-auth-section svg{width:24px;height:24px;stroke:currentColor;flex:0 0 auto}body.menu-open{overflow:hidden}body.menu-open .header-actions .icon-button{pointer-events:none}body.menu-open #marketplaceMenuButton{pointer-events:auto}body.menu-open:before{content:"";position:fixed;inset:86px 0 0 0;z-index:1250;background:rgba(3,22,61,.32)}body.update-locked{overflow:hidden}
+    .marketplace-main{max-width:1160px;margin:auto;padding:22px max(14px,calc(12px + env(safe-area-inset-right,0px))) calc(112px + env(safe-area-inset-bottom,0px)) max(14px,calc(12px + env(safe-area-inset-left,0px)))}.toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}.toolbar #search{grid-column:1/-1}input,select,textarea{width:100%;min-height:46px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:0 14px;color:var(--ink)}textarea{min-height:76px;padding:13px;resize:vertical}.section-head{display:flex;align-items:center;justify-content:space-between;margin:2px 0 12px}.section-head h1{font-size:20px;margin:0}.section-head a{font-weight:900;color:#0068ff}
+    .products-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.product-card{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 25px rgba(3,22,61,.08);overflow:hidden;display:flex;flex-direction:column;min-height:100%}.product-card-main{display:flex;flex-direction:column;text-align:left;background:transparent;border:0;padding:0;color:inherit;flex:1}.product-image-area{width:100%;aspect-ratio:1/1;overflow:hidden;background:#f4f6f9;border-radius:12px 12px 0 0}.product-image{width:100%;height:100%;object-fit:cover;display:block}.product-image.contain{object-fit:contain;padding:18px}.product-content{padding:12px;display:flex;flex-direction:column;gap:7px;flex:1}.product-category{align-self:flex-start;background:#ffe09a;color:#7b4e00;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:900}.product-name{font-size:15px;line-height:1.22;margin:0;font-weight:900;color:var(--ink)}.product-summary{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:38px;margin:0;color:#4b5565;font-size:12.5px;line-height:1.48}.product-price{font-size:17px;font-weight:950;color:var(--green);margin-top:2px}.product-stock{font-size:12px;font-weight:900;color:var(--green)}.product-actions{display:grid;grid-template-columns:80px 1fr;gap:8px;margin-top:auto;padding:0 12px 10px}.product-quantity{height:44px;text-align:center;padding:8px;border-radius:9px}.add-to-cart-button{height:44px;border:0;border-radius:9px;background:var(--navy);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px}.add-to-cart-button:disabled{background:#c5ccd8;color:#fff}.view-details-button{margin:0 12px 12px;height:42px;border:0;border-radius:9px;background:#edf4ff;color:var(--navy);font-weight:900}.empty{grid-column:1/-1;background:#fff;border:1px dashed var(--line);border-radius:14px;padding:30px;text-align:center;color:var(--muted)}
+    .drawer{position:fixed;left:0;right:0;bottom:0;z-index:1200;background:#fff;border-radius:22px 22px 0 0;box-shadow:0 -16px 40px rgba(3,22,61,.22);transform:translateY(105%);transition:.22s;max-height:82vh;display:flex;flex-direction:column}.drawer.open{transform:translateY(0)}.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}.drawer-head strong{font-size:20px}.ghost{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:9px;padding:9px 12px;font-weight:900}.drawer-body{padding:12px 18px 18px;overflow:auto}.cart-row{display:grid;grid-template-columns:58px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #edf0f5}.cart-thumb{width:58px;height:58px;border-radius:9px;object-fit:cover;background:#f4f6f9}.cart-row b{display:block}.cart-row small{color:var(--muted)}.qty{display:flex;align-items:center;gap:7px;margin-top:5px}.qty button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--navy);font-weight:900}.cart-line-total{font-weight:900}.totals{padding-top:14px}.totals div{display:flex;justify-content:space-between;margin:8px 0}.totals strong{font-size:20px;color:var(--green)}.checkout{display:grid;gap:10px;margin-top:14px}.checkout button{height:48px;border:0;border-radius:10px;background:var(--navy);color:#fff;font-weight:900}.field-label{display:grid;gap:6px;color:var(--navy);font-size:13px;font-weight:900}.field-label input{font-weight:400;color:var(--ink)}.notice{background:#fff7d6;border:1px solid #f0d57b;border-radius:10px;padding:11px;color:#5d4300}.bad{background:#fff0ed;border-color:#f5aaa2;color:var(--bad)}.hidden{display:none!important}
+    .page-panel{display:none}.page-panel.active{display:block}.connect-home{display:grid;gap:18px}.connect-hero{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 12px 28px rgba(3,22,61,.08)}.connect-hero h1{margin:0;color:var(--navy);font-size:30px;line-height:1.05}.connect-hero p{margin:8px 0 0;color:#59657a;line-height:1.45}.service-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.service-card{min-height:148px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);padding:16px;display:flex;flex-direction:column;justify-content:space-between;gap:12px;box-shadow:0 10px 24px rgba(3,22,61,.07)}.service-card strong{display:block;color:var(--navy);font-size:19px;line-height:1.1}.service-card span{display:block;color:#5f6b7d;font-weight:750;line-height:1.35;margin-top:4px}.service-card .service-icon{width:44px;height:44px;border-radius:10px;background:#eef3fb;color:var(--navy);display:grid;place-items:center}.service-card.gold-icon .service-icon{background:var(--gold);color:var(--navy)}.service-card svg{width:24px;height:24px;stroke:currentColor}.service-card.primary{background:var(--navy);color:#fff}.service-card.primary strong,.service-card.primary span{color:#fff}.service-card.primary .service-icon{background:var(--gold);color:var(--navy)}.module-note{border:1px solid #cfd8e6;border-radius:12px;background:#f8fafc;padding:13px;color:#475467;line-height:1.45}.tracking,.contact,.notifications{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:0}.track-form{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}.confirmation{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}.pill{display:inline-flex;border-radius:999px;background:#eef3fb;color:var(--navy);padding:5px 9px;font-size:12px;font-weight:900}.orders-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.orders-title h2{margin:0;color:var(--navy);font-size:30px;line-height:1.05}.orders-title p{margin:6px 0 0;color:#5d667a}.refresh-icon-button{width:46px;height:46px;border:1px solid var(--line);border-radius:16px;background:#fff;color:var(--navy);display:grid;place-items:center;box-shadow:0 8px 18px rgba(3,22,61,.08);padding:0}.refresh-icon-button svg{width:22px;height:22px;stroke:currentColor}.refresh-icon-button.loading svg{animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.order-tabs{display:flex;gap:10px;overflow-x:auto;padding:16px 0 9px;margin-inline:-2px;scrollbar-width:none}.order-tabs::-webkit-scrollbar{display:none}.order-tab{flex:0 0 auto;min-height:54px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--navy);padding:8px 13px;font-size:12px;font-weight:900;display:flex;align-items:center;gap:8px;box-shadow:0 7px 16px rgba(3,22,61,.04)}.order-tab.active{background:linear-gradient(135deg,#d89400,var(--gold));border-color:#d89400;color:#fff}.order-tab-count{min-width:21px;height:21px;border-radius:999px;background:#eef3fb;color:var(--navy);display:grid;place-items:center;font-size:12px}.order-tab.active .order-tab-count{background:#fff;color:#b67800}.orders-controls{display:grid;grid-template-columns:1fr auto;gap:10px;margin:12px 0 14px}.order-search{position:relative}.order-search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:22px;height:22px;stroke:#59657a}.order-search input{padding-left:46px;min-height:56px;border-radius:14px;font-size:15px}.filter-button{min-height:56px;border:1px solid var(--line);border-radius:14px;background:#fff;color:var(--navy);padding:0 14px;font-weight:900;display:flex;align-items:center;gap:8px}.filter-button svg{width:22px;height:22px;stroke:currentColor}.filter-panel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;padding:10px;border:1px solid var(--line);border-radius:14px;background:#f8fafc;margin-bottom:14px}.orders-list{display:grid;gap:14px;margin:12px 0 28px;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}.order-card{border:1px solid #dce4f0;border-radius:18px;padding:16px 16px 18px;background:#fff;box-shadow:0 12px 28px rgba(3,22,61,.08)}.order-card-top{display:grid;grid-template-columns:auto 1fr auto;gap:13px;align-items:start;padding-bottom:14px;border-bottom:1px solid #e8edf5}.order-icon{width:48px;height:48px;border-radius:999px;display:grid;place-items:center;background:#eef8f1;color:var(--green);flex:0 0 auto}.order-icon svg{width:24px;height:24px;stroke:currentColor}.order-number{display:block;color:var(--navy);font-weight:950;font-size:20px;line-height:1.1;white-space:nowrap}.order-date{display:block;color:#677286;margin-top:5px;font-size:13px}.order-total{text-align:right;display:grid;justify-items:end;gap:7px}.order-total strong{color:var(--navy);font-size:19px;white-space:nowrap}.status-badge{display:inline-flex;align-items:center;gap:6px;border:1px solid currentColor;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:950;white-space:nowrap}.status-awaiting{color:#d76d0b;background:#fff5ea}.status-paid,.status-out{color:#0068d9;background:#eef6ff}.status-processing{color:#7b3fc6;background:#f5efff}.status-ready{color:#008a88;background:#e9fbfa}.status-completed{color:#169b22;background:#edfff0}.status-cancelled{color:#c82121;background:#fff0f0}.order-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px 16px;margin:16px 0;color:#445066;font-size:13px}.order-info{display:grid;grid-template-columns:28px 1fr;gap:9px;align-items:start;min-width:0}.order-info svg{width:22px;height:22px;stroke:#7b8799}.order-info span{display:block;color:#687386;font-size:12px}.order-info b{display:block;color:var(--navy);font-size:14px;margin-top:3px;line-height:1.2;overflow-wrap:anywhere}.inline-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;margin-right:6px}.order-progress{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin:14px 0 16px;align-items:start}.progress-step{position:relative;text-align:center;color:#7b8799;font-size:11px;font-weight:800}.progress-step:before{content:"";position:absolute;left:-50%;right:50%;top:10px;height:2px;background:#d9e2ef}.progress-step:first-child:before{display:none}.progress-dot{width:22px;height:22px;border-radius:999px;border:2px solid #cfd8e6;background:#fff;margin:0 auto 6px;display:grid;place-items:center;color:#fff;font-size:11px}.progress-step.done{color:var(--navy)}.progress-step.done:before{background:var(--gold)}.progress-step.done .progress-dot{background:var(--green);border-color:var(--green)}.progress-step.current .progress-dot{background:var(--gold);border-color:var(--gold)}.order-card-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.order-card-actions.single{grid-template-columns:1fr}.order-action-primary,.order-action-secondary{min-height:48px;border-radius:11px;font-weight:950;display:flex;align-items:center;justify-content:center;gap:8px}.order-action-primary{background:var(--navy);color:#fff;border:1px solid var(--navy)}.order-action-secondary{background:#fff;color:var(--navy);border:1px solid var(--navy)}.order-action-primary svg,.order-action-secondary svg{width:19px;height:19px;stroke:currentColor}.order-detail{border:1px solid var(--line);border-radius:16px;background:#f8fafc;padding:14px;margin:10px 0 18px}.order-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.order-items{margin-top:10px;border-top:1px solid var(--line)}.order-item{display:grid;grid-template-columns:1fr auto;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}.timeline{display:grid;gap:8px;margin-top:10px}.timeline-step{display:flex;gap:8px;align-items:flex-start}.timeline-dot{width:10px;height:10px;border-radius:50%;background:var(--gold);margin-top:5px;flex:0 0 auto}.order-skeleton{height:230px;border-radius:18px;background:linear-gradient(90deg,#eef2f7,#fff,#eef2f7);background-size:220% 100%;animation:shimmer 1.1s infinite;border:1px solid var(--line)}@keyframes shimmer{to{background-position:-220% 0}}.orders-empty{border:1px dashed var(--line);border-radius:18px;background:#fff;padding:30px 18px;text-align:center;color:#667085}.orders-empty svg{width:58px;height:58px;stroke:var(--gold);margin-bottom:10px}.orders-empty h3{margin:0 0 6px;color:var(--navy);font-size:22px}.orders-empty .order-action-primary{max-width:220px;margin:16px auto 0}.admin-tools{margin-top:14px;border-top:1px solid var(--line);padding-top:14px}.admin-tools a{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:8px;font-weight:900;color:var(--navy);background:#f8fafc}.print-page{display:grid;gap:16px}.print-hero{background:var(--navy);color:#fff;border-radius:14px;padding:20px;box-shadow:0 12px 28px rgba(3,22,61,.16)}.print-hero h1{margin:0;font-size:30px;line-height:1.05}.print-hero p{margin:8px 0 0;color:#e5ebf7;line-height:1.45}.print-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.print-button{min-height:48px;border:0;border-radius:10px;background:var(--gold);color:var(--navy);font-weight:950;display:flex;align-items:center;justify-content:center}.print-button.secondary{background:#fff;color:var(--navy);border:1px solid var(--line)}.print-services{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.print-service{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px;display:grid;gap:8px;min-height:116px;box-shadow:0 8px 18px rgba(3,22,61,.06)}.print-service b{color:var(--navy);line-height:1.15}.print-service span{color:#667085;font-size:12px;line-height:1.35}.print-panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 10px 24px rgba(3,22,61,.07)}.print-panel h2,.print-panel h3{margin:0 0 10px;color:var(--navy)}.print-stepper{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:14px}.print-step{border:1px solid var(--line);border-radius:10px;background:#f8fafc;color:#667085;min-height:42px;font-size:12px;font-weight:900}.print-step.active{background:var(--navy);color:#fff;border-color:var(--navy)}.print-form-step{display:none;gap:12px}.print-form-step.active{display:grid}.print-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.print-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.print-grid.full{grid-template-columns:1fr}.print-upload-list{display:grid;gap:8px}.print-upload-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px;background:#f8fafc}.print-upload-row small{color:#667085}.print-progress{height:7px;border-radius:999px;background:#e2e8f0;overflow:hidden;margin-top:7px}.print-progress span{display:block;height:100%;background:var(--gold);width:100%}.print-doc-card{border:1px solid var(--line);border-radius:12px;padding:12px;background:#f8fafc;display:grid;gap:10px}.print-summary{display:grid;gap:8px}.print-summary div{display:flex;justify-content:space-between;gap:12px}.print-summary strong{color:var(--navy)}.print-total{font-size:22px;color:var(--green)!important}.print-nav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.print-orders-list{display:grid;gap:12px}.print-order-card{border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px;box-shadow:0 10px 22px rgba(3,22,61,.06)}.print-order-card header{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:10px}.print-order-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;color:#4b5565;font-size:13px}.print-order-meta b{display:block;color:var(--navy);margin-top:2px}.print-timeline{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-top:12px}.print-auth{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}
+    .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:900;background:var(--navy);border-top:1px solid rgba(255,255,255,.14);border-radius:24px 24px 0 0;box-shadow:0 -14px 38px rgba(3,22,61,.28);display:grid;grid-template-columns:repeat(5,1fr);padding:9px max(10px,calc(8px + env(safe-area-inset-right,0px))) calc(18px + env(safe-area-inset-bottom,0px)) max(10px,calc(8px + env(safe-area-inset-left,0px)))}.bottom-nav a,.bottom-nav button{min-height:58px;background:transparent;border:0;color:#fff;display:grid;place-items:center;gap:2px;font-size:12px;font-weight:800;position:relative;border-radius:16px}.bottom-nav svg{width:23px;height:23px;stroke:currentColor}.bottom-nav .active{color:#d89400}.bottom-badge{position:absolute;top:3px;right:22%;min-width:18px;height:18px;border-radius:999px;background:var(--gold);font-size:11px;color:var(--navy);display:grid;place-items:center;font-weight:900}.lavida-word{display:inline-block;background:var(--navy);color:#fff;border-radius:6px;padding:0 .18em}
+    @media(max-width:359px){.products-grid,.print-services{grid-template-columns:1fr}.track-form,.order-meta,.order-detail-grid,.print-grid,.print-grid.three,.print-auth,.print-order-meta{grid-template-columns:1fr}}@media(min-width:768px){.products-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.drawer{left:auto;top:0;right:0;bottom:0;width:min(430px,100%);border-radius:0;transform:translateX(105%)}.drawer.open{transform:translateX(0)}}@media(min-width:1100px){.products-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.toolbar{grid-template-columns:1.3fr .8fr .7fr}.toolbar #search{grid-column:auto}}@media(max-width:767px){.marketplace-main{padding-inline:12px}.section-head h1{font-size:18px}.connect-hero h1{font-size:27px}.track-form{grid-template-columns:1fr}.orders-head{align-items:center}.orders-title h2{font-size:27px}.orders-controls{grid-template-columns:1fr auto}.filter-button span{display:none}.filter-panel{grid-template-columns:1fr}.order-card{padding:14px}.order-card-top{grid-template-columns:42px 1fr;gap:11px}.order-icon{width:42px;height:42px}.order-total{grid-column:1/-1;grid-template-columns:1fr auto;align-items:center;justify-items:stretch;text-align:left}.order-total strong{font-size:18px}.order-total .status-badge{justify-self:end}.order-number{font-size:18px}.order-meta{grid-template-columns:1fr;gap:11px}.order-progress{overflow-x:auto;padding-bottom:4px}.progress-step{min-width:70px}.order-card-actions{grid-template-columns:1fr}.order-detail-grid{grid-template-columns:1fr}.print-services{grid-template-columns:repeat(2,minmax(0,1fr))}.print-grid,.print-grid.three,.print-auth,.print-order-meta{grid-template-columns:1fr}.print-stepper{grid-template-columns:repeat(4,1fr)}.print-actions,.print-nav{grid-template-columns:1fr}.print-timeline{overflow-x:auto}.print-timeline .progress-step{min-width:78px}.print-hero h1{font-size:27px}}
+    .connect-home{gap:12px}.connect-hero{padding:14px 16px;border-radius:12px}.connect-hero h1{font-size:25px}.connect-hero p{font-size:14px;line-height:1.35}.service-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.service-card{min-height:116px;padding:12px;border-radius:11px;gap:8px}.service-card:active{transform:scale(.985);background:#fffaf0}.service-card.primary:active{background:#061f54}.service-card .service-icon{width:34px;height:34px;border-radius:9px}.service-card svg{width:20px;height:20px}.service-card strong{font-size:17px}.service-card span{font-size:12px;line-height:1.28}.module-note{padding:10px;font-size:13px}.section-head.market-head{align-items:center}.market-title{display:flex;align-items:center;gap:10px}.market-cart-button{min-height:42px;border:1px solid var(--navy);border-radius:12px;background:#fff;color:var(--navy);font-weight:950;padding:0 13px;display:inline-flex;align-items:center;gap:8px;position:relative}.market-cart-button svg{width:21px;height:21px}.market-cart-button .cart-badge{position:static;min-width:20px;height:20px}.page-panel:not(.active){display:none!important}.page-panel.active{display:block!important}.connect-home.page-panel.active{display:grid!important}.exit-dialog{position:fixed;inset:0;z-index:2200;background:rgba(3,22,61,.32);display:grid;place-items:center;padding:20px}.exit-card{width:min(340px,100%);background:#fff;border-radius:16px;border:1px solid var(--line);box-shadow:0 20px 55px rgba(0,0,0,.22);padding:18px}.exit-card h3{margin:0 0 8px;color:var(--navy)}.exit-card p{margin:0 0 16px;color:#59657a}.exit-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.exit-actions button{height:44px;border-radius:10px;font-weight:950}.exit-cancel{border:1px solid var(--line);background:#fff;color:var(--navy)}.exit-confirm{border:1px solid var(--navy);background:var(--navy);color:#fff}@media(max-width:767px){.marketplace-main{padding-top:14px}.connect-hero h1{font-size:23px}.service-card{min-height:106px}.module-note{display:none}.bottom-nav a{font-size:11px}.bottom-nav svg{width:22px;height:22px}}
+  </style>
+</head>
+<body>
+  <header class="marketplace-header">
+    <a href="marketplace.html" class="marketplace-brand"><strong>LAVIDA</strong><span>Connect</span></a>
+    <div class="header-actions">
+      <button id="marketplaceSearchButton" class="icon-button" type="button" aria-label="Search products"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg></button>
+      <button id="marketplaceNotificationsButton" class="icon-button" type="button" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.3"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg><span id="notificationBadge" class="notification-badge hidden">0</span></button>
+      <button id="marketplaceMenuButton" class="icon-button" type="button" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+    </div>
+  </header>
+  <div id="marketplaceHeaderMenu" class="header-menu" hidden>
+    <span class="menu-section-label">MAIN</span>
+    <a href="#home" data-menu-destination="home">Home</a>
+    <a href="#market" data-menu-destination="market">Market 365</a>
+    <a href="#print365" data-menu-destination="print365">Print 365</a>
+    <a href="hrm365.html" data-menu-destination="hrm365.html">HRM 365</a>
+    <a href="community.html" data-menu-destination="community.html">Community</a>
+    <a href="chess365.html#chess-home" data-menu-destination="chess365.html#chess-home">Games 365</a>
+    <a href="#orders" data-menu-destination="orders">My Orders</a>
+    <a href="#account" data-menu-destination="account">Account</a>
+    <div class="menu-auth-section"><button id="marketplaceAuthMenuButton" type="button"></button></div>
+    <div id="lavidaAdminMenuSection" class="menu-admin-section hidden">
+      <span class="menu-section-label">LAVIDA ADMIN</span>
+      <a id="userManagementMenuLink" class="hidden" href="user-management.html" data-menu-destination="user-management.html">User Management</a>
+      <a id="marketplaceAdminMenuLink" href="marketplace-admin.html" data-menu-destination="marketplace-admin.html">Market 365 Admin</a>
+      <a id="printingAdminMenuLink" href="printing-admin.html" data-menu-destination="printing-admin.html">Print 365 Admin</a>
+      <a id="hrmAdminMenuLink" href="hrm365.html#admin" data-menu-destination="hrm365.html#admin">HRM 365 Admin</a>
+      <a id="communityAdminMenuLink" href="community.html#admin" data-menu-destination="community.html#admin">Community Admin</a>
+      <a id="gamesAdminMenuLink" href="chess365.html#admin" data-menu-destination="chess365.html#admin">Games 365 Admin</a>
+    </div>
+  </div>
+  <main class="marketplace-main">
+    <div id="confirmation" class="confirmation hidden"></div>
+    <section id="connectHome" class="connect-home page-panel active" data-page="home">
+      <div class="connect-hero">
+        <h1><span class="lavida-word">LAVIDA</span> Connect</h1>
+        <p>One sign-in for shopping, community, chess and business services.</p>
+      </div>
+      <div class="service-grid" aria-label="LAVIDA Connect services">
+        <a class="service-card gold-icon" href="#market" data-service-page="market">
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 6h15l-2 9H8L6 6Z"></path><path d="M6 6 5 3H2"></path><circle cx="9" cy="20" r="1"></circle><circle cx="18" cy="20" r="1"></circle></svg></div>
+          <div><strong>Market 365</strong><span>Shop products and place orders.</span></div>
+        </a>
+        <a class="service-card" href="community.html" data-module-link="community.html">
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+          <div><strong>Community</strong><span>Connect. Share. Grow.</span></div>
+        </a>
+        <a class="service-card" href="chess365.html#chess-home" data-module-link="chess365.html#chess-home">
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M8 22h8"></path><path d="M7 18h10l-1 4H8l-1-4Z"></path><path d="M10 4h4v4h3l-2 10H9L7 8h3V4Z"></path></svg></div>
+          <div><strong>Games 365</strong><span>Chess 365 and Bawo 365.</span></div>
+        </a>
+        <a class="service-card" href="hrm365.html" data-module-link="hrm365.html">
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+          <div><strong>HRM 365</strong><span>Recruitment, employee management and professional HR support.</span></div>
+          <span class="pill">Open HRM</span>
+        </a>
+        <a class="service-card" href="#orders" data-service-page="orders">
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 3h12v18H6z"></path><path d="M9 7h6M9 11h6M9 15h3"></path></svg></div>
+          <div><strong>My Orders</strong><span>Track purchases and deliveries.</span></div>
+        </a>
+        <a class="service-card gold-icon" href="#print365" data-service-page="print365">
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 9V3h12v6"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><path d="M6 14h12v7H6z"></path></svg></div>
+          <div><strong>Printing Services</strong><span>Print, bind, scan and collect through Print 365.</span></div>
+        </a>
+        <a class="service-card" href="#account" data-service-page="account">
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg></div>
+          <div><strong>Account</strong><span>Profile, security and settings.</span></div>
+        </a>
+        <a class="service-card" href="#notifications" data-service-page="notifications">
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></div>
+          <div><strong>More Services</strong><span>Explore more LAVIDA tools and services.</span></div>
+        </a>
+      </div>
+      <div class="module-note">Powered by <span class="lavida-word">LAVIDA</span>. Market 365, Community, Games 365, HRM 365 and Print 365 are part of the LAVIDA Connect ecosystem.</div>
+    </section>
+    <section id="catalogue" class="page-panel" data-page="market">
+      <div class="section-head market-head"><div class="market-title"><h1>Market 365</h1></div><button id="marketCartButton" class="market-cart-button" type="button"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.6L23 6H6"></path></svg>Cart <span id="marketCartBadge" class="cart-badge">0</span></button></div>
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Search products">
+        <select id="category"><option value="">All categories</option></select>
+        <select id="price"><option value="">All prices</option><option value="0-5000">Up to MWK 5,000</option><option value="5000-20000">MWK 5,000 to 20,000</option><option value="20000-999999999">MWK 20,000+</option></select>
+      </div>
+      <div id="products" class="products-grid"></div>
+    </section>
+    <section id="print365" class="print-page page-panel" data-page="print365">
+      <div class="print-hero">
+        <h1>Printing made simple</h1>
+        <p>Upload your documents, choose your printing options and place your order.</p>
+        <div class="print-actions">
+          <button id="startPrintOrderButton" class="print-button" type="button">Start Printing Order</button>
+          <button id="myPrintOrdersButton" class="print-button secondary" type="button">My Printing Orders</button>
+        </div>
+      </div>
+      <div id="printServicesGrid" class="print-services" aria-label="Print 365 services"></div>
+      <div class="print-panel">
+        <h2>Pickup and contact</h2>
+        <p><b>Pickup location:</b> White House near DMI, Lilongwe.</p>
+        <p><b>Contact:</b> <span class="lavida-word">LAVIDA</span> Connect Print 365 support.</p>
+        <div id="printAuthNotice" class="notice">Sign in to submit your printing request and keep your files and orders linked to your account.</div>
+        <button id="printAuthContinueButton" class="print-button" type="button" style="margin-top:10px">Sign In to Continue</button>
+      </div>
+      <form id="printOrderForm" class="print-panel hidden">
+        <div class="print-stepper" aria-label="Printing order steps">
+          <button class="print-step active" type="button" data-print-step-jump="0">1 Upload</button>
+          <button class="print-step" type="button" data-print-step-jump="1">2 Options</button>
+          <button class="print-step" type="button" data-print-step-jump="2">3 Collection</button>
+          <button class="print-step" type="button" data-print-step-jump="3">4 Customer</button>
+          <button class="print-step" type="button" data-print-step-jump="4">5 Price</button>
+          <button class="print-step" type="button" data-print-step-jump="5">6 Payment</button>
+          <button class="print-step" type="button" data-print-step-jump="6">7 Confirm</button>
+        </div>
+        <section class="print-form-step active" data-print-step="0">
+          <h2>Upload document</h2>
+          <label class="field-label" for="printFiles">PDF, DOC, DOCX, JPG and PNG files<input id="printFiles" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/jpeg,image/png" multiple></label>
+          <div id="printUploadList" class="print-upload-list"></div>
+        </section>
+        <section class="print-form-step" data-print-step="1">
+          <h2>Printing options</h2>
+          <div id="printDocumentOptions" class="print-upload-list"></div>
+        </section>
+        <section class="print-form-step" data-print-step="2">
+          <h2>Collection or delivery</h2>
+          <div class="print-grid">
+            <select id="printFulfilment"><option value="pickup">Pickup</option><option value="delivery">Delivery</option></select>
+            <input id="printDeliveryPhone" type="tel" placeholder="Delivery phone number">
+          </div>
+          <textarea id="printDeliveryLocation" placeholder="Delivery location"></textarea>
+          <div class="notice">Pickup location: White House near DMI, Lilongwe. Delivery fee will be calculated or confirmed based on distance and kept separate from printing cost.</div>
+        </section>
+        <section class="print-form-step" data-print-step="3">
+          <h2>Customer information</h2>
+          <div class="print-grid">
+            <input id="printCustomerName" placeholder="Full name">
+            <input id="printCustomerPhone" type="tel" placeholder="Phone number">
+            <input id="printCustomerEmail" type="email" placeholder="Email address">
+          </div>
+        </section>
+        <section class="print-form-step" data-print-step="4">
+          <h2>Price summary</h2>
+          <div id="printPriceSummary" class="print-summary"></div>
+        </section>
+        <section class="print-form-step" data-print-step="5">
+          <h2>Payment</h2>
+          <div class="print-grid">
+            <select id="printPaymentMethod"><option value="airtel_money">Airtel Money</option><option value="tnm_mpamba">TNM Mpamba</option><option value="cash_on_pickup">Cash on pickup</option><option value="bank_transfer">Bank transfer</option></select>
+            <input id="printPaymentReference" placeholder="Transaction reference">
+          </div>
+          <label class="field-label" for="printPaymentProof">Upload or capture proof of payment<input id="printPaymentProof" type="file" accept="image/*,.pdf" capture="environment"></label>
+          <div class="notice">Electronic payment proof starts as Pending Verification. Staff must verify it before printing proceeds.</div>
+        </section>
+        <section class="print-form-step" data-print-step="6">
+          <h2>Confirmation</h2>
+          <div id="printConfirmationSummary" class="order-detail"></div>
+          <div class="print-grid">
+            <button id="confirmPrintOrderButton" class="print-button" type="button">Confirm Order</button>
+            <button id="editPrintOrderButton" class="print-button secondary" type="button">Edit Order</button>
+          </div>
+        </section>
+        <div id="printOrderNotice" class="notice hidden"></div>
+        <div class="print-nav">
+          <button id="printPrevButton" class="print-button secondary" type="button">Previous</button>
+          <button id="printNextButton" class="print-button" type="button">Next</button>
+        </div>
+      </form>
+    </section>
+    <section id="printingOrders" class="tracking page-panel" data-page="printing-orders">
+      <div class="orders-head">
+        <div class="orders-title"><h2>My Printing Orders</h2><p>Track print jobs, payments and pickup or delivery.</p></div>
+        <button id="refreshPrintOrdersButton" class="refresh-icon-button" type="button" aria-label="Refresh printing orders"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"></path><path d="M21 3v6h-6"></path></svg></button>
+      </div>
+      <div id="printOrdersList" class="print-orders-list"><div class="notice">Open this page to load your printing orders.</div></div>
+      <div id="printOrderDetails" class="order-detail hidden"></div>
+    </section>
+    <section id="track" class="tracking page-panel" data-page="orders">
+      <div class="orders-head">
+        <div class="orders-title"><h2>My Orders</h2><p>Track, manage and review your purchases.</p></div>
+        <button id="refreshOrdersButton" class="refresh-icon-button" type="button" aria-label="Refresh orders"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"></path><path d="M21 3v6h-6"></path></svg></button>
+      </div>
+      <div id="orderTabs" class="order-tabs" aria-label="Order status filters"></div>
+      <div class="orders-controls">
+        <label class="order-search" for="orderSearch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input id="orderSearch" type="search" placeholder="Search by order number..."></label>
+        <button id="orderFilterButton" class="filter-button" type="button"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 5h18l-7 8v5l-4 2v-7z"></path></svg><span>Filters</span></button>
+      </div>
+      <div id="orderFilterPanel" class="filter-panel hidden">
+        <select id="orderStatusFilter"><option value="">Any order status</option><option value="pending_confirmation">Awaiting payment</option><option value="payment_review">Payment review</option><option value="approved">Approved</option><option value="processing">Processing</option><option value="ready_for_collection">Ready</option><option value="out_for_delivery">Out for delivery</option><option value="completed">Completed</option><option value="rejected">Rejected</option><option value="cancelled">Cancelled</option></select>
+        <select id="paymentMethodFilter"><option value="">Any payment method</option><option value="airtel_money">Airtel Money</option><option value="tnm_mpamba">TNM Mpamba</option><option value="bank_transfer">Bank Transfer</option><option value="cash_on_pickup">Cash on Pickup</option><option value="cash_on_delivery">Cash on Delivery</option></select>
+        <select id="fulfilmentFilter"><option value="">Delivery or pickup</option><option value="delivery">Home Delivery</option><option value="pickup">Store Pickup</option></select>
+        <select id="dateRangeFilter"><option value="">Any date</option><option value="today">Today</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option></select>
+      </div>
+      <div id="myOrdersList" class="orders-list"><div class="notice">Open this tab to load your orders.</div></div>
+      <div id="orderDetails" class="order-detail hidden"></div>
+      <h3>Track an Order</h3>
+      <div class="track-form"><input id="trackReference" placeholder="Order reference"><input id="trackPhone" placeholder="Phone number"><button id="trackButton" type="button">Track</button></div>
+      <div id="trackResult" style="margin-top:12px"></div>
+    </section>
+    <section id="notifications" class="notifications page-panel" data-page="notifications">
+      <div class="orders-title"><h2>Notifications</h2><p>Service messages from LAVIDA Connect will appear here.</p></div>
+      <div class="notice" style="margin-top:14px">No new notifications.</div>
+    </section>
+    <section id="contact" class="contact page-panel" data-page="account">
+      <h2>Account</h2>
+      <p><b>Pickup address:</b> <span id="contactPickup">GrandMaster Shop, Biwi, Lilongwe</span></p>
+      <p><b>Phone:</b> <span id="contactPhone">Contact support</span></p>
+      <p><b>WhatsApp:</b> <a id="whatsappLink" href="#" target="_blank" rel="noopener">Open WhatsApp</a></p>
+      <div id="appUpdateCard" class="admin-tools">
+        <h3>About LAVIDA Connect</h3>
+        <p><b>Installed version:</b> <span id="installedAppVersion">Checking...</span></p>
+        <button id="checkUpdatesButton" class="order-action-secondary" type="button">Check for Updates</button>
+        <div id="updateInlineStatus" class="notice hidden" style="margin-top:10px"></div>
+      </div>
+      <div id="adminToolsSection" class="admin-tools hidden">
+        <h3>Admin Tools</h3>
+        <a id="userManagementAccountLink" class="hidden" href="user-management.html">User Management <span>Open</span></a>
+        <a href="marketplace-admin.html">Market 365 Products <span>Open</span></a>
+        <a href="marketplace-orders-admin.html">Orders Management <span>Open</span></a>
+        <a href="printing-admin.html">Print 365 Admin <span>Open</span></a>
+        <a href="hrm365.html#admin">HRM 365 Admin <span>Open</span></a>
+        <a href="community.html#admin">Community Admin <span>Open</span></a>
+        <a href="chess365.html#admin">Games 365 Admin <span>Open</span></a>
+      </div>
+    </section>
+  </main>
+  <aside id="cartDrawer" class="drawer" aria-label="Shopping cart">
+    <div class="drawer-head"><strong>Your Cart (<span id="cartTitleCount">0</span> items)</strong><button id="closeCart" class="ghost" type="button">Close</button></div>
+    <div class="drawer-body">
+      <div id="cartRows"></div>
+      <div class="totals"><div><span>Total</span><strong id="grandTotal">MWK 0.00</strong></div></div>
+      <div class="checkout">
+        <select id="fulfilment"><option value="pickup">Shop pickup</option><option value="delivery">Delivery</option></select>
+        <select id="paymentMethod"><option value="cash_on_pickup">Cash</option><option value="airtel_money">Airtel Money</option><option value="tnm_mpamba">TNM Mpamba</option><option value="bank_transfer">Bank transfer</option><option value="cash_on_delivery">Pay on delivery</option></select>
+        <input id="customerName" placeholder="Full name"><input id="customerPhone" placeholder="Phone number"><input id="customerEmail" placeholder="Email optional">
+        <textarea id="address" placeholder="Delivery address, if delivery"></textarea><textarea id="deliveryNotes" placeholder="Order notes optional"></textarea>
+        <input id="paymentReference" placeholder="Payment reference optional"><label class="field-label" for="paymentProof">Upload proof of payment<input id="paymentProof" type="file" accept="image/*,.pdf"></label>
+        <div id="checkoutNotice" class="notice hidden"></div><button id="checkoutButton" type="button">Checkout</button>
+      </div>
+    </div>
+  </aside>
+  <nav class="bottom-nav" aria-label="Bottom navigation">
+    <a class="active" href="#home" data-nav-page="home"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"></path></svg>Home</a>
+    <a href="#market" data-nav-page="market"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"></path></svg>Market 365</a>
+    <a href="community.html"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path></svg>Community</a>
+    <a href="#orders" data-nav-page="orders"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 3h12v18H6z"></path><path d="M9 7h6M9 11h6M9 15h3"></path></svg>My Orders</a>
+    <a href="#account" data-nav-page="account"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>Account</a>
+  </nav>
+  <div id="exitDialog" class="exit-dialog hidden" role="dialog" aria-modal="true" aria-labelledby="exitTitle">
+    <div class="exit-card"><h3 id="exitTitle">Exit LAVIDA Connect?</h3><p>Cancel to keep using the app.</p><div class="exit-actions"><button id="cancelExitButton" class="exit-cancel" type="button">Cancel</button><button id="confirmExitButton" class="exit-confirm" type="button">Exit</button></div></div>
+  </div>
+  <script src="./vendor/supabase-js.js"></script>
+  <script src="./lavida-auth.js"></script>
+  <script src="./lavida-updater.js"></script>
+  <script>
+    const SUPABASE_URL = "https://cgvpoddtqswmtzvyrmwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndnBvZGR0cXN3bXR6dnlybXdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDE0OTMsImV4cCI6MjA5MTkxNzQ5M30.Ut_5jGo8L66zi8zxqR25nV_gkDBYLrT7p3Fx-4G5wGQ";
+    const db = window.LavidaAuth.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const CART_KEY = "lavida_marketplace_cart_v1";
+    const AUTH_RETURN_KEY = "lavida_auth_return_to";
+    const SIGN_IN_DESTINATION = "signin.html";
+    const HOME_DESTINATION = "marketplace.html#home";
+    const NOTIFICATIONS_DESTINATION = "marketplace.html#notifications";
+    const $ = (id) => document.getElementById(id);
+    const esc = (value) => String(value ?? "").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const money = (value) => "MWK " + Number(value || 0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    let products = [], settings = {}, cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+    let customerOrders = [];
+    let activeOrderTab = "all";
+    let ordersRealtimeChannel = null;
+    let printSession = null;
+    let printPrices = [];
+    let printServices = [];
+    let printFiles = [];
+    let printStep = 0;
+    let printOrders = [];
+    let authSession = null;
+    let authBusy = false;
+    let unreadNotifications = 0;
+    const PRINT_STATUSES = ["draft","awaiting_payment","payment_under_review","payment_confirmed","reviewing_document","approved_for_printing","printing","ready_for_pickup","out_for_delivery","completed","cancelled","rejected"];
+    const PRINT_SERVICE_CARDS = [
+      ["bw_printing","Black & White Printing","Admin price"],
+      ["colour_printing","Colour Printing","Admin price"],
+      ["cv_printing","CV Printing","Admin price"],
+      ["photocopying","Photocopying","Admin-priced service"],
+      ["binding","Document Binding","Admin price"],
+      ["scanning","Scanning","Admin-priced service"],
+      ["lamination","Lamination","Admin-priced service"],
+      ["custom_request","Custom Printing Request","Describe what you need"]
+    ];
+    function productName(p){return p.marketplace_name || p.name || "Product"} function productPrice(p){return Number(p.marketplace_price ?? p.selling_price ?? 0)} function productCategory(p){return p.marketplace_category || p.category || "Product"} function productDescription(p){return p.marketplace_description || p.description || "Available from LAVIDA Connect."} function availableQty(p){return Number(p.available_for_new_orders ?? p.available_quantity ?? p.stock_qty ?? 0)} function minQty(p){return Math.max(1,Number(p.minimum_order_quantity || 1))} function maxQty(p){const max=Number(p.maximum_order_quantity || 0); const available=availableQty(p); return Math.max(minQty(p), Math.min(max > 0 ? max : available, available || max || 999999))}
+    function placeholder(p){return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640"><rect width="100%" height="100%" fill="#03163d"/><text x="50%" y="46%" fill="#fff" font-family="Arial" font-size="54" font-weight="800" text-anchor="middle">LAVIDA</text><text x="50%" y="58%" fill="#f5b821" font-family="Arial" font-size="27" text-anchor="middle">Connect</text><text x="50%" y="70%" fill="#fff" font-family="Arial" font-size="22" text-anchor="middle">${esc(productName(p))}</text></svg>`)}`}
+    function imageUrl(p){return p.marketplace_image_url || p.image_url || placeholder(p)} function isDigital(p){return /digital|usdt|crypto|asset|wallet/i.test(`${productCategory(p)} ${p.unit || ""} ${productName(p)}`)}
+    function saveCart(){localStorage.setItem(CART_KEY,JSON.stringify(cart));renderCart()} function cartCount(){return cart.reduce((s,i)=>s+Number(i.quantity||0),0)} function cartSubtotal(){return cart.reduce((s,i)=>s+Number(i.quantity||0)*Number(i.unit_price||0),0)} function deliveryFee(){return $("fulfilment").value==="delivery"?Number(settings.delivery_fee||settings.default_delivery_fee||0):0} function cartTotal(){return cartSubtotal()+deliveryFee()}
+    function updateAuthControls(){
+      const button = $("marketplaceAuthMenuButton");
+      if(!button) return;
+      if(authBusy){
+        button.disabled = true;
+        button.innerHTML = `${iconSvg("logout")}<span>Signing out...</span>`;
+        return;
+      }
+      button.disabled = false;
+      button.innerHTML = authSession ? `${iconSvg("logout")}<span>Log Out</span>` : `${iconSvg("login")}<span>Sign In</span>`;
+    }
+    function setNotificationBadge(count){
+      unreadNotifications = Math.max(0, Number(count || 0));
+      const badge = $("notificationBadge");
+      if(!badge) return;
+      badge.textContent = unreadNotifications > 9 ? "9+" : String(unreadNotifications);
+      badge.classList.toggle("hidden", unreadNotifications <= 0);
+    }
+    async function refreshAuthSession(){
+      try{
+        authSession = await window.LavidaAuth.getSession(db);
+      }catch(error){
+        window.LavidaAuth.debug("home session check failed", error);
+        authSession = null;
+      }
+      updateAuthControls();
+      await loadUnreadNotifications();
+      return authSession;
+    }
+    async function loadUnreadNotifications(){
+      if(!authSession?.user){setNotificationBadge(0);return;}
+      try{
+        const user = authSession.user;
+        const {count,error} = await db
+          .from("notifications")
+          .select("id",{count:"exact",head:true})
+          .or(`user_id.eq.${user.id},email.eq.${user.email}`)
+          .is("read_at", null);
+        if(error) throw error;
+        setNotificationBadge(count || 0);
+      }catch(error){
+        setNotificationBadge(0);
+      }
+    }
+    function requestSignIn(returnTo){
+      const destination = returnTo || HOME_DESTINATION;
+      sessionStorage.setItem(AUTH_RETURN_KEY, destination);
+      location.href = `${SIGN_IN_DESTINATION}?returnTo=${encodeURIComponent(destination)}`;
+    }
+    async function openNotificationsFromHeader(){
+      toggleMarketplaceMenu(false);
+      const session = authSession || await refreshAuthSession();
+      if(!session){requestSignIn(NOTIFICATIONS_DESTINATION);return;}
+      navigateRoute("notifications",{resetScroll:true});
+      await loadUnreadNotifications();
+    }
+    function consumeAuthReturnAfterSignIn(){
+      const returnTo = sessionStorage.getItem(AUTH_RETURN_KEY);
+      if(!returnTo) return false;
+      sessionStorage.removeItem(AUTH_RETURN_KEY);
+      const destination = window.LavidaAuth.safeDestination(returnTo, HOME_DESTINATION);
+      handleMenuNavigation(destination);
+      return true;
+    }
+    async function handleMenuAuthAction(){
+      if(authBusy) return;
+      if(!authSession){
+        sessionStorage.setItem(AUTH_RETURN_KEY, HOME_DESTINATION);
+        toggleMarketplaceMenu(false);
+        location.href = `${SIGN_IN_DESTINATION}?returnTo=${encodeURIComponent(HOME_DESTINATION)}`;
+        return;
+      }
+      authBusy = true;
+      updateAuthControls();
+      toggleMarketplaceMenu(false);
+      try{
+        await window.LavidaAuth.signOut(db);
+      }catch(error){
+        window.LavidaAuth.debug("home logout failed", error);
+      }finally{
+        authBusy = false;
+        authSession = null;
+        printSession = null;
+        setNotificationBadge(0);
+        hideRestrictedLinks();
+        updateAuthControls();
+        navigateRoute("home",{replace:true,resetScroll:true});
+      }
+    }
+    async function loadSettings(){try{const{data}=await db.from("marketplace_settings").select("*").limit(1).maybeSingle();settings=data||{}}catch(e){settings={}}$("contactPickup").textContent=settings.pickup_location||settings.pickup_address||"GrandMaster Shop, Biwi, Lilongwe";$("contactPhone").textContent=settings.contact_phone||settings.contact_number||"Contact support";$("whatsappLink").href=settings.whatsapp_number?`https://wa.me/${String(settings.whatsapp_number).replace(/\D/g,"")}`:"#"}
+    async function loadProducts(){$("products").innerHTML=`<div class="empty">Loading marketplace products...</div>`;try{const{data,error}=await db.from("marketplace_public_products").select("*").order("marketplace_sort_order",{ascending:true});if(error)throw error;products=data||[]}catch(e){$("products").innerHTML=`<div class="empty">The marketplace could not be loaded. Please check your connection and try again.</div>`;return}const cats=[...new Set(products.map(productCategory).filter(Boolean))].sort();$("category").innerHTML=`<option value="">All categories</option>`+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");renderProducts()}
+    function renderProducts(){const q=$("search").value.trim().toLowerCase(),cat=$("category").value,range=$("price").value;const rows=products.filter(p=>{const text=`${productName(p)} ${productDescription(p)} ${productCategory(p)}`.toLowerCase();const inPrice=!range||(productPrice(p)>=Number(range.split("-")[0])&&productPrice(p)<=Number(range.split("-")[1]));return(!q||text.includes(q))&&(!cat||productCategory(p)===cat)&&inPrice});$("products").innerHTML=rows.map(p=>{const qty=availableQty(p), disabled=qty<=0, imgClass=isDigital(p)?"product-image contain":"product-image";return `<article class="product-card">
+      <button class="product-card-main" type="button" data-open-product="${esc(p.id)}"><div class="product-image-area"><img class="${imgClass}" src="${esc(imageUrl(p))}" alt="${esc(productName(p))}" loading="lazy"></div><div class="product-content"><span class="product-category">${esc(productCategory(p))}</span><h3 class="product-name">${esc(productName(p))}</h3><p class="product-summary">${esc(productDescription(p))}</p><div class="product-price">${esc(money(productPrice(p)))}</div><div class="product-stock">${qty>0?`${esc(qty)} available`:"Out of stock"}</div></div></button>
+      <div class="product-actions"><input class="product-quantity" type="number" min="${esc(minQty(p))}" max="${esc(maxQty(p))}" value="${esc(minQty(p))}" data-qty="${esc(p.id)}"><button class="add-to-cart-button" type="button" data-add="${esc(p.id)}" ${disabled?"disabled":""}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.6L23 6H6"></path></svg>${disabled?"Out of stock":"Add"}</button></div><button class="view-details-button" type="button" data-details="${esc(p.id)}">View Details</button></article>`}).join("")||`<div class="empty">No products match your filters.</div>`}
+    function addToCart(productId){const p=products.find(row=>String(row.id)===String(productId));if(!p)return;const input=document.querySelector(`[data-qty="${CSS.escape(String(productId))}"]`);const qty=Math.max(minQty(p),Math.min(maxQty(p),Number(input?.value||minQty(p))));const existing=cart.find(i=>String(i.product_id)===String(productId));if(existing)existing.quantity=Math.min(maxQty(p),Number(existing.quantity||0)+qty);else cart.push({product_id:p.id,product_name:productName(p),unit_price:productPrice(p),quantity:qty,unit:p.unit||"unit",image_url:imageUrl(p)});saveCart()}
+    function openCart(){$("cartDrawer").classList.add("open")} function closeCart(){$("cartDrawer").classList.remove("open")} function openDetails(id){location.href=`product-details.html?id=${encodeURIComponent(id)}`}
+    function renderCart(){const count=cartCount();$("marketCartBadge").textContent=count;$("marketCartBadge").classList.toggle("hidden",count<=0);$("cartTitleCount").textContent=count;$("cartRows").innerHTML=cart.map(item=>`<div class="cart-row"><img class="cart-thumb" src="${esc(item.image_url||placeholder({name:item.product_name}))}" alt=""><div><b>${esc(item.product_name)}</b><small>${esc(money(item.unit_price))}</small><div class="qty"><button type="button" data-dec="${esc(item.product_id)}">-</button><span>${esc(item.quantity)}</span><button type="button" data-inc="${esc(item.product_id)}">+</button><button type="button" data-remove="${esc(item.product_id)}">Remove</button></div></div><div class="cart-line-total">${esc(money(item.quantity*item.unit_price))}</div></div>`).join("")||`<div class="empty">Your cart is empty.</div>`;$("grandTotal").textContent=money(cartTotal())}
+    async function uploadProof(key){const file=$("paymentProof").files[0];if(!file)return"";const path=`${key}/${Date.now()}-${file.name.replace(/[^\w.-]+/g,"_")}`;const{error}=await db.storage.from("marketplace-payment-proofs").upload(path,file,{upsert:false});if(error){error.checkout_step="payment_proof_upload";error.payment_proof_path=path;throw error}return path}
+    function showNotice(text,type){const n=$("checkoutNotice");n.textContent=text;n.className=`notice ${type||""}`}
+    function isAirtelMoney(method){return String(method||"").toLowerCase().includes("airtel")}
+    function emailLooksValid(email){return !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)}
+    function phoneLooksValid(phone){return String(phone||"").replace(/\D/g,"").length>=7}
+    function checkoutErrorMessage(error){
+      const code=String(error?.code||"");
+      const message=String(error?.message||"");
+      if(error?.userMessage)return error.userMessage;
+      if(code==="42883")return "The checkout database has an incompatible product ID type.";
+      if(code==="22P02")return "One of the product IDs is invalid.";
+      if(code==="PGRST202")return "The checkout service is not ready. Refresh the LAVIDA database setup.";
+      if(["42P01","PGRST205","PGRST202"].includes(code)||/marketplace_orders|marketplace_order_items|submit_marketplace_order|schema cache/i.test(message))return "The marketplace order table is not installed.";
+      if(code==="42501")return "The order was blocked by database permissions.";
+      if(code==="PGRST204"||code==="42703")return "The checkout is using a missing database column.";
+      if(code==="23503")return "One of the selected products is no longer valid.";
+      if(code==="23514")return message.replace(/^ERROR:\s*/i,"")||"One of the order values failed validation.";
+      if(/insufficient stock|stock/i.test(message))return message.replace(/^ERROR:\s*/i,"");
+      if(error?.checkout_step==="payment_proof_upload"&&/bucket not found|not found/i.test(`${error?.message||""} ${error?.error||""}`))return "Upload proof of payment storage is not installed. Enter the Airtel reference instead, or run the checkout SQL setup.";
+      if(error?.checkout_step==="payment_proof_upload"&&(error?.statusCode==="403"||error?.statusCode===403||/permission|policy|row level|unauthorized/i.test(error?.message||"")))return "Payment proof upload was blocked by storage permissions. Enter the payment reference instead.";
+      if(error?.checkout_step==="payment_proof_upload")return "Payment proof could not be uploaded. Enter the payment reference instead, or try the upload again.";
+      return message||"Your order could not be submitted. Please try again.";
+    }
+    function logCheckoutError(error,payload){
+      console.error("LAVIDA Connect checkout RPC error:",{
+        code:error?.code||null,
+        message:error?.message||String(error||""),
+        details:error?.details||null,
+        hint:error?.hint||null,
+        submitted_payload:payload||null,
+        raw_error:error
+      });
+    }
+    function publicOrderLabel(value){
+      return ({pending_confirmation:"Awaiting payment",payment_review:"Payment under review",approved:"Approved",processing:"Processing",ready_for_collection:"Ready for pickup",out_for_delivery:"Out for delivery",completed:"Completed",rejected:"Rejected",cancelled:"Cancelled"}[value] || String(value || "Pending confirmation").replaceAll("_"," "));
+    }
+    function publicPaymentLabel(value){
+      return ({pending_confirmation:"Pending",proof_submitted:"Proof submitted",paid:"Confirmed",rejected:"Rejected",refunded:"Refunded"}[value] || String(value || "Payment pending").replaceAll("_"," "));
+    }
+    function paymentMethodLabel(value){return ({airtel_money:"Airtel Money",tnm_mpamba:"TNM Mpamba",bank_transfer:"Bank Transfer",cash_on_pickup:"Cash on Pickup",cash_on_delivery:"Cash on Delivery",cash:"Cash"}[value] || String(value || "Payment method").replaceAll("_"," ").replace(/\b\w/g,(c)=>c.toUpperCase()));}
+    function fulfilmentLabel(value){return ({delivery:"Home Delivery",pickup:"Store Pickup"}[value] || String(value || "Fulfilment").replaceAll("_"," ").replace(/\b\w/g,(c)=>c.toUpperCase()));}
+    function orderBucket(order){
+      const status = order?.order_status || "";
+      const payment = order?.payment_status || "";
+      if(["cancelled","rejected"].includes(status)) return "cancelled";
+      if(status === "completed") return "completed";
+      if(status === "out_for_delivery") return "out_for_delivery";
+      if(status === "ready_for_collection") return "ready";
+      if(status === "processing" || status === "approved") return "processing";
+      if(payment !== "paid" || status === "pending_confirmation" || status === "payment_review") return "awaiting";
+      return "processing";
+    }
+    function orderBadge(order){
+      const bucket = orderBucket(order);
+      if(bucket === "completed") return {label:"Completed", cls:"status-completed", icon:"check"};
+      if(bucket === "cancelled") return {label:order?.order_status === "rejected" ? "Rejected" : "Cancelled", cls:"status-cancelled", icon:"x"};
+      if(bucket === "out_for_delivery") return {label:"Out for delivery", cls:"status-out", icon:"truck"};
+      if(bucket === "ready") return {label:order?.fulfilment_method === "pickup" ? "Ready for pickup" : "Ready", cls:"status-ready", icon:"check"};
+      if(bucket === "processing") return {label:"Processing", cls:"status-processing", icon:"gear"};
+      if(order?.payment_status === "paid") return {label:"Payment confirmed", cls:"status-paid", icon:"check"};
+      return {label:"Awaiting Payment", cls:"status-awaiting", icon:"clock"};
+    }
+    function iconSvg(name){
+      const icons = {
+        bag:'<path d="M6 8h12l-1 12H7L6 8Z"></path><path d="M9 8a3 3 0 0 1 6 0"></path>',
+        box:'<path d="m12 3 8 4-8 4-8-4 8-4Z"></path><path d="M4 7v10l8 4 8-4V7"></path><path d="M12 11v10"></path>',
+        card:'<rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 10h18"></path>',
+        wallet:'<path d="M4 7h15a2 2 0 0 1 2 2v8H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14"></path><path d="M16 13h2"></path>',
+        pin:'<path d="M12 21s7-5.1 7-11a7 7 0 1 0-14 0c0 5.9 7 11 7 11Z"></path><circle cx="12" cy="10" r="2"></circle>',
+        truck:'<path d="M3 7h11v9H3z"></path><path d="M14 10h4l3 3v3h-7z"></path><circle cx="7" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle>',
+        clipboard:'<path d="M9 4h6l1 2h3v15H5V6h3l1-2Z"></path><path d="M9 11h6M9 15h6"></path>',
+        eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle>',
+        search:'<circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path>',
+        check:'<path d="m5 12 4 4L19 6"></path>',
+        clock:'<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path>',
+        gear:'<path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"></path><path d="M4 12h2m12 0h2M12 4v2m0 12v2"></path>',
+        x:'<path d="M6 6l12 12M18 6 6 18"></path>',
+        login:'<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><path d="m10 17 5-5-5-5"></path><path d="M15 12H3"></path>',
+        logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path>'
+      };
+      return `<svg viewBox="0 0 24 24" fill="none" stroke-width="2">${icons[name] || icons.bag}</svg>`;
+    }
+    function orderLocation(order){return order.delivery_address || (order.fulfilment_method === "pickup" ? (settings.pickup_location || settings.pickup_address || "Store pickup") : "Delivery address");}
+    function progressSteps(order){
+      if(["cancelled","rejected"].includes(order.order_status)) return [];
+      const deliveryStep = order.fulfilment_method === "pickup" ? "Ready" : "Delivery";
+      const steps = ["Order Placed","Payment","Processing",deliveryStep,"Completed"];
+      let current = 0;
+      if(order.payment_status === "paid" || ["approved","processing","ready_for_collection","out_for_delivery","completed"].includes(order.order_status)) current = 1;
+      if(["processing","ready_for_collection","out_for_delivery","completed"].includes(order.order_status)) current = 2;
+      if(["ready_for_collection","out_for_delivery","completed"].includes(order.order_status)) current = 3;
+      if(order.order_status === "completed") current = 4;
+      return steps.map((label,index)=>({label,done:index<=current,current:index===current}));
+    }
+    function renderOrderProgress(order){
+      const steps = progressSteps(order);
+      if(!steps.length) return "";
+      return `<div class="order-progress">${steps.map((step)=>`<div class="progress-step ${step.done ? "done" : ""} ${step.current ? "current" : ""}"><span class="progress-dot">${step.done ? "OK" : ""}</span><span>${esc(step.label)}</span></div>`).join("")}</div>`;
+    }
+    function renderSkeletonOrders(){return `<div class="order-skeleton"></div><div class="order-skeleton"></div>`;}
+    function orderMatchesDate(order, range){
+      if(!range) return true;
+      const created = new Date(order.created_at).getTime();
+      if(!created) return false;
+      const now = Date.now();
+      if(range === "today") return new Date(order.created_at).toDateString() === new Date().toDateString();
+      return now - created <= Number(range) * 24 * 60 * 60 * 1000;
+    }
+    function filteredOrders(){
+      const q = $("orderSearch").value.trim().toLowerCase();
+      const status = $("orderStatusFilter").value;
+      const method = $("paymentMethodFilter").value;
+      const fulfilment = $("fulfilmentFilter").value;
+      const dateRange = $("dateRangeFilter").value;
+      return customerOrders.filter((order)=>{
+        const text = `${order.order_reference || ""} ${order.customer_name || ""} ${order.phone || ""}`.toLowerCase();
+        return (activeOrderTab === "all" || orderBucket(order) === activeOrderTab)
+          && (!q || text.includes(q))
+          && (!status || order.order_status === status)
+          && (!method || order.payment_method === method)
+          && (!fulfilment || order.fulfilment_method === fulfilment)
+          && orderMatchesDate(order, dateRange);
+      });
+    }
+    function renderOrderTabs(){
+      const tabs = [
+        ["all","All"],
+        ["awaiting","Awaiting Payment"],
+        ["processing","Processing"],
+        ["ready","Ready"],
+        ["out_for_delivery","Out for Delivery"],
+        ["completed","Completed"],
+        ["cancelled","Cancelled"]
+      ];
+      const counts = Object.fromEntries(tabs.map(([key])=>[key,0]));
+      counts.all = customerOrders.length;
+      customerOrders.forEach((order)=>{counts[orderBucket(order)] = (counts[orderBucket(order)] || 0) + 1;});
+      $("orderTabs").innerHTML = tabs.map(([key,label])=>`<button class="order-tab ${activeOrderTab===key?"active":""}" type="button" data-order-tab="${esc(key)}"><span>${esc(label)}</span><span class="order-tab-count">${esc(counts[key] || 0)}</span></button>`).join("");
+    }
+    function orderActions(order){
+      const actions = [[`<button class="order-action-primary" type="button" data-order-details="${esc(order.id)}">${iconSvg("eye")}View Order</button>`]];
+      if(order.fulfilment_method === "delivery" && !["completed","cancelled","rejected"].includes(order.order_status)) actions.push([`<button class="order-action-secondary" type="button" data-track-existing="${esc(order.id)}">${iconSvg("pin")}Track Order</button>`]);
+      if(order.payment_status !== "paid" && !["cancelled","rejected","completed"].includes(order.order_status)) actions.push([`<button class="order-action-primary" type="button" data-order-details="${esc(order.id)}">${iconSvg("card")}Pay Now</button>`]);
+      if(order.order_status === "ready_for_collection" && order.fulfilment_method === "pickup") actions.push([`<button class="order-action-secondary" type="button" data-order-details="${esc(order.id)}">${iconSvg("check")}Confirm Collection</button>`]);
+      const html = actions.slice(0,2).map((item)=>item[0]).join("");
+      return `<div class="order-card-actions ${actions.length === 1 ? "single" : ""}">${html}</div>`;
+    }
+    function renderOrders(){
+      renderOrderTabs();
+      const rows = filteredOrders();
+      if(!customerOrders.length){
+        $("myOrdersList").innerHTML = `<div class="orders-empty">${iconSvg("bag")}<h3>No orders yet</h3><p>Products you purchase will appear here.</p><a class="order-action-primary" href="#market">Start Shopping</a></div>`;
+        return;
+      }
+      if(!rows.length){
+        $("myOrdersList").innerHTML = `<div class="orders-empty">${iconSvg("search")}<h3>No matching orders</h3><p>Try another status, search, or filter.</p></div>`;
+        return;
+      }
+      $("myOrdersList").innerHTML = rows.map((order)=>{
+        const badge = orderBadge(order);
+        return `<article class="order-card">
+          <div class="order-card-top">
+            <div class="order-icon ${badge.cls}">${iconSvg("bag")}</div>
+            <div><b class="order-number">${esc(order.order_reference)}</b><span class="order-date">${esc(cleanDate(order.created_at))}</span></div>
+            <div class="order-total"><strong>${esc(money(order.grand_total))}</strong><span class="status-badge ${badge.cls}">${badge.icon==="check" ? "OK" : ""} ${esc(badge.label)}</span></div>
+          </div>
+          <div class="order-meta">
+            <div class="order-info">${iconSvg("box")}<div><span>Items</span><b>${esc(order.item_count || 0)} ${Number(order.item_count || 0) === 1 ? "item" : "items"}</b></div></div>
+            <div class="order-info">${iconSvg("wallet")}<div><span>Payment Method</span><b>${esc(paymentMethodLabel(order.payment_method))}</b></div></div>
+            <div class="order-info">${iconSvg("card")}<div><span>Payment Status</span><b><i class="inline-dot"></i>${esc(publicPaymentLabel(order.payment_status))}</b></div></div>
+            <div class="order-info">${iconSvg("pin")}<div><span>${order.fulfilment_method === "pickup" ? "Pickup Location" : "Delivery Address"}</span><b>${esc(orderLocation(order))}</b></div></div>
+            <div class="order-info">${iconSvg("truck")}<div><span>Fulfilment</span><b>${esc(fulfilmentLabel(order.fulfilment_method))}</b></div></div>
+            <div class="order-info">${iconSvg("clipboard")}<div><span>Order Status</span><b><i class="inline-dot"></i>${esc(publicOrderLabel(order.order_status))}</b></div></div>
+          </div>
+          ${renderOrderProgress(order)}
+          ${orderActions(order)}
+        </article>`;
+      }).join("");
+    }
+    function orderStatusMessage(value){
+      return ({pending_confirmation:"Your order is pending confirmation.",payment_review:"Your payment is under review.",approved:"Your order has been approved.",processing:"Your order is being prepared.",ready_for_collection:"Your order is ready for collection.",out_for_delivery:"Your order is out for delivery.",completed:"Your order has been completed.",rejected:"Your order was rejected.",cancelled:"Your order was cancelled."}[value] || "Your order is pending confirmation.");
+    }
+    function cleanDate(value){try{return value?new Date(value).toLocaleString():"";}catch(e){return value || "";}}
+    function savedCustomerPhone(){return localStorage.getItem("lavida_connect_customer_phone") || $("customerPhone")?.value?.trim() || "";}
+    function savedCustomerEmail(){return localStorage.getItem("lavida_connect_customer_email") || $("customerEmail")?.value?.trim() || "";}
+    function renderOrderDetails(payload){
+      const order = payload?.order || payload || {};
+      const items = payload?.items || [];
+      const history = payload?.history || [];
+      const orderLabel = payload?.order_label || publicOrderLabel(order.order_status);
+      const paymentLabel = payload?.payment_label || publicPaymentLabel(order.payment_status);
+      $("orderDetails").classList.remove("hidden");
+      $("orderDetails").innerHTML = `<div class="orders-head"><h3>${esc(order.order_reference || "Order details")}</h3><span class="pill">${esc(orderLabel)}</span></div>
+        <p>${esc(orderStatusMessage(order.order_status))}</p>
+        <div class="order-detail-grid">
+          <div><b>Date</b><br>${esc(cleanDate(order.created_at))}</div>
+          <div><b>Customer</b><br>${esc(order.customer_name || "")}</div>
+          <div><b>Phone</b><br>${esc(order.phone || "")}</div>
+          <div><b>Email</b><br>${esc(order.email || "")}</div>
+          <div><b>Fulfilment</b><br>${esc(order.fulfilment_method || "")}</div>
+          <div><b>Location</b><br>${esc(order.delivery_address || "Pickup")}</div>
+          <div><b>Payment</b><br>${esc(order.payment_method || "")}</div>
+          <div><b>Payment status</b><br>${esc(paymentLabel)}</div>
+          <div><b>Payment reference</b><br>${esc(order.payment_reference || "Not supplied")}</div>
+          <div><b>Total</b><br>${esc(money(order.grand_total))}</div>
+        </div>
+        <div class="order-items">${items.map((item)=>`<div class="order-item"><div><b>${esc(item.product_name || item.name || "Product")}</b><br>${esc(item.quantity)} ${esc(item.unit || "")} x ${esc(money(item.unit_price))}</div><b>${esc(money(item.line_total))}</b></div>`).join("") || `<div class="notice">No order items were returned.</div>`}</div>
+        ${order.delivery_notes ? `<p><b>Notes:</b> ${esc(order.delivery_notes)}</p>` : ""}
+        ${order.status_reason ? `<p><b>Reason:</b> ${esc(order.status_reason)}</p>` : ""}
+        <h3>Status timeline</h3>
+        <div class="timeline">${history.length ? history.map((h)=>`<div class="timeline-step"><span class="timeline-dot"></span><div><b>${esc(publicOrderLabel(h.new_order_status))}</b><br><small>${esc(cleanDate(h.changed_at))}${h.reason ? ` - ${esc(h.reason)}` : ""}</small></div></div>`).join("") : `<div class="timeline-step"><span class="timeline-dot"></span><div><b>Order placed</b><br><small>${esc(cleanDate(order.created_at))}</small></div></div>`}</div>`;
+      $("orderDetails").scrollIntoView({behavior:"smooth", block:"start"});
+    }
+    async function viewOrderDetails(orderId){
+      $("orderDetails").classList.remove("hidden");
+      $("orderDetails").innerHTML = `<div class="notice">Loading order details...</div>`;
+      try{
+        const {data,error} = await db.rpc("get_marketplace_order_details",{p_order_id:orderId,p_order_reference:null,p_phone:savedCustomerPhone()});
+        if(error) throw error;
+        renderOrderDetails(data);
+      }catch(error){
+        console.error("LAVIDA Connect order details error:", error);
+        $("orderDetails").innerHTML = `<div class="notice bad">${esc(error?.message || "Order details could not be loaded.")}</div>`;
+      }
+    }
+    async function loadMyOrders(){
+      const list = $("myOrdersList");
+      const refresh = $("refreshOrdersButton");
+      refresh.classList.add("loading");
+      list.innerHTML = renderSkeletonOrders();
+      try{
+        const {data,error} = await db.rpc("get_my_marketplace_orders",{p_phone:savedCustomerPhone(),p_email:savedCustomerEmail()});
+        if(error) throw error;
+        customerOrders = (data || []).slice().sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+        renderOrders();
+      }catch(error){
+        console.error("LAVIDA Connect My Orders error:", error);
+        list.innerHTML = `<div class="notice bad">${esc(error?.message || "Your orders could not be loaded.")}</div>`;
+      }finally{
+        refresh.classList.remove("loading");
+      }
+    }
+    async function checkAdminTools(){
+      try{
+        const {data:{session:currentSession}} = await db.auth.getSession();
+        const email = currentSession?.user?.email || "";
+        if(!email) return;
+        const {data} = await db.from("user_roles").select("role,active").eq("email", email).eq("active", true).maybeSingle();
+        const role = String(data?.role || "").toLowerCase();
+        if(["owner","admin","executive","manager","printing_admin"].includes(role)){
+          $("adminToolsSection").classList.remove("hidden");
+          $("lavidaAdminMenuSection").classList.remove("hidden");
+          $("userManagementMenuLink").classList.remove("hidden");
+          $("userManagementAccountLink").classList.remove("hidden");
+        }
+      }catch(error){}
+    }
+    function hideRestrictedLinks(){
+      ["adminToolsSection","lavidaAdminMenuSection","userManagementMenuLink","userManagementAccountLink"].forEach((id)=>$(id)?.classList.add("hidden"));
+    }
+    async function validateCartItems(){
+      const ids=[...new Set(cart.map(item=>String(item.product_id)).filter(Boolean))];
+      if(!ids.length)throw {userMessage:"Add products to your cart first."};
+      const{data,error}=await db.from("marketplace_public_products").select("*").in("id",ids);
+      if(error)throw error;
+      const byId=new Map((data||[]).map(product=>[String(product.id),product]));
+      for(const item of cart){
+        const product=byId.get(String(item.product_id));
+        if(!product)throw {userMessage:`${item.product_name||"One product"} is no longer available.`};
+        const qty=Number(item.quantity||0);
+        const min=Number(product.minimum_order_quantity||1);
+        const max=Number(product.maximum_order_quantity||0);
+        const available=Number(product.available_for_new_orders??product.available_quantity??0);
+        if(!["published","active"].includes(String(product.status||"")))throw {userMessage:`${productName(product)} is not published for sale.`};
+        if(product.published!==true)throw {userMessage:`${productName(product)} is not published for sale.`};
+        if(qty<min)throw {userMessage:`${productName(product)} minimum order is ${min}.`};
+        if(max>0&&qty>max)throw {userMessage:`${productName(product)} maximum order is ${max}.`};
+        if(qty>available)throw {userMessage:`Insufficient stock for ${productName(product)}. Available: ${available}, requested: ${qty}.`};
+      }
+      return data||[];
+    }
+    async function checkout(){
+      let payload=null;
+      if(settings.is_open===false)return showNotice("Connect is currently closed. Please try again during operating hours.","bad");
+      if(!cart.length)return showNotice("Add products to your cart first.","bad");
+      const name=$("customerName").value.trim(),phone=$("customerPhone").value.trim(),email=$("customerEmail").value.trim();
+      const fulfilment=$("fulfilment").value,paymentMethod=$("paymentMethod").value,paymentReference=$("paymentReference").value.trim();
+      if(!name)return showNotice("Please enter your full name.","bad");
+      if(!phoneLooksValid(phone))return showNotice("Please enter a valid phone number.","bad");
+      if(!emailLooksValid(email))return showNotice("Please enter a valid email address, or leave it blank.","bad");
+      if(!fulfilment)return showNotice("Please choose pickup or delivery.","bad");
+      if(!paymentMethod)return showNotice("Please choose a payment method.","bad");
+      if(fulfilment==="delivery"&&!$("address").value.trim())return showNotice("Please enter a delivery address.","bad");
+      const proofFile=$("paymentProof").files[0];
+      if(isAirtelMoney(paymentMethod)&&!paymentReference&&!proofFile)return showNotice("Airtel Money requires a payment reference or uploaded payment proof.","bad");
+      $("checkoutButton").disabled=true;
+      try{
+        await validateCartItems();
+        const submittedTotal=cartTotal();
+        let proofUrl="";
+        try{
+          proofUrl=await uploadProof(phone.replace(/\D/g,"")||"guest");
+        }catch(uploadError){
+          logCheckoutError(uploadError,{payment_method:paymentMethod,payment_reference:paymentReference,payment_proof_selected:Boolean(proofFile)});
+          if(!paymentReference)throw uploadError;
+          showNotice("Payment proof could not be uploaded, so the order will use your payment reference only.","warn");
+        }
+        payload={customer_name:name,phone,email,fulfilment_method:fulfilment,delivery_address:$("address").value.trim(),delivery_notes:$("deliveryNotes").value.trim(),payment_method:paymentMethod,payment_reference:paymentReference,payment_proof_url:proofUrl,delivery_fee:deliveryFee(),source_device_id:localStorage.getItem("lavida_marketplace_device")||crypto.randomUUID(),idempotency_key:crypto.randomUUID(),items:cart.map(i=>({product_id:i.product_id,quantity:Number(i.quantity||0)}))};
+        localStorage.setItem("lavida_marketplace_device",payload.source_device_id);
+        const{data,error}=await db.rpc("submit_marketplace_order",{p_order:payload});
+        if(error)throw error;
+        const order=Array.isArray(data)?data[0]:data;
+        localStorage.setItem("lavida_connect_customer_phone", phone);
+        if(email) localStorage.setItem("lavida_connect_customer_email", email);
+        cart=[];saveCart();closeCart();
+        $("confirmation").classList.remove("hidden");
+        $("confirmation").innerHTML=`<h2>Order submitted</h2><p>Your reference is <b>${esc(order?.order_reference||"")}</b>.</p><p>Total: <b>${esc(money(order?.grand_total||submittedTotal))}</b></p><span class="pill">${esc(publicOrderLabel(order?.order_status||"pending_confirmation"))}</span>`;
+        loadMyOrders();
+        scrollTo({top:0,behavior:"smooth"});
+      }catch(error){
+        logCheckoutError(error,payload);
+        showNotice(checkoutErrorMessage(error),"bad");
+      }finally{$("checkoutButton").disabled=false}
+    }
+    async function trackOrder(){const reference=$("trackReference").value.trim(),phone=$("trackPhone").value.trim();if(!reference||!phone){$("trackResult").innerHTML=`<div class="notice bad">Enter order reference and phone number.</div>`;return}try{const{data,error}=await db.rpc("get_marketplace_order_details",{p_order_id:null,p_order_reference:reference,p_phone:phone});if(error)throw error;if(data){$("trackResult").innerHTML=`<div class="notice"><b>${esc(data.order?.order_reference || reference)}</b><br>Status: ${esc(publicOrderLabel(data.order?.order_status))}<br>Total: ${esc(money(data.order?.grand_total))}</div>`;renderOrderDetails(data)}else $("trackResult").innerHTML=`<div class="notice bad">No matching order was found.</div>`}catch(e){console.error("LAVIDA Connect track order error:", e);$("trackResult").innerHTML=`<div class="notice bad">${esc(e?.message || "Order tracking is unavailable. Please try again.")}</div>`}}
+    function setupOrdersRealtime(){
+      if(ordersRealtimeChannel || !db.channel) return;
+      try{
+        ordersRealtimeChannel = db.channel("lavida-connect-customer-orders")
+          .on("postgres_changes",{event:"*",schema:"public",table:"marketplace_orders"},()=>{if(location.hash==="#orders"||location.hash==="#track")loadMyOrders();})
+          .subscribe();
+      }catch(error){console.warn("LAVIDA Connect realtime unavailable", error);}
+    }
+    function printPrice(code){
+      return printPrices.find((row)=>row.service_code===code && row.active!==false) || null;
+    }
+    function printAmount(code){
+      return Number(printPrice(code)?.amount_mwk || 0);
+    }
+    function renderPrintServices(){
+      $("printServicesGrid").innerHTML = PRINT_SERVICE_CARDS.map(([code,name,fallback])=>{
+        const price = printPrice(code);
+        const label = price ? `${money(price.amount_mwk)} ${price.pricing_unit === "per_page" ? "per page" : price.pricing_unit === "per_order" ? "per order" : price.pricing_unit || ""}` : fallback;
+        return `<article class="print-service"><b>${esc(name)}</b><span>${esc(label)}</span></article>`;
+      }).join("");
+    }
+    async function loadPrintPrices(){
+      try{
+        const [{data:services},{data:prices}] = await Promise.all([
+          db.from("printing_services").select("*").eq("active",true).order("sort_order"),
+          db.from("printing_service_prices").select("*").eq("active",true)
+        ]);
+        printServices = services || [];
+        printPrices = prices || [];
+      }catch(error){
+        printServices = [];
+        printPrices = [];
+      }
+      renderPrintServices();
+      renderPrintSummary();
+    }
+    async function refreshPrintSession(){
+      try{
+        printSession = await window.LavidaAuth.getSession(db);
+      }catch(error){
+        window.LavidaAuth.debug("print session check failed", error);
+        printSession = null;
+        $("printAuthNotice").textContent = window.LavidaAuth.friendlyError(error, "LAVIDA could not check your session. Please try again.");
+      }
+      const user = printSession?.user;
+      authSession = printSession;
+      updateAuthControls();
+      loadUnreadNotifications();
+      $("printAuthNotice").textContent = user ? `Signed in as ${user.email}. Private documents are stored under your account.` : "Sign in to submit your printing request and keep your files and orders linked to your account.";
+      $("printAuthContinueButton").classList.toggle("hidden", Boolean(user));
+      if(user){
+        const meta = user.user_metadata || {};
+        if(!$("printCustomerName").value) $("printCustomerName").value = meta.full_name || meta.name || "";
+        if(!$("printCustomerEmail").value) $("printCustomerEmail").value = user.email || "";
+        if(!$("printCustomerPhone").value) $("printCustomerPhone").value = meta.phone || meta.phone_number || savedCustomerPhone();
+      }
+    }
+    function safeFileName(name){return String(name || "document").replace(/[^\w.-]+/g,"_");}
+    function fileSizeLabel(size){
+      const n = Number(size || 0);
+      if(n > 1024 * 1024) return `${(n / 1024 / 1024).toFixed(1)} MB`;
+      if(n > 1024) return `${(n / 1024).toFixed(1)} KB`;
+      return `${n} B`;
+    }
+    function defaultPrintOptions(file){
+      return {id:crypto.randomUUID(),file,colour_mode:"bw",page_count:1,copies:1,sides:"single",paper_size:"A4",custom_paper_size:"",orientation:"portrait",binding_required:false,lamination_required:false,express_required:false,pages_to_print:"all",selected_page_range:"",instructions:""};
+    }
+    function renderPrintUploads(){
+      $("printUploadList").innerHTML = printFiles.map((row,index)=>`<div class="print-upload-row"><div><b>${esc(row.file.name)}</b><br><small>${esc(row.file.type || "Unknown type")} | ${esc(fileSizeLabel(row.file.size))}</small><div class="print-progress"><span style="width:${row.uploaded ? 100 : 0}%"></span></div></div><button type="button" class="ghost" data-remove-print-file="${esc(row.id)}">Remove</button></div>`).join("") || `<div class="notice">No files selected yet.</div>`;
+      $("printDocumentOptions").innerHTML = printFiles.map((row,index)=>`<article class="print-doc-card" data-print-doc="${esc(row.id)}"><h3>${esc(row.file.name)}</h3><div class="print-grid three">
+        <select data-print-field="colour_mode"><option value="bw" ${row.colour_mode==="bw"?"selected":""}>Black & white</option><option value="colour" ${row.colour_mode==="colour"?"selected":""}>Colour</option></select>
+        <input data-print-field="page_count" type="number" min="1" value="${esc(row.page_count)}" placeholder="Number of pages">
+        <input data-print-field="copies" type="number" min="1" value="${esc(row.copies)}" placeholder="Copies">
+        <select data-print-field="sides"><option value="single" ${row.sides==="single"?"selected":""}>Single-sided</option><option value="double" ${row.sides==="double"?"selected":""}>Double-sided</option></select>
+        <select data-print-field="paper_size"><option value="A4" ${row.paper_size==="A4"?"selected":""}>A4</option><option value="A3" ${row.paper_size==="A3"?"selected":""}>A3</option><option value="custom" ${row.paper_size==="custom"?"selected":""}>Custom</option></select>
+        <input data-print-field="custom_paper_size" value="${esc(row.custom_paper_size)}" placeholder="Custom paper size">
+        <select data-print-field="orientation"><option value="portrait" ${row.orientation==="portrait"?"selected":""}>Portrait</option><option value="landscape" ${row.orientation==="landscape"?"selected":""}>Landscape</option></select>
+        <select data-print-field="pages_to_print"><option value="all" ${row.pages_to_print==="all"?"selected":""}>All pages</option><option value="range" ${row.pages_to_print==="range"?"selected":""}>Selected page range</option></select>
+        <input data-print-field="selected_page_range" value="${esc(row.selected_page_range)}" placeholder="Example: 1-3, 7">
+      </div><div class="checks"><label><input data-print-field="binding_required" type="checkbox" ${row.binding_required?"checked":""}> Binding</label><label><input data-print-field="lamination_required" type="checkbox" ${row.lamination_required?"checked":""}> Lamination</label><label><input data-print-field="express_required" type="checkbox" ${row.express_required?"checked":""}> Express</label></div><textarea data-print-field="instructions" placeholder="Additional instructions">${esc(row.instructions)}</textarea></article>`).join("") || `<div class="notice">Upload documents first.</div>`;
+      renderPrintSummary();
+    }
+    function updatePrintOption(target){
+      const card = target.closest("[data-print-doc]");
+      if(!card) return;
+      const row = printFiles.find((item)=>item.id===card.dataset.printDoc);
+      if(!row) return;
+      const field = target.dataset.printField;
+      if(!field) return;
+      row[field] = target.type === "checkbox" ? target.checked : target.value;
+      if(["page_count","copies"].includes(field)) row[field] = Math.max(1, Number(row[field] || 1));
+      renderPrintSummary();
+    }
+    function printLine(row){
+      const pages = Math.max(1, Number(row.page_count || 1));
+      const copies = Math.max(1, Number(row.copies || 1));
+      const perPage = row.colour_mode === "colour" ? printAmount("colour_printing") : printAmount("bw_printing");
+      const printing = pages * copies * perPage;
+      const binding = row.binding_required ? printAmount("binding") : 0;
+      const lamination = row.lamination_required ? printAmount("lamination") * pages * copies : 0;
+      const express = row.express_required ? printAmount("express_service") : 0;
+      const additional = binding + lamination + express;
+      return {pages,copies,perPage,printing,binding,lamination,express,additional,total:printing+additional};
+    }
+    function printTotals(){
+      return printFiles.reduce((totals,row)=>{
+        const line = printLine(row);
+        totals.printing += line.printing;
+        totals.additional += line.additional;
+        totals.delivery += $("printFulfilment")?.value === "delivery" ? 0 : 0;
+        totals.total += line.total;
+        return totals;
+      },{printing:0,additional:0,delivery:0,total:0});
+    }
+    function renderPrintSummary(){
+      const totals = printTotals();
+      const html = `<div><span>Printing subtotal</span><strong>${esc(money(totals.printing))}</strong></div><div><span>Additional services</span><strong>${esc(money(totals.additional))}</strong></div><div><span>Delivery</span><strong>To be confirmed</strong></div><div><span>Grand total estimate</span><strong class="print-total">${esc(money(totals.total))}</strong></div>`;
+      if($("printPriceSummary")) $("printPriceSummary").innerHTML = html;
+      if($("printConfirmationSummary")){
+        $("printConfirmationSummary").innerHTML = `<h3>Order summary</h3><p><b>Files:</b> ${esc(printFiles.length)} document${printFiles.length===1?"":"s"}</p><p><b>Collection:</b> ${esc($("printFulfilment")?.value || "pickup")}</p><p><b>Payment:</b> ${esc(paymentMethodLabel($("printPaymentMethod")?.value || ""))}</p><div class="print-summary">${html}</div>`;
+      }
+    }
+    function showPrintStep(index){
+      printStep = Math.max(0, Math.min(6, Number(index || 0)));
+      document.querySelectorAll("[data-print-step]").forEach((section)=>section.classList.toggle("active", Number(section.dataset.printStep)===printStep));
+      document.querySelectorAll("[data-print-step-jump]").forEach((button)=>button.classList.toggle("active", Number(button.dataset.printStepJump)===printStep));
+      $("printPrevButton").disabled = printStep === 0;
+      $("printNextButton").classList.toggle("hidden", printStep === 6);
+      renderPrintSummary();
+    }
+    function printNotice(text,type){
+      $("printOrderNotice").textContent = text;
+      $("printOrderNotice").className = `notice ${type || ""}`;
+    }
+    function validPrintStep(){
+      if(printStep === 0 && !printFiles.length){printNotice("Upload at least one document.","bad"); return false;}
+      if(printStep === 1 && printFiles.some((row)=>Number(row.page_count)<1 || Number(row.copies)<1)){printNotice("Each document needs pages and copies.","bad"); return false;}
+      if(printStep === 2 && $("printFulfilment").value==="delivery" && (!$("printDeliveryLocation").value.trim() || !$("printDeliveryPhone").value.trim())){printNotice("Delivery needs a location and phone number.","bad"); return false;}
+      if(printStep === 3 && (!$("printCustomerName").value.trim() || !$("printCustomerPhone").value.trim() || !$("printCustomerEmail").value.trim())){printNotice("Customer name, phone and email are required.","bad"); return false;}
+      printNotice("Ready.","hidden");
+      $("printOrderNotice").classList.add("hidden");
+      return true;
+    }
+    async function uploadPrintFile(orderId,row){
+      const path = `${printSession.user.id}/${orderId}/${Date.now()}-${safeFileName(row.file.name)}`;
+      const {error} = await db.storage.from("printing-order-files").upload(path,row.file,{upsert:false,contentType:row.file.type || "application/octet-stream"});
+      if(error) throw error;
+      row.uploaded = true;
+      renderPrintUploads();
+      return path;
+    }
+    async function uploadPrintProof(orderId){
+      const file = $("printPaymentProof").files[0];
+      if(!file) return "";
+      const path = `${printSession.user.id}/${orderId}/payments/${Date.now()}-${safeFileName(file.name)}`;
+      const {error} = await db.storage.from("printing-order-files").upload(path,file,{upsert:false,contentType:file.type || "application/octet-stream"});
+      if(error) throw error;
+      return path;
+    }
+    async function submitPrintOrder(){
+      await refreshPrintSession();
+      if(!printSession?.user){
+        printNotice("Sign in to submit your printing request and keep your files and orders linked to your account.","bad");
+        requestSignIn("marketplace.html#print365");
+        return;
+      }
+      if(!validPrintStep()) return;
+      const totals = printTotals();
+      const electronic = ["airtel_money","tnm_mpamba","bank_transfer"].includes($("printPaymentMethod").value);
+      $("confirmPrintOrderButton").disabled = true;
+      try{
+        const orderPayload = {
+          user_id: printSession.user.id,
+          primary_service: printFiles[0]?.colour_mode === "colour" ? "Colour Printing" : "Black & White Printing",
+          customer_name: $("printCustomerName").value.trim(),
+          customer_phone: $("printCustomerPhone").value.trim(),
+          customer_email: $("printCustomerEmail").value.trim(),
+          fulfilment_method: $("printFulfilment").value,
+          printing_subtotal_mwk: totals.printing,
+          additional_services_mwk: totals.additional,
+          delivery_fee_mwk: 0,
+          grand_total_mwk: totals.total,
+          original_total_mwk: totals.total,
+          payment_status: electronic ? "pending_verification" : "awaiting_payment",
+          production_status: electronic ? "payment_under_review" : "awaiting_payment",
+          estimated_completion_time: null
+        };
+        const {data:order,error:orderError} = await db.from("printing_orders").insert(orderPayload).select("*").single();
+        if(orderError) throw orderError;
+        const fileRows = [];
+        const itemRows = [];
+        for(const row of printFiles){
+          const line = printLine(row);
+          const path = await uploadPrintFile(order.id,row);
+          fileRows.push({order_id:order.id,storage_bucket:"printing-order-files",storage_path:path,file_name:row.file.name,file_type:row.file.type || "",file_size_bytes:row.file.size,uploaded_by:printSession.user.id});
+          itemRows.push({order_id:order.id,service_code:row.colour_mode==="colour"?"colour_printing":"bw_printing",file_name:row.file.name,colour_mode:row.colour_mode,page_count:line.pages,copies:line.copies,sides:row.sides,paper_size:row.paper_size,custom_paper_size:row.custom_paper_size,orientation:row.orientation,binding_required:row.binding_required,lamination_required:row.lamination_required,express_required:row.express_required,pages_to_print:row.pages_to_print,selected_page_range:row.selected_page_range,additional_instructions:row.instructions,printing_subtotal_mwk:line.printing,additional_services_mwk:line.additional,line_total_mwk:line.total});
+        }
+        if(itemRows.length){const {error}=await db.from("printing_order_items").insert(itemRows); if(error) throw error;}
+        if(fileRows.length){const {error}=await db.from("printing_order_files").insert(fileRows); if(error) throw error;}
+        if($("printFulfilment").value==="delivery"){
+          const {error}=await db.from("printing_delivery_details").insert({order_id:order.id,location:$("printDeliveryLocation").value.trim(),phone_number:$("printDeliveryPhone").value.trim(),delivery_fee_mwk:0,fee_status:"to_be_confirmed"});
+          if(error) throw error;
+        }
+        const proofPath = await uploadPrintProof(order.id);
+        const {error:paymentError}=await db.from("printing_payments").insert({order_id:order.id,payment_method:$("printPaymentMethod").value,transaction_reference:$("printPaymentReference").value.trim(),proof_bucket:proofPath ? "printing-order-files" : null,proof_path:proofPath || null,amount_mwk:totals.total,verification_status:electronic ? "pending_verification" : "awaiting_payment"});
+        if(paymentError) throw paymentError;
+        await db.from("printing_order_status_history").insert({order_id:order.id,changed_by:printSession.user.id,new_status:orderPayload.production_status,reason:"Customer submitted printing order"});
+        $("confirmation").classList.remove("hidden");
+        $("confirmation").innerHTML = `<h2>Printing order submitted</h2><p>Your order number is <b>${esc(order.order_number)}</b>.</p><p>Total estimate: <b>${esc(money(totals.total))}</b></p><span class="pill">${esc(printStatusLabel(orderPayload.production_status))}</span>`;
+        localStorage.setItem("lavida_connect_customer_phone", $("printCustomerPhone").value.trim());
+        localStorage.setItem("lavida_connect_customer_email", $("printCustomerEmail").value.trim());
+        printFiles = [];
+        $("printOrderForm").classList.add("hidden");
+        renderPrintUploads();
+        navigateRoute("printing-orders",{resetScroll:true});
+      }catch(error){
+        console.error("Print 365 submit error", error);
+        printNotice(error?.message || "Printing order could not be submitted.","bad");
+      }finally{
+        $("confirmPrintOrderButton").disabled = false;
+      }
+    }
+    function printStatusLabel(value){
+      return String(value || "").replaceAll("_"," ").replace(/\b\w/g,(c)=>c.toUpperCase());
+    }
+    function renderPrintOrderTimeline(order){
+      const status = order.production_status || "draft";
+      const stages = ["draft","payment_under_review","reviewing_document","printing",order.fulfilment_method==="delivery"?"out_for_delivery":"ready_for_pickup","completed"];
+      const index = Math.max(0, stages.indexOf(status));
+      return `<div class="print-timeline">${stages.slice(0,5).map((stage,i)=>`<div class="progress-step ${i<=index?"done":""} ${i===index?"current":""}"><span class="progress-dot">${i<=index?"OK":""}</span><span>${esc(printStatusLabel(stage))}</span></div>`).join("")}</div>`;
+    }
+    async function loadPrintOrders(){
+      const list = $("printOrdersList");
+      $("refreshPrintOrdersButton").classList.add("loading");
+      await refreshPrintSession();
+      if(!printSession?.user){list.innerHTML = `<div class="notice">Sign in to view your printing orders.</div>`; $("refreshPrintOrdersButton").classList.remove("loading"); return;}
+      try{
+        const {data,error}=await db.from("printing_orders").select("*").order("created_at",{ascending:false}).limit(50);
+        if(error) throw error;
+        printOrders = data || [];
+        list.innerHTML = printOrders.map((order)=>`<article class="print-order-card"><header><div><b class="order-number">${esc(order.order_number)}</b><small>${esc(cleanDate(order.created_at))}</small></div><strong>${esc(money(order.grand_total_mwk))}</strong></header><div class="print-order-meta"><div><span>Service</span><b>${esc(order.primary_service || "Printing")}</b></div><div><span>Payment</span><b>${esc(printStatusLabel(order.payment_status))}</b></div><div><span>Production</span><b>${esc(printStatusLabel(order.production_status))}</b></div><div><span>Method</span><b>${esc(fulfilmentLabel(order.fulfilment_method))}</b></div><div><span>Estimated completion</span><b>${esc(cleanDate(order.estimated_completion_time) || "To be confirmed")}</b></div></div>${renderPrintOrderTimeline(order)}<div class="order-card-actions single"><button class="order-action-primary" type="button" data-print-order-details="${esc(order.id)}">View Details</button></div></article>`).join("") || `<div class="orders-empty"><h3>No printing orders yet</h3><p>Start a Print 365 order to see it here.</p><a class="order-action-primary" href="#print365">Start Printing Order</a></div>`;
+      }catch(error){
+        list.innerHTML = `<div class="notice bad">${esc(error?.message || "Printing orders could not be loaded.")}</div>`;
+      }finally{
+        $("refreshPrintOrdersButton").classList.remove("loading");
+      }
+    }
+    async function viewPrintOrderDetails(orderId){
+      $("printOrderDetails").classList.remove("hidden");
+      $("printOrderDetails").innerHTML = `<div class="notice">Loading printing order details...</div>`;
+      try{
+        const {data,error}=await db.from("printing_orders").select("*,printing_order_items(*),printing_order_files(*),printing_order_status_history(*)").eq("id",orderId).single();
+        if(error) throw error;
+        $("printOrderDetails").innerHTML = `<div class="orders-head"><h3>${esc(data.order_number)}</h3><span class="pill">${esc(printStatusLabel(data.production_status))}</span></div><div class="order-detail-grid"><div><b>Total</b><br>${esc(money(data.grand_total_mwk))}</div><div><b>Payment</b><br>${esc(printStatusLabel(data.payment_status))}</div><div><b>Collection</b><br>${esc(fulfilmentLabel(data.fulfilment_method))}</div><div><b>Estimated completion</b><br>${esc(cleanDate(data.estimated_completion_time) || "To be confirmed")}</div></div><h3>Documents</h3><div class="order-items">${(data.printing_order_items||[]).map((item)=>`<div class="order-item"><div><b>${esc(item.file_name)}</b><br>${esc(item.page_count)} pages x ${esc(item.copies)} copies | ${esc(item.colour_mode)}</div><b>${esc(money(item.line_total_mwk))}</b></div>`).join("")}</div><h3>Status timeline</h3><div class="timeline">${(data.printing_order_status_history||[]).map((h)=>`<div class="timeline-step"><span class="timeline-dot"></span><div><b>${esc(printStatusLabel(h.new_status))}</b><br><small>${esc(cleanDate(h.changed_at))}${h.reason ? ` - ${esc(h.reason)}` : ""}</small></div></div>`).join("")}</div>`;
+        $("printOrderDetails").scrollIntoView({behavior:"smooth",block:"start"});
+      }catch(error){
+        $("printOrderDetails").innerHTML = `<div class="notice bad">${esc(error?.message || "Details could not be loaded.")}</div>`;
+      }
+    }
+    document.addEventListener("click",event=>{const printDetails=event.target.closest("[data-print-order-details]");if(printDetails){viewPrintOrderDetails(printDetails.dataset.printOrderDetails);return}const removePrintFile=event.target.closest("[data-remove-print-file]");if(removePrintFile){printFiles=printFiles.filter((row)=>row.id!==removePrintFile.dataset.removePrintFile);renderPrintUploads();return}const tab=event.target.closest("[data-order-tab]");if(tab){activeOrderTab=tab.dataset.orderTab;renderOrders();return}const trackExisting=event.target.closest("[data-track-existing]");if(trackExisting){viewOrderDetails(trackExisting.dataset.trackExisting);return}const orderDetails=event.target.closest("[data-order-details]");if(orderDetails){viewOrderDetails(orderDetails.dataset.orderDetails);return}const add=event.target.closest("[data-add]");if(add){event.stopPropagation();addToCart(add.dataset.add);return}const details=event.target.closest("[data-details]");if(details){openDetails(details.dataset.details);return}const main=event.target.closest("[data-open-product]");if(main){openDetails(main.dataset.openProduct);return}const inc=event.target.closest("[data-inc]");if(inc){const item=cart.find(row=>String(row.product_id)===String(inc.dataset.inc));const p=products.find(row=>String(row.id)===String(inc.dataset.inc));if(item){item.quantity=Math.min(maxQty(p||{}),item.quantity+1);saveCart()}return}const dec=event.target.closest("[data-dec]");if(dec){const item=cart.find(row=>String(row.product_id)===String(dec.dataset.dec));if(item){item.quantity=Math.max(1,item.quantity-1);saveCart()}return}const rem=event.target.closest("[data-remove]");if(rem){cart=cart.filter(row=>String(row.product_id)!==String(rem.dataset.remove));saveCart()}})
+    const LAVIDA_CACHE_NAME = "lavida-connect-independent-v230";
+    async function refreshLavidaAppShell(){
+      try{
+        if("caches" in window){
+          const keys = await caches.keys();
+          await Promise.all(keys
+            .filter((key) => /lavida|grandmaster/i.test(key) && key !== LAVIDA_CACHE_NAME)
+            .map((key) => caches.delete(key)));
+        }
+        if("serviceWorker" in navigator){
+          const registration = await navigator.serviceWorker.register("./gm-offline-sw.js");
+          if(registration.waiting) registration.waiting.postMessage({ type: "SKIP_WAITING" });
+          registration.update?.();
+        }
+      }catch(error){
+        console.warn("LAVIDA Connect app shell refresh failed", error?.message || error);
+      }
+    }
+    async function openLavidaModule(href){
+      await refreshLavidaAppShell();
+      location.href = href;
+    }
+    function afterMenuClose(callback){
+      requestAnimationFrame(()=>requestAnimationFrame(callback));
+    }
+    function handleMenuNavigation(destination, options={}){
+      const target = String(destination || "home").trim();
+      toggleMarketplaceMenu(false);
+      afterMenuClose(async ()=>{
+        if(!target) return;
+        if(target.startsWith("#")){
+          navigateRoute(target.slice(1) || "home",{resetScroll:true});
+        }else if(/^(home|market|print365|orders|account|notifications|printing-orders|cart|track)$/.test(target)){
+          navigateRoute(target,{resetScroll:true});
+        }else if(/^marketplace\.html#/i.test(target)){
+          navigateRoute(target.split("#")[1] || "home",{resetScroll:true});
+        }else{
+          await openLavidaModule(target);
+        }
+        options.after?.();
+      });
+    }
+    function currentRoute(){return location.hash.replace("#","") || "home"}
+    function routePage(route){if(route==="cart")return"market";if(route==="track")return"orders";if(["market","orders","account","notifications","home","print365","printing-orders"].includes(route))return route;return"home"}
+    function showPage(page, options={}){document.querySelectorAll(".page-panel").forEach(section=>section.classList.toggle("active",section.dataset.page===page));document.querySelectorAll(".bottom-nav a").forEach(link=>link.classList.toggle("active",link.dataset.navPage===page));if(page==="notifications"&&!authSession)refreshAuthSession().then((session)=>{if(!session&&currentRoute()==="notifications")requestSignIn(NOTIFICATIONS_DESTINATION);});if(page==="notifications"&&authSession)loadUnreadNotifications();if(page==="orders")loadMyOrders();if(page==="print365"){refreshPrintSession();loadPrintPrices();}if(page==="printing-orders")loadPrintOrders();if(options.resetScroll)scrollTo({top:0,behavior:"smooth"})}
+    function navigateRoute(route, options={}){const next=`#${route}`;if(location.hash===next){showPage(routePage(route),{resetScroll:options.resetScroll});if(route==="cart")openCart();return}if(options.replace)history.replaceState({route},"",next);else history.pushState({route},"",next);routeFromHash({resetScroll:options.resetScroll})}
+    function routeFromHash(options={}){const route=currentRoute();const page=routePage(route);if(route!=="cart")closeCart();showPage(page,options);if(route==="cart")openCart()}
+    function toggleMarketplaceMenu(force){const menu=$("marketplaceHeaderMenu");const open=typeof force==="boolean"?force:menu.hidden;menu.hidden=!open;document.body.classList.toggle("menu-open",open);$("marketplaceMenuButton").setAttribute("aria-expanded",String(open))}
+    function showExitConfirmation(){$("exitDialog").classList.remove("hidden")}
+    function hideExitConfirmation(){$("exitDialog").classList.add("hidden")}
+    function handleAppBack(){
+      if(!$("exitDialog").classList.contains("hidden")){hideExitConfirmation();return}
+      if(!$("marketplaceHeaderMenu").hidden){toggleMarketplaceMenu(false);return}
+      if($("cartDrawer").classList.contains("open")){if(currentRoute()==="cart")history.back();else closeCart();return}
+      if(!$("orderFilterPanel").classList.contains("hidden")){$("orderFilterPanel").classList.add("hidden");return}
+      if(currentRoute()!=="home"){history.back();return}
+      showExitConfirmation();
+    }
+    function setupNativeBackButton(){
+      const appPlugin=window.Capacitor?.Plugins?.App;
+      if(!appPlugin?.addListener)return;
+      appPlugin.addListener("backButton",()=>handleAppBack());
+    }
+    ["search","category","price"].forEach(id=>$(id).addEventListener("input",renderProducts));["orderSearch","orderStatusFilter","paymentMethodFilter","fulfilmentFilter","dateRangeFilter"].forEach(id=>$(id).addEventListener("input",renderOrders));document.addEventListener("click",e=>{if(e.target.closest(".product-quantity"))e.stopPropagation()});
+    document.addEventListener("click",event=>{const moduleLink=event.target.closest("[data-module-link]");if(moduleLink){event.preventDefault();openLavidaModule(moduleLink.getAttribute("href"));return}const service=event.target.closest("[data-service-page]");if(service){event.preventDefault();navigateRoute(service.dataset.servicePage,{resetScroll:true});return}const nav=event.target.closest("[data-nav-page]");if(nav){event.preventDefault();navigateRoute(nav.dataset.navPage,{resetScroll:true});return}});
+    $("marketplaceSearchButton").addEventListener("click",()=>{navigateRoute("market");setTimeout(()=>$("search").focus(),0)});$("marketplaceNotificationsButton").addEventListener("click",openNotificationsFromHeader);$("marketplaceAuthMenuButton").addEventListener("click",event=>{event.preventDefault();event.stopPropagation();handleMenuAuthAction();});$("marketplaceMenuButton").addEventListener("click",event=>{event.stopPropagation();toggleMarketplaceMenu()});$("marketplaceHeaderMenu").addEventListener("click",(event)=>{const destination=event.target.closest("[data-menu-destination]");if(destination){event.preventDefault();event.stopPropagation();handleMenuNavigation(destination.dataset.menuDestination);return}event.stopPropagation();});document.addEventListener("click",event=>{if(!$("marketplaceHeaderMenu").contains(event.target)&&!$("marketplaceMenuButton").contains(event.target))toggleMarketplaceMenu(false)});$("orderFilterButton").addEventListener("click",()=>{$("orderFilterPanel").classList.toggle("hidden")});$("marketCartButton").addEventListener("click",()=>navigateRoute("cart"));$("closeCart").addEventListener("click",()=>{if(currentRoute()==="cart")history.back();else closeCart()});$("fulfilment").addEventListener("change",renderCart);$("checkoutButton").addEventListener("click",checkout);$("trackButton").addEventListener("click",trackOrder);$("refreshOrdersButton").addEventListener("click",loadMyOrders);$("startPrintOrderButton").addEventListener("click",()=>{$("printOrderForm").classList.remove("hidden");showPrintStep(0);$("printOrderForm").scrollIntoView({behavior:"smooth",block:"start"});});$("myPrintOrdersButton").addEventListener("click",()=>navigateRoute("printing-orders",{resetScroll:true}));$("printAuthContinueButton").addEventListener("click",()=>requestSignIn("marketplace.html#print365"));$("printFiles").addEventListener("change",()=>{const allowed=/(\.pdf|\.doc|\.docx|\.jpg|\.jpeg|\.png)$/i;Array.from($("printFiles").files||[]).forEach((file)=>{if(allowed.test(file.name))printFiles.push(defaultPrintOptions(file));});$("printFiles").value="";renderPrintUploads();});$("printDocumentOptions").addEventListener("input",(event)=>updatePrintOption(event.target));$("printDocumentOptions").addEventListener("change",(event)=>updatePrintOption(event.target));["printFulfilment","printPaymentMethod"].forEach((id)=>$(id).addEventListener("change",renderPrintSummary));$("printPrevButton").addEventListener("click",()=>showPrintStep(printStep-1));$("printNextButton").addEventListener("click",()=>{if(validPrintStep())showPrintStep(printStep+1);});document.querySelectorAll("[data-print-step-jump]").forEach((button)=>button.addEventListener("click",()=>{if(Number(button.dataset.printStepJump)<=printStep || validPrintStep())showPrintStep(button.dataset.printStepJump);}));$("editPrintOrderButton").addEventListener("click",()=>showPrintStep(0));$("confirmPrintOrderButton").addEventListener("click",submitPrintOrder);$("refreshPrintOrdersButton").addEventListener("click",loadPrintOrders);$("cancelExitButton").addEventListener("click",hideExitConfirmation);$("confirmExitButton").addEventListener("click",()=>{window.Capacitor?.Plugins?.App?.exitApp?.()});window.addEventListener("popstate",()=>{const wasOpen=!$("marketplaceHeaderMenu").hidden;if(wasOpen)toggleMarketplaceMenu(false);afterMenuClose(()=>routeFromHash());});window.addEventListener("hashchange",()=>{if(!$("marketplaceHeaderMenu").hidden){toggleMarketplaceMenu(false);afterMenuClose(()=>routeFromHash());return}routeFromHash();});window.addEventListener("focus",()=>{if(location.hash==="#orders"||location.hash==="#track")loadMyOrders();if(location.hash==="#printing-orders")loadPrintOrders();refreshAuthSession();});
+    window.LavidaAuth.listen(db,(event,session)=>{authSession=session;printSession=session;hideRestrictedLinks();if(session)checkAdminTools();updateAuthControls();loadUnreadNotifications();});
+    refreshLavidaAppShell();loadSettings();loadProducts();renderCart();renderPrintServices();renderPrintUploads();updateAuthControls();refreshAuthSession();refreshPrintSession();checkAdminTools();setupOrdersRealtime();setupNativeBackButton();if(!location.hash)history.replaceState({route:"home"},"","#home");routeFromHash();
+  </script>
+</body>
+</html>

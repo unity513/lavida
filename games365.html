@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#03163d">
+  <title>Games 365 | LAVIDA Connect</title>
+  <style>
+    :root{--navy:#03163d;--gold:#f5b821;--green:#08783e;--ink:#071126;--muted:#667085;--line:#dfe5ee;--page:#f3f5f8;--white:#fff}
+    *{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;padding-bottom:calc(98px + env(safe-area-inset-bottom,0px))}a{text-decoration:none;color:inherit}
+    .topbar{position:sticky;top:0;z-index:20;min-height:86px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(16px + env(safe-area-inset-top,0px)) max(18px,calc(14px + env(safe-area-inset-right,0px))) 12px max(18px,calc(14px + env(safe-area-inset-left,0px)));box-shadow:0 8px 22px rgba(3,22,61,.2)}.brand strong{display:block;color:#fff;font-size:24px;line-height:1;font-weight:950}.brand span{display:block;color:var(--gold);font-size:14px;letter-spacing:1px;margin-top:4px;font-weight:850}.icon-link{min-height:46px;border-radius:10px;border:1px solid rgba(255,255,255,.24);background:transparent;color:#fff;display:flex;align-items:center;gap:8px;padding:0 12px;font-weight:900}.icon-link svg{width:20px;height:20px;stroke:currentColor}
+    .wrap{max-width:760px;margin:auto;padding:20px max(14px,calc(12px + env(safe-area-inset-right,0px))) calc(22px + env(safe-area-inset-bottom,0px)) max(14px,calc(12px + env(safe-area-inset-left,0px)))}.hero,.game-card,.coming{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 12px 28px rgba(3,22,61,.08)}.hero h1{margin:0;color:var(--navy);font-size:30px;line-height:1.05}.hero p{margin:8px 0 0;color:#536073;line-height:1.45}.game-grid{display:grid;gap:12px;margin-top:14px}.game-card{display:grid;grid-template-columns:112px 1fr;gap:14px;align-items:center}.game-image{width:112px;aspect-ratio:1.15;border-radius:12px;background:#eef3fb;overflow:hidden;border:1px solid var(--line)}.game-image img{width:100%;height:100%;object-fit:cover;display:block}.chess-mark{height:100%;display:grid;place-items:center;background:linear-gradient(135deg,#03163d,#071f57);color:var(--gold);font-size:48px;font-weight:950}.game-card h2{margin:0;color:var(--navy);font-size:21px}.game-card p{margin:5px 0 10px;color:#536073}.checks{display:grid;gap:4px;margin:8px 0 12px;color:#344054;font-size:13px;font-weight:850}.checks span:before{content:"✓";color:var(--green);margin-right:7px}.enter{min-height:42px;border-radius:10px;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:950}.coming{margin-top:12px;color:#536073}.coming b{display:block;color:var(--navy);margin-top:4px}.bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:1px solid var(--line);box-shadow:0 -8px 22px rgba(3,22,61,.08);display:grid;grid-template-columns:repeat(5,1fr);padding:9px max(10px,calc(8px + env(safe-area-inset-right,0px))) calc(18px + env(safe-area-inset-bottom,0px)) max(10px,calc(8px + env(safe-area-inset-left,0px)))}.bottom-nav a{min-height:50px;background:transparent;border:0;color:var(--navy);display:grid;place-items:center;gap:2px;font-size:12px;font-weight:800;border-radius:12px}.bottom-nav svg{width:23px;height:23px;stroke:currentColor}.bottom-nav .active{color:#d89400}
+    @media(max-width:420px){.wrap{padding-top:14px}.hero h1{font-size:27px}.game-card{grid-template-columns:92px 1fr;padding:12px}.game-image{width:92px}.game-card h2{font-size:18px}.game-card p,.checks{font-size:12px}.icon-link span{display:none}.bottom-nav a{font-size:11px}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="marketplace.html#home"><strong>LAVIDA</strong><span>Connect · Games 365</span></a>
+    <a class="icon-link" href="marketplace.html#home"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m15 18-6-6 6-6"></path></svg><span>Home</span></a>
+  </header>
+  <main class="wrap">
+    <section class="hero">
+      <h1>Games 365</h1>
+      <p>Play. Connect. Compete.</p>
+    </section>
+    <section class="game-grid" aria-label="Games 365 modules">
+      <article class="game-card">
+        <div class="game-image"><div class="chess-mark">♞</div></div>
+        <div>
+          <h2>Chess 365</h2>
+          <p>Strategize. Think ahead.</p>
+          <a class="enter" href="chess365.html#chess-home">Enter Chess 365</a>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-image"><img src="./assets/bawo-board.jpg" alt="Bawo board"></div>
+        <div>
+          <h2>Bawo 365</h2>
+          <p>Local game. Real connections.</p>
+          <div class="checks"><span>Record Matches</span><span>Build Rankings</span><span>Challenge Players</span></div>
+          <a class="enter" href="bawo365.html">Enter Bawo 365</a>
+        </div>
+      </article>
+      <div class="coming">More Games Coming Soon<b>Darts 365</b><span>Coming Soon</span></div>
+    </section>
+  </main>
+  <nav class="bottom-nav" aria-label="LAVIDA Connect bottom navigation">
+    <a href="marketplace.html#home"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"></path></svg>Home</a>
+    <a class="active" href="games365.html"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 12h12M8 10v4M16 10h.01M18 14h.01"></path><path d="M7 8h10a4 4 0 0 1 4 4v1a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-1a4 4 0 0 1 4-4Z"></path></svg>Games</a>
+    <a href="marketplace.html#market"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 7h14l-1 12H6zM8 7a4 4 0 0 1 8 0"></path></svg>Market</a>
+    <a href="community.html"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>Community</a>
+    <a href="marketplace.html#account"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>Profile</a>
+  </nav>
+</body>
+</html>

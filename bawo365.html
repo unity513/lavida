@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#03163d">
+  <title>Bawo 365 | LAVIDA Connect</title>
+  <style>
+    :root{--navy:#03163d;--gold:#f5b821;--green:#08783e;--ink:#071126;--muted:#667085;--line:#dfe5ee;--page:#f3f5f8;--white:#fff;--bad:#b42318;--blue:#1264d8}
+    *{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;padding-bottom:calc(98px + env(safe-area-inset-bottom,0px))}button,input,select,textarea{font:inherit}button{cursor:pointer}a{text-decoration:none;color:inherit}.hidden{display:none!important}
+    .topbar{position:sticky;top:0;z-index:20;min-height:86px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(16px + env(safe-area-inset-top,0px)) max(18px,calc(14px + env(safe-area-inset-right,0px))) 12px max(18px,calc(14px + env(safe-area-inset-left,0px)));box-shadow:0 8px 22px rgba(3,22,61,.2)}.brand strong{display:block;color:#fff;font-size:24px;line-height:1;font-weight:950}.brand span{display:block;color:var(--gold);font-size:14px;letter-spacing:1px;margin-top:4px;font-weight:850}.icon-link,.ghost{min-height:46px;border-radius:10px;border:1px solid rgba(255,255,255,.24);background:transparent;color:#fff;display:flex;align-items:center;gap:8px;padding:0 12px;font-weight:900}.icon-link svg,.ghost svg{width:20px;height:20px;stroke:currentColor}
+    .wrap{max-width:1160px;margin:auto;padding:20px max(14px,calc(12px + env(safe-area-inset-right,0px))) calc(22px + env(safe-area-inset-bottom,0px)) max(14px,calc(12px + env(safe-area-inset-left,0px)))}.page{display:none}.page.active{display:block}.hero{display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:stretch}.hero-main,.status-panel,.panel,.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 12px 28px rgba(3,22,61,.08)}.hero-main{display:grid;gap:12px}.kicker{color:var(--gold);font-weight:950;letter-spacing:1px;text-transform:uppercase;font-size:12px}.hero h1{margin:0;color:var(--navy);font-size:30px;line-height:1.05}.hero p,.panel p{margin:0;color:#536073;line-height:1.45}.powered{display:inline-flex;align-self:start;border-radius:999px;background:#eef3fb;color:var(--navy);padding:6px 10px;font-size:12px;font-weight:900}.bawo-photo{min-height:190px;border-radius:12px;background:#ead6b5 url("./assets/bawo-board.jpg") center/cover no-repeat;border:1px solid #d7b77f}.status-panel{display:grid;gap:12px}.profile-card{display:grid;grid-template-columns:76px 1fr;gap:12px;align-items:center}.avatar{width:76px;height:76px;border-radius:14px;background:var(--navy);color:var(--gold);display:grid;place-items:center;font-size:25px;font-weight:950;overflow:hidden}.avatar.small{width:44px;height:44px;border-radius:10px;font-size:14px}.avatar img{width:100%;height:100%;object-fit:cover}.metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}.metric{border-right:1px solid var(--line);padding:10px;background:#f8fafc}.metric:last-child{border-right:0}.metric span{display:block;color:#667085;font-size:11px;font-weight:850}.metric strong{display:block;color:var(--navy);font-size:18px;margin-top:2px}
+    .module-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}.module-button{min-height:82px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--navy);padding:12px;text-align:left;font-weight:950;display:grid;grid-template-columns:32px 1fr;align-items:center;gap:10px;box-shadow:0 8px 18px rgba(3,22,61,.05)}.module-button.active{background:var(--navy);color:#fff;border-color:var(--navy)}.module-button svg{width:25px;height:25px;stroke:currentColor}.module-button small{display:block;color:#667085;font-size:12px;font-weight:800;line-height:1.25;margin-top:3px}.module-button.active small{color:#fff}.panel{margin-top:14px}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}.panel h2{margin:0;color:var(--navy);font-size:22px}.grid{display:grid;gap:10px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}input,select,textarea{width:100%;min-height:46px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:0 13px;color:var(--ink)}textarea{min-height:86px;padding:12px;resize:vertical}.field{display:grid;gap:6px;color:var(--navy);font-size:13px;font-weight:900}.primary,.secondary,.danger{min-height:46px;border-radius:10px;font-weight:950;border:1px solid var(--navy);padding:0 14px}.primary{background:var(--navy);color:#fff}.secondary{background:#fff;color:var(--navy)}.danger{background:#fff;color:var(--bad);border-color:var(--bad)}.green{background:var(--green);border-color:var(--green);color:#fff}.notice{border:1px solid #f0d57b;background:#fff7d6;color:#5d4300;border-radius:10px;padding:11px}.pill{display:inline-flex;border-radius:999px;background:#eef3fb;color:var(--navy);padding:5px 9px;font-size:12px;font-weight:900;white-space:nowrap}.pill.plus{background:#effff4;color:#096b36}.pill.bad{background:#fff0ed;color:var(--bad)}
+    .segmented{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.segmented button{min-height:44px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--navy);font-size:13px;font-weight:900}.segmented button.active{background:var(--navy);color:#fff}.suggestions{border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}.suggestions button{width:100%;min-height:40px;border:0;border-bottom:1px solid var(--line);background:#fff;color:var(--navy);text-align:left;padding:0 12px;font-weight:850}.suggestions button:last-child{border-bottom:0}.list{display:grid;gap:10px}.list-row{border:1px solid var(--line);border-radius:10px;background:#f8fafc;padding:12px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px}.list-row b{color:var(--navy)}.list-row small{display:block;color:#667085;margin-top:2px}.score-card{text-align:center;border:1px solid var(--line);border-radius:12px;background:#f8fafc;padding:14px}.score{font-size:40px;color:var(--green);font-weight:950}.versus{font-size:22px;color:var(--navy);font-weight:950}.match-board{height:118px;border-radius:12px;border:1px solid #d7b77f;background:#ead6b5 url("./assets/bawo-board.jpg") center/cover no-repeat}.tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px}.tab{flex:0 0 auto;min-height:40px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--navy);padding:0 14px;font-weight:900}.tab.active{background:var(--navy);border-color:var(--navy);color:#fff}.profile-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}.profile-grid div{text-align:center;padding:11px 8px;background:#f8fafc;border-right:1px solid var(--line)}.profile-grid div:last-child{border-right:0}.profile-grid b{display:block;color:var(--navy);font-size:18px}.challenge-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;grid-column:1/-1}
+    .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:1px solid var(--line);box-shadow:0 -8px 22px rgba(3,22,61,.08);display:grid;grid-template-columns:repeat(5,1fr);padding:9px max(10px,calc(8px + env(safe-area-inset-right,0px))) calc(18px + env(safe-area-inset-bottom,0px)) max(10px,calc(8px + env(safe-area-inset-left,0px)))}.bottom-nav button{min-height:50px;background:transparent;border:0;color:var(--navy);display:grid;place-items:center;gap:2px;font-size:12px;font-weight:800;border-radius:12px}.bottom-nav svg{width:23px;height:23px;stroke:currentColor}.bottom-nav .active{color:#d89400}
+    @media(max-width:900px){.hero{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.hero h1{font-size:30px}.bawo-photo{min-height:160px}.profile-grid{grid-template-columns:repeat(2,1fr)}.profile-grid div:nth-child(2n){border-right:0}}@media(max-width:420px){.module-grid,.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.metric:nth-child(2){border-right:0}.metric:nth-child(-n+2){border-bottom:1px solid var(--line)}.segmented{grid-template-columns:repeat(2,1fr)}.topbar{align-items:flex-start}.icon-link span{display:none}.wrap{padding-top:14px}.hero-main,.status-panel,.panel,.card{padding:14px}.bottom-nav button{font-size:11px}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="games365.html"><strong>LAVIDA</strong><span>Connect · Bawo 365</span></a>
+    <a class="icon-link" href="games365.html"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m15 18-6-6 6-6"></path></svg><span>Games</span></a>
+  </header>
+  <main class="wrap">
+    <section id="page-home" class="page active" data-page="home">
+      <section class="hero">
+        <div class="hero-main">
+          <span class="kicker">Bawo 365</span>
+          <h1>Welcome to Bawo 365</h1>
+          <p>Record real physical Bawo matches, build community rankings and keep player history inside LAVIDA Connect.</p>
+          <span class="powered">Powered by LAVIDA</span>
+        </div>
+        <aside class="status-panel">
+          <div class="profile-card">
+            <div class="avatar">GC</div>
+            <div><b>Gian Chirwa</b><small style="display:block;color:#667085">GrandMaster Biwi</small></div>
+          </div>
+          <div id="homeStats" class="metric-grid"></div>
+        </aside>
+      </section>
+      <nav id="moduleGrid" class="module-grid" aria-label="Bawo 365 modules"></nav>
+      <section class="panel">
+        <div class="panel-head"><div><h2>Bawo Community</h2><p>Simple game activity from the Bawo 365 community.</p></div></div>
+        <div id="activityList" class="list"></div>
+      </section>
+    </section>
+
+    <section id="page-start" class="page" data-page="start">
+      <section class="panel">
+        <div class="panel-head"><div><h2>Start Match</h2><p>Record a physical Bawo match at GrandMaster or another registered location.</p></div></div>
+        <div class="form-grid">
+          <label class="field">Player 1<select id="playerOne"></select></label>
+          <label class="field">Player 2 / Opponent<input id="playerTwoSearch" placeholder="Type player name" autocomplete="off"></label>
+          <div id="opponentSuggestions" class="suggestions hidden"></div>
+          <label class="field">Match Location<select id="matchLocation"></select></label>
+          <label class="field">Number of Rounds<div id="roundOptions" class="segmented"></div></label>
+          <label id="customRoundWrap" class="field hidden">Custom rounds to win<input id="customRounds" type="number" min="1" max="9" value="2"></label>
+          <button id="startMatchButton" class="primary" type="button">Start Match</button>
+        </div>
+      </section>
+    </section>
+
+    <section id="page-live" class="page" data-page="live">
+      <section class="panel">
+        <div class="panel-head"><div><h2>Live Match</h2><p>Tap the round winner after each physical round.</p></div></div>
+        <div class="score-card">
+          <div class="form-grid" style="align-items:center">
+            <div><div id="liveP1Avatar" class="avatar" style="margin:auto"></div><b id="liveP1Name"></b><div id="liveP1Score" class="score">0</div></div>
+            <div><div class="versus">VS</div><small id="liveRound" style="color:#667085"></small></div>
+          </div>
+          <div id="liveP2Block" style="margin-top:8px"><div id="liveP2Avatar" class="avatar" style="margin:auto"></div><b id="liveP2Name"></b><div id="liveP2Score" class="score">0</div></div>
+        </div>
+        <div class="match-board" style="margin:12px 0"></div>
+        <div class="grid">
+          <button id="p1RoundButton" class="primary green" type="button"></button>
+          <button id="p2RoundButton" class="secondary" type="button"></button>
+          <button id="completeMatchButton" class="primary hidden" type="button">Complete Match</button>
+        </div>
+      </section>
+    </section>
+
+    <section id="page-confirm" class="page" data-page="confirm">
+      <section class="panel">
+        <div class="panel-head"><div><h2>Confirm Match</h2><p>Review the score before saving it to Bawo 365.</p></div></div>
+        <div id="confirmContent"></div>
+        <button id="saveMatchButton" class="primary" type="button" style="width:100%;margin-top:12px">Save Match</button>
+      </section>
+    </section>
+
+    <section id="page-matches" class="page" data-page="matches">
+      <section class="panel">
+        <div class="panel-head"><div><h2>My Matches</h2><p>Your Bawo match history and points.</p></div></div>
+        <div id="matchFilters" class="tabs"></div>
+        <div id="matchesList" class="list"></div>
+      </section>
+    </section>
+
+    <section id="page-rankings" class="page" data-page="rankings">
+      <section class="panel">
+        <div class="panel-head"><div><h2>Bawo Rankings</h2><p>Top players in the Bawo 365 community.</p></div></div>
+        <div id="rankingsList" class="list"></div>
+        <div class="notice" style="margin-top:12px;text-align:center;color:#096b36;background:#effff4;border-color:#b7e2c7">7 players active today</div>
+      </section>
+    </section>
+
+    <section id="page-players" class="page" data-page="players">
+      <section class="panel">
+        <div class="panel-head"><div><h2>Players</h2><p>Search registered Bawo players.</p></div></div>
+        <input id="playerSearch" type="search" placeholder="Search players...">
+        <div id="playersList" class="list" style="margin-top:12px"></div>
+      </section>
+    </section>
+
+    <section id="page-profile" class="page" data-page="profile">
+      <section class="panel">
+        <div class="profile-card">
+          <div id="profileAvatar" class="avatar"></div>
+          <div><h2 id="profileName" style="margin:0"></h2><span id="profileRank" class="pill"></span></div>
+        </div>
+        <div id="profileStats" class="profile-grid" style="margin-top:12px"></div>
+      </section>
+      <section class="panel"><div class="panel-head"><div><h2>Recent Matches</h2></div></div><div id="profileMatches" class="list"></div></section>
+      <section class="panel"><div class="panel-head"><div><h2>Recent Opponents</h2></div></div><div id="profileOpponents"></div></section>
+    </section>
+
+    <section id="page-challenges" class="page" data-page="challenges">
+      <section class="panel">
+        <div class="panel-head"><div><h2>Challenges</h2><p>Challenge another registered Bawo player.</p></div></div>
+        <button id="showChallengeForm" class="primary" type="button">Challenge Player</button>
+        <div id="challengeForm" class="grid hidden" style="margin-top:12px">
+          <input id="challengePlayerSearch" placeholder="Type player name" autocomplete="off">
+          <div id="challengeSuggestions" class="suggestions hidden"></div>
+          <select id="challengeLocation"></select>
+          <input id="challengeDate" type="date">
+          <textarea id="challengeMessage" placeholder="Let's settle this pa Bawo :)"></textarea>
+          <button id="createChallengeButton" class="primary" type="button">Create Challenge</button>
+        </div>
+      </section>
+      <section class="panel"><div class="panel-head"><div><h2>My Challenges</h2></div></div><div id="myChallenges" class="list"></div></section>
+      <section class="panel"><div class="panel-head"><div><h2>Received Challenges</h2></div></div><div id="receivedChallenges" class="list"></div></section>
+      <section class="panel"><div class="panel-head"><div><h2>Completed Challenges</h2></div></div><div id="completedChallenges" class="list"></div></section>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Bawo 365 bottom navigation">
+    <button class="active" type="button" data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"></path></svg>Home</button>
+    <button type="button" data-go="matches"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 3h12v18H6zM9 7h6M9 11h6M9 15h3"></path></svg>Matches</button>
+    <button type="button" data-go="rankings"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4ZM5 6H3a4 4 0 0 0 4 4M19 6h2a4 4 0 0 1-4 4"></path></svg>Rankings</button>
+    <button type="button" data-go="players"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>Players</button>
+    <button type="button" data-go="profile"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>Profile</button>
+  </nav>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const esc = (value) => String(value ?? "").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const locations = [{id:"grandmaster-biwi",name:"GrandMaster Biwi"}];
+    const seedPlayers = [
+      {id:"gian",name:"Gian Chirwa",points:220,matches:28,wins:20,losses:8,user:true},
+      {id:"banda",name:"Mr Banda",points:245,matches:32,wins:24,losses:8},
+      {id:"austin",name:"Austin",points:198,matches:25,wins:17,losses:8},
+      {id:"chikondi",name:"Chikondi",points:146,matches:18,wins:12,losses:6},
+      {id:"phiri",name:"Phiri",points:128,matches:16,wins:10,losses:6},
+      {id:"peter",name:"Peter",points:110,matches:14,wins:9,losses:5},
+      {id:"joseph",name:"Joseph",points:96,matches:12,wins:7,losses:5}
+    ];
+    const seedMatches = [
+      {id:"m1",p1:"gian",p2:"austin",s1:2,s2:1,winner:"gian",location:"GrandMaster Biwi",date:"15 July 2026",time:"15:45",points:15},
+      {id:"m2",p1:"gian",p2:"banda",s1:1,s2:2,winner:"banda",location:"GrandMaster Biwi",date:"12 July 2026",time:"18:10",points:5},
+      {id:"m3",p1:"austin",p2:"chikondi",s1:2,s2:0,winner:"austin",location:"GrandMaster Biwi",date:"10 July 2026",time:"16:20",points:15},
+      {id:"m4",p1:"banda",p2:"gian",s1:0,s2:2,winner:"gian",location:"GrandMaster Biwi",date:"8 July 2026",time:"19:30",points:15}
+    ];
+    const seedChallenges = [
+      {id:"c1",from:"gian",to:"banda",location:"GrandMaster Biwi",date:"20 July 2026",status:"Pending",message:"Let's settle this pa Bawo :)"},
+      {id:"c2",from:"austin",to:"gian",location:"GrandMaster Biwi",date:"19 July 2026",status:"Pending",message:"Ready for a rematch?"},
+      {id:"c3",from:"chikondi",to:"gian",location:"GrandMaster Biwi",date:"15 July 2026",status:"Completed",score:"2 - 1"}
+    ];
+    let players = JSON.parse(localStorage.getItem("bawo365_players_v2") || "null") || seedPlayers;
+    let matches = JSON.parse(localStorage.getItem("bawo365_matches_v2") || "null") || seedMatches;
+    let challenges = JSON.parse(localStorage.getItem("bawo365_challenges_v2") || "null") || seedChallenges;
+    let active = "home", selectedProfile = "gian", selectedOpponent = "austin", selectedChallengePlayer = "banda", roundFormat = "best3", draft = null;
+    const modules = [
+      ["start","Start Match","M8 19 19 8M14 5l5 5-3 3-5-5 3-3ZM5 14l5 5-3 3-5-5 3-3", "Record a physical game"],
+      ["matches","My Matches","M12 8v5l3 2M21 12a9 9 0 1 1-3-6.7", "View match history"],
+      ["rankings","Rankings","M4 20V10h4v10M10 20V4h4v16M16 20v-7h4v7", "Bawo leaderboard"],
+      ["players","Players","M16 11c1.7 0 3-1.3 3-3s-1.3-3-3-3-3 1.3-3 3 1.3 3 3 3ZM8 13c2.2 0 4 1.8 4 4v1H4v-1c0-2.2 1.8-4 4-4ZM16 13c2.2 0 4 1.8 4 4v1h-5", "Search community"],
+      ["challenges","Challenges","M12 4v16M4 12h16M7 7l10 10M17 7 7 17", "Challenge players"]
+    ];
+    function save(){localStorage.setItem("bawo365_players_v2",JSON.stringify(players));localStorage.setItem("bawo365_matches_v2",JSON.stringify(matches));localStorage.setItem("bawo365_challenges_v2",JSON.stringify(challenges));}
+    function player(id){return players.find(p=>p.id===id) || players[0];}
+    function initials(name){return String(name || "B365").split(/\s+/).map(part=>part[0]).join("").slice(0,2).toUpperCase();}
+    function ranked(){return [...players].sort((a,b)=>b.points-a.points || b.wins-a.wins || a.name.localeCompare(b.name));}
+    function rankOf(id){return ranked().findIndex(p=>p.id===id)+1;}
+    function show(page, push=true){
+      active = page;
+      document.querySelectorAll(".page").forEach(el=>el.classList.toggle("active",el.dataset.page===page));
+      document.querySelectorAll("[data-go]").forEach(el=>el.classList.toggle("active",el.dataset.go===page));
+      if(push) history.pushState({page}, "", "#"+page);
+      render();
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+    function render(){
+      renderHome(); renderStart(); renderLive(); renderMatches(); renderRankings(); renderPlayers(); renderProfile(); renderChallenges();
+    }
+    function renderHome(){
+      const me = player("gian");
+      $("homeStats").innerHTML = [["Matches",18],["Wins",11],["Losses",7],["Bawo Points",me.points]].map(([label,value])=>`<div class="metric"><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join("");
+      $("moduleGrid").innerHTML = modules.map(([id,label,path,subtitle])=>`<button class="module-button ${active===id?"active":""}" type="button" data-go="${id}"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="${path}"></path></svg><span>${esc(label)}<small>${esc(subtitle)}</small></span></button>`).join("");
+      $("activityList").innerHTML = ["Gian defeated Austin 2-1.","Mr Banda reached 245 Bawo Points.","Chikondi joined Bawo 365.","A new Bawo challenge has been created at GrandMaster."].map(text=>`<div class="list-row"><span class="pill">Bawo</span><b>${esc(text)}</b><span></span></div>`).join("");
+    }
+    function renderStart(){
+      $("playerOne").innerHTML = players.map(p=>`<option value="${p.id}" ${p.id==="gian"?"selected":""}>${esc(p.name)}</option>`).join("");
+      $("matchLocation").innerHTML = locations.map(l=>`<option value="${l.name}">${esc(l.name)}</option>`).join("");
+      $("challengeLocation").innerHTML = locations.map(l=>`<option value="${l.name}">${esc(l.name)}</option>`).join("");
+      $("roundOptions").innerHTML = [["one","1 Round"],["best3","Best of 3"],["best5","Best of 5"],["custom","Custom"]].map(([id,label])=>`<button type="button" class="${roundFormat===id?"active":""}" data-round="${id}">${esc(label)}</button>`).join("");
+      $("customRoundWrap").classList.toggle("hidden", roundFormat !== "custom");
+    }
+    function roundTarget(){return roundFormat==="one"?1:roundFormat==="best5"?3:roundFormat==="custom"?Math.max(1,Number($("customRounds").value||2)):2;}
+    function showSuggestions(inputId, boxId, setter){
+      const q = $(inputId).value.trim().toLowerCase();
+      const rows = players.filter(p=>p.id!==$("playerOne").value && p.name.toLowerCase().includes(q)).slice(0,5);
+      $(boxId).classList.toggle("hidden", !q || !rows.length);
+      $(boxId).innerHTML = rows.map(p=>`<button type="button" data-pick="${p.id}">${esc(p.name)}</button>`).join("");
+      $(boxId).querySelectorAll("button").forEach(button=>button.onclick=()=>{setter(button.dataset.pick);$(inputId).value=player(button.dataset.pick).name;$(boxId).classList.add("hidden");});
+    }
+    function startMatch(){
+      draft = {p1:$("playerOne").value,p2:selectedOpponent,location:$("matchLocation").value,target:roundTarget(),rounds:[],date:"16 July 2026",time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})};
+      show("live");
+    }
+    function score(id){return draft?.rounds.filter(round=>round===id).length || 0;}
+    function winner(){if(!draft)return null;return score(draft.p1)>=draft.target?draft.p1:score(draft.p2)>=draft.target?draft.p2:null;}
+    function addRound(id){if(winner())return;draft.rounds.push(id);renderLive();}
+    function renderLive(){
+      if(!draft)return;
+      const p1=player(draft.p1), p2=player(draft.p2), w=winner();
+      $("liveP1Avatar").textContent=initials(p1.name); $("liveP2Avatar").textContent=initials(p2.name);
+      $("liveP1Name").textContent=p1.name; $("liveP2Name").textContent=p2.name;
+      $("liveP1Score").textContent=score(p1.id); $("liveP2Score").textContent=score(p2.id);
+      $("liveRound").textContent=w?`Winner: ${player(w).name}`:`Round ${draft.rounds.length+1}`;
+      $("p1RoundButton").textContent=`${p1.name.split(" ")[0]} Wins Round`; $("p2RoundButton").textContent=`${p2.name.split(" ")[0]} Wins Round`;
+      $("completeMatchButton").classList.toggle("hidden", !w);
+    }
+    function confirmMatch(){
+      const p1=player(draft.p1), p2=player(draft.p2), w=winner();
+      $("confirmContent").innerHTML = `<div class="score-card"><b>${esc(p1.name)}</b><div class="versus">VS</div><b>${esc(p2.name)}</b><div class="score">${score(p1.id)} - ${score(p2.id)}</div><b>Winner: ${esc(player(w).name)}</b></div><div class="list" style="margin-top:12px"><div class="list-row"><span>Type</span><b>Best of ${draft.target*2-1}</b><span></span></div><div class="list-row"><span>Location</span><b>${esc(draft.location)}</b><span></span></div><div class="list-row"><span>Date</span><b>${esc(draft.date)}</b><span></span></div><div class="list-row"><span>Time</span><b>${esc(draft.time)}</b><span></span></div></div>`;
+      show("confirm");
+    }
+    function saveMatch(){
+      const p1=player(draft.p1), p2=player(draft.p2), w=winner(), loser=w===p1.id?p2:p1;
+      matches.unshift({id:"m"+Date.now(),p1:p1.id,p2:p2.id,s1:score(p1.id),s2:score(p2.id),winner:w,location:draft.location,date:draft.date,time:draft.time,points:w==="gian"?15:5});
+      players = players.map(p=>p.id===w?{...p,points:p.points+15,matches:p.matches+1,wins:p.wins+1}:p.id===loser.id?{...p,points:p.points+5,matches:p.matches+1,losses:p.losses+1}:p);
+      save(); draft=null; show("matches");
+    }
+    function matchRow(m, showPoints=true){
+      const p1=player(m.p1), p2=player(m.p2);
+      return `<div class="list-row"><div class="avatar small">${initials(player(m.winner).name)}</div><div><b>${esc(p1.name)} vs ${esc(p2.name)}</b><small>${esc(m.location)} · ${esc(m.date)}</small></div><div style="text-align:right"><b>${m.s1} - ${m.s2}</b>${showPoints?`<small class="pill plus">+${m.points} Points</small>`:""}</div></div>`;
+    }
+    function renderMatches(){
+      $("matchFilters").innerHTML = ["All","Today","This Week","This Month"].map((f,i)=>`<button class="tab ${i===0?"active":""}" type="button">${esc(f)}</button>`).join("");
+      $("matchesList").innerHTML = matches.map(m=>matchRow(m,true)).join("");
+    }
+    function renderRankings(){
+      $("rankingsList").innerHTML = ranked().map((p,i)=>`<div class="list-row"><span class="pill ${i<3?"plus":""}">#${i+1}</span><div><b>${esc(p.name)}</b><small>${p.matches} Matches · ${p.wins} Wins</small></div><strong>${p.points} Pts</strong></div>`).join("");
+    }
+    function renderPlayers(){
+      const q = ($("playerSearch")?.value || "").toLowerCase();
+      $("playersList").innerHTML = ranked().filter(p=>p.name.toLowerCase().includes(q)).map(p=>`<button class="list-row" type="button" data-profile="${p.id}" style="width:100%;text-align:left"><div class="avatar small">${initials(p.name)}</div><div><b>${esc(p.name)}</b><small>${p.matches} Matches · ${p.wins} Wins · Rank #${rankOf(p.id)}</small></div><strong>${p.points} Pts</strong></button>`).join("");
+      document.querySelectorAll("[data-profile]").forEach(button=>button.onclick=()=>{selectedProfile=button.dataset.profile;show("profile");});
+    }
+    function renderProfile(){
+      const p=player(selectedProfile), recent=matches.filter(m=>m.p1===p.id||m.p2===p.id).slice(0,3);
+      $("profileAvatar").textContent=initials(p.name); $("profileName").textContent=p.name; $("profileRank").textContent=`Rank #${rankOf(p.id)}`;
+      $("profileStats").innerHTML = [["Points",p.points],["Matches",p.matches],["Wins",p.wins],["Losses",p.losses],["Win Rate",Math.round((p.wins/Math.max(1,p.matches))*100)+"%"]].map(([label,value])=>`<div><b>${esc(value)}</b><span>${esc(label)}</span></div>`).join("");
+      $("profileMatches").innerHTML = recent.map(m=>matchRow(m,false)).join("") || `<div class="notice">No matches yet.</div>`;
+      $("profileOpponents").innerHTML = recent.map(m=>{const opp=player(m.p1===p.id?m.p2:m.p1);return `<span class="avatar small" style="display:inline-grid;margin-right:8px">${initials(opp.name)}</span>`;}).join("") || `<span style="color:#667085">No recent opponents.</span>`;
+    }
+    function challengeRow(c, received=false){
+      return `<div class="list-row"><div class="avatar small">${initials(player(received?c.from:c.to).name)}</div><div><b>${esc(player(c.from).name)} challenged ${esc(player(c.to).name)}</b><small>${esc(c.location)} · ${esc(c.date)}</small></div><span class="pill">${esc(c.status)}</span>${received&&c.status==="Pending"?`<div class="challenge-actions"><button class="primary green" data-accept="${c.id}" type="button">Accept</button><button class="danger" data-decline="${c.id}" type="button">Decline</button></div>`:""}</div>`;
+    }
+    function renderChallenges(){
+      $("myChallenges").innerHTML = challenges.filter(c=>c.from==="gian"&&c.status!=="Completed").map(c=>challengeRow(c)).join("") || `<div class="notice">No outgoing challenges.</div>`;
+      $("receivedChallenges").innerHTML = challenges.filter(c=>c.to==="gian"&&c.status!=="Completed").map(c=>challengeRow(c,true)).join("") || `<div class="notice">No received challenges.</div>`;
+      $("completedChallenges").innerHTML = challenges.filter(c=>c.status==="Completed").map(c=>`<div class="list-row"><div class="avatar small">${initials(player(c.from).name)}</div><div><b>${esc(player(c.from).name)}</b><small>You won · ${esc(c.date)}</small></div><b>${esc(c.score || "2 - 1")}</b></div>`).join("");
+      document.querySelectorAll("[data-accept]").forEach(button=>button.onclick=()=>{challenges=challenges.map(c=>c.id===button.dataset.accept?{...c,status:"Accepted"}:c);save();renderChallenges();});
+      document.querySelectorAll("[data-decline]").forEach(button=>button.onclick=()=>{challenges=challenges.map(c=>c.id===button.dataset.decline?{...c,status:"Declined"}:c);save();renderChallenges();});
+    }
+    document.addEventListener("click",(event)=>{const go=event.target.closest("[data-go]")?.dataset.go;if(go)show(go);const round=event.target.closest("[data-round]")?.dataset.round;if(round){roundFormat=round;renderStart();}});
+    $("playerTwoSearch").addEventListener("input",()=>showSuggestions("playerTwoSearch","opponentSuggestions",(id)=>selectedOpponent=id));
+    $("challengePlayerSearch").addEventListener("input",()=>showSuggestions("challengePlayerSearch","challengeSuggestions",(id)=>selectedChallengePlayer=id));
+    $("playerSearch").addEventListener("input",renderPlayers);
+    $("startMatchButton").onclick=startMatch; $("p1RoundButton").onclick=()=>addRound(draft.p1); $("p2RoundButton").onclick=()=>addRound(draft.p2); $("completeMatchButton").onclick=confirmMatch; $("saveMatchButton").onclick=saveMatch;
+    $("showChallengeForm").onclick=()=>$("challengeForm").classList.toggle("hidden");
+    $("createChallengeButton").onclick=()=>{challenges.unshift({id:"c"+Date.now(),from:"gian",to:selectedChallengePlayer,location:$("challengeLocation").value,date:$("challengeDate").value || "20 July 2026",status:"Pending",message:$("challengeMessage").value});save();$("challengeForm").classList.add("hidden");renderChallenges();};
+    window.onpopstate=()=>show((location.hash || "#home").slice(1), false);
+    $("challengeDate").value = "2026-07-20";
+    show((location.hash || "#home").slice(1) || "home", false);
+  </script>
+</body>
+</html>

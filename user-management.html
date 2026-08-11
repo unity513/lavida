@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#061433">
+  <title>User Management | LAVIDA Connect</title>
+  <style>
+    :root{--navy:#061433;--gold:#f4c542;--ink:#071126;--muted:#64748b;--line:#d9e2ef;--soft:#f6f8fb;--white:#fff;--good:#0f8a5f;--warn:#b7791f;--bad:#b42318}
+    *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--soft);color:var(--ink)}button,input,select{font:inherit}button{border:0;border-radius:7px;background:var(--navy);color:#fff;font-weight:900;padding:11px 14px;cursor:pointer}button.secondary{background:#eef3fb;color:var(--navy)}button.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}button.danger{background:var(--bad)}button:disabled{opacity:.55;cursor:not-allowed}input,select{width:100%;border:1px solid var(--line);border-radius:7px;background:#fff;padding:11px;color:var(--ink)}a{color:inherit;text-decoration:none}
+    .admin-header{position:sticky;top:0;z-index:20;min-height:68px;padding:calc(8px + env(safe-area-inset-top,0px)) 16px 8px;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;box-shadow:0 12px 34px rgba(6,20,51,.18)}.admin-brand strong{display:block;color:#fff;font-size:24px;line-height:1;letter-spacing:1px}.admin-brand span{display:block;margin-top:4px;color:var(--gold);font-size:12px;letter-spacing:1.2px}.admin-actions{display:flex;gap:8px;align-items:center}.admin-actions a,.admin-actions button{min-height:42px;display:flex;align-items:center;background:#fff;color:var(--navy);border-radius:10px;padding:0 12px;font-weight:900}
+    main{max-width:1220px;margin:auto;padding:16px 16px 50px}.panel{background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:16px;box-shadow:0 10px 24px rgba(6,20,51,.07)}.panel-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:12px}.panel h1,.panel h2,.panel h3{margin:0;color:var(--navy)}.muted{color:var(--muted)}.status{display:inline-flex;border-radius:999px;background:#eef3fb;color:var(--navy);padding:5px 9px;font-size:12px;font-weight:900}.status.ok{background:#e8fff5;color:#08734e}.status.warn{background:#fff7d6;color:#7a5200}.status.bad{background:#fff0ed;color:var(--bad)}.hidden{display:none!important}.notice{background:#fff7d6;border:1px solid #f0d57b;border-radius:8px;padding:11px;color:#5d4300}.notice.bad{background:#fff0ed;border-color:#f5aaa2;color:var(--bad)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.summary-card{border:1px solid var(--line);border-radius:8px;background:#f8fafc;padding:13px}.summary-card span{display:block;color:var(--muted);font-size:12px;font-weight:800}.summary-card strong{display:block;color:var(--navy);font-size:26px;margin-top:4px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px}table{width:100%;border-collapse:collapse;min-width:980px}th,td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top;font-size:13px}th{background:var(--navy);color:var(--gold);text-transform:uppercase;font-size:11px}.user-cell{display:grid;grid-template-columns:42px 1fr;gap:10px;align-items:center}.avatar{width:42px;height:42px;border-radius:999px;background:var(--navy);color:var(--gold);display:grid;place-items:center;font-weight:950;overflow:hidden}.avatar.large{width:72px;height:72px;font-size:24px}.avatar img{width:100%;height:100%;object-fit:cover}.pill-list{display:flex;flex-wrap:wrap;gap:6px}.pill{display:inline-flex;border-radius:999px;background:#eef3fb;color:var(--navy);padding:5px 8px;font-size:12px;font-weight:900;white-space:nowrap}.details{display:grid;grid-template-columns:.8fr 1.2fr;gap:14px}.detail-card{border:1px solid var(--line);border-radius:8px;background:#f8fafc;padding:12px}.detail-row{display:grid;grid-template-columns:130px 1fr;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}.detail-row:last-child{border-bottom:0}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.empty{text-align:center;color:var(--muted);padding:24px}
+    @media(max-width:900px){.admin-actions{display:none}.grid,.summary-grid,.details{grid-template-columns:1fr}.panel-head{display:block}main{padding-inline:12px}table{min-width:780px}.detail-row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="admin-header">
+    <a class="admin-brand" href="./user-management.html"><strong>LAVIDA</strong><span>User Management</span></a>
+    <nav class="admin-actions">
+      <a href="./marketplace.html#home">Public Connect</a>
+      <a href="./marketplace-admin.html">Market 365 Admin</a>
+      <a href="./printing-admin.html">Print 365 Admin</a>
+      <button id="logoutBtn" type="button">Log Out</button>
+    </nav>
+  </header>
+  <main>
+    <section id="authPanel" class="panel">
+      <div class="panel-head"><div><h1>User Management</h1><p class="muted">View and manage registered LAVIDA Connect users from existing profiles and role records.</p></div><span id="authStatus" class="status warn">Checking access</span></div>
+      <div id="loginBox" class="grid hidden">
+        <input id="email" type="email" placeholder="Admin email">
+        <input id="password" type="password" placeholder="Password">
+        <button id="loginBtn" type="button">Sign In</button>
+      </div>
+      <div id="pageMessage" class="notice hidden"></div>
+    </section>
+
+    <section id="summaryPanel" class="panel hidden">
+      <div id="summaryCards" class="summary-grid"></div>
+    </section>
+
+    <section id="filtersPanel" class="panel hidden">
+      <div class="grid">
+        <input id="searchBox" type="search" placeholder="Search name, email or phone">
+        <select id="roleFilter"><option value="">All roles</option></select>
+        <select id="statusFilter"><option value="">All statuses</option><option>Active</option><option>Suspended</option><option>Pending</option></select>
+        <select id="moduleFilter"><option value="">All modules</option></select>
+        <button id="refreshBtn" class="secondary" type="button">Refresh</button>
+      </div>
+    </section>
+
+    <section id="usersPanel" class="panel hidden">
+      <div class="panel-head"><div><h2>Registered Users</h2><p id="resultCount" class="muted"></p></div><span id="loadStatus" class="status">Ready</span></div>
+      <div class="table-wrap"><table><thead><tr><th>User</th><th>Contact</th><th>Role</th><th>Systems</th><th>Status</th><th>Registered</th><th>Last Active</th><th>Action</th></tr></thead><tbody id="usersBody"></tbody></table></div>
+    </section>
+
+    <section id="detailPanel" class="panel hidden">
+      <div class="panel-head"><div><h2 id="detailTitle">User Details</h2><p id="detailSubtitle" class="muted"></p></div><span id="detailStatus" class="status">Selected</span></div>
+      <div id="detailContent" class="details"></div>
+    </section>
+  </main>
+  <script src="./vendor/supabase-js.js"></script>
+  <script src="./lavida-auth.js"></script>
+  <script>
+    const SUPABASE_URL = "https://cgvpoddtqswmtzvyrmwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndnBvZGR0cXN3bXR6dnlybXdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDE0OTMsImV4cCI6MjA5MTkxNzQ5M30.Ut_5jGo8L66zi8zxqR25nV_gkDBYLrT7p3Fx-4G5wGQ";
+    const db = window.LavidaAuth.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const ADMIN_ROLES = ["owner","admin","executive","manager","printing_admin"];
+    const ROLE_OPTIONS = ["owner","admin","executive","manager","printing_admin","cashier","customer","player"];
+    const MODULES = ["LAVIDA Connect","Market 365","Print 365","HRM 365","Community","Games 365"];
+    const $ = (id) => document.getElementById(id);
+    const esc = (value) => String(value ?? "").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    let session = null;
+    let adminRole = "";
+    let users = [];
+    let selectedUserKey = "";
+    let initStarted = false;
+
+    function normal(value){return String(value || "").trim().toLowerCase();}
+    function roleAllowed(value){return ADMIN_ROLES.includes(normal(value));}
+    function setStatus(id,text,type){const el=$(id); if(el){el.textContent=text; el.className=`status ${type || ""}`;}}
+    function showMessage(text,type,withRetry){
+      const box = $("pageMessage");
+      box.className = `notice ${type || ""}`;
+      box.innerHTML = `${esc(text)}${withRetry ? ' <button id="retryAccessButton" class="ghost" type="button" style="margin-left:10px">Retry</button>' : ""}`;
+      $("retryAccessButton")?.addEventListener("click",()=>init({force:true}));
+    }
+    function hideMessage(){const box=$("pageMessage"); box.classList.add("hidden"); box.textContent="";}
+    function showPanels(){["summaryPanel","filtersPanel","usersPanel"].forEach((id)=>$(id).classList.remove("hidden"));$("loginBox").classList.add("hidden");}
+    function hidePanels(){["summaryPanel","filtersPanel","usersPanel","detailPanel"].forEach((id)=>$(id).classList.add("hidden"));}
+    function withTimeout(promise,label,ms=12000){
+      return Promise.race([
+        promise,
+        new Promise((_,reject)=>setTimeout(()=>reject(new Error(`${label} timed out. Please check your connection and retry.`)),ms))
+      ]);
+    }
+    function dateLabel(value){return value ? new Date(value).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"}) : "Not recorded";}
+    function dateTimeLabel(value){return value ? new Date(value).toLocaleString(undefined,{year:"numeric",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "Not recorded";}
+    function initials(user){return (user.full_name || user.email || "LC").split(/\s+|@/).filter(Boolean).slice(0,2).map((part)=>part[0]).join("").toUpperCase() || "LC";}
+    function avatarHtml(user, large){
+      const cls = large ? "avatar large" : "avatar";
+      return user.avatar_url ? `<div class="${cls}"><img src="${esc(user.avatar_url)}" alt=""></div>` : `<div class="${cls}" aria-hidden="true">${esc(initials(user))}</div>`;
+    }
+    function userStatus(user){
+      if(user.is_active === false || user.role_active === false) return "Suspended";
+      if(user.is_active === null || user.role_active === null) return "Pending";
+      return "Active";
+    }
+    function userKey(row){
+      if(row.id) return `id:${row.id}`;
+      if(row.email) return `email:${normal(row.email)}`;
+      if(row.phone) return `phone:${normal(row.phone)}`;
+      return `anon:${crypto.randomUUID()}`;
+    }
+    function existingUser(map,row){
+      const email = normal(row.email || row.customer_email);
+      const phone = normal(row.phone || row.customer_phone);
+      for(const user of map.values()){
+        if(row.id && user.id === row.id) return user;
+        if(email && normal(user.email) === email) return user;
+        if(phone && normal(user.phone) === phone) return user;
+      }
+      return null;
+    }
+    function ensureUser(map, seed){
+      const existing = existingUser(map,seed);
+      if(existing) return existing;
+      const key = userKey(seed);
+      if(!map.has(key)){
+        map.set(key,{key,id:seed.id || "",full_name:"",email:"",phone:"",role:"customer",role_active:null,is_active:null,created_at:null,updated_at:null,last_active:null,avatar_url:"",modules:new Set(["LAVIDA Connect"])});
+      }
+      return map.get(key);
+    }
+    function newerDate(a,b){
+      const left = a ? new Date(a).getTime() : 0;
+      const right = b ? new Date(b).getTime() : 0;
+      return right > left ? b : a;
+    }
+    function mergeProfile(map,row){
+      const user = ensureUser(map,row);
+      user.id = user.id || row.id || "";
+      user.full_name = row.full_name || user.full_name || "";
+      user.email = row.email || user.email || "";
+      user.phone = row.phone || user.phone || "";
+      user.role = row.role || user.role || "customer";
+      user.is_active = row.is_active === undefined ? user.is_active : row.is_active;
+      user.created_at = user.created_at || row.created_at || null;
+      user.updated_at = newerDate(user.updated_at,row.updated_at);
+      user.last_active = newerDate(user.last_active,row.last_sign_in_at || row.updated_at);
+      user.avatar_url = row.avatar_url || row.source_profile_avatar_url || user.avatar_url || "";
+      if(/hr|human/i.test(row.department || "")) user.modules.add("HRM 365");
+    }
+    function mergeRole(map,row){
+      const user = ensureUser(map,row);
+      user.full_name = user.full_name || row.full_name || "";
+      user.email = user.email || row.email || "";
+      user.phone = user.phone || row.phone || "";
+      user.role = row.role || user.role || "customer";
+      user.role_active = row.active === undefined ? user.role_active : row.active;
+      user.created_at = user.created_at || row.created_at || null;
+    }
+    function mergeAuthUser(map,row){
+      const user = ensureUser(map,row);
+      user.id = user.id || row.id || "";
+      user.full_name = user.full_name || row.full_name || "";
+      user.email = user.email || row.email || "";
+      user.phone = user.phone || row.phone || "";
+      user.created_at = user.created_at || row.created_at || null;
+      user.last_active = newerDate(user.last_active,row.last_sign_in_at || row.updated_at);
+      if(!row.confirmed_at && user.is_active !== false) user.is_active = null;
+    }
+    function matchUser(user,row){
+      const email = normal(row.email || row.customer_email);
+      const phone = normal(row.phone || row.customer_phone);
+      return (email && normal(user.email) === email) || (phone && normal(user.phone) === phone) || (row.user_id && user.id === row.user_id);
+    }
+    function addActivity(moduleName, rows){
+      (rows || []).forEach((row)=>{
+        const user = users.find((candidate)=>matchUser(candidate,row));
+        if(!user) return;
+        user.modules.add(moduleName);
+        user.last_active = newerDate(user.last_active,row.updated_at || row.created_at);
+      });
+    }
+    async function selectRows(table, columns){
+      try{
+        const {data,error} = await withTimeout(db.from(table).select(columns).limit(1000), `${table} request`);
+        if(error) throw error;
+        return data || [];
+      }catch(error){
+        window.LavidaAuth.debug(`${table} load skipped`, error);
+        return [];
+      }
+    }
+    async function loadProfiles(){
+      const columns = "id,email,full_name,phone,role,department,is_active,created_at,updated_at,last_sign_in_at,avatar_url,source_profile_avatar_url";
+      const fallback = "id,email,full_name,phone,role,department,is_active,created_at,updated_at,last_sign_in_at";
+      const minimal = "id,email,phone,role,is_active,created_at,updated_at";
+      let result = await withTimeout(db.from("profiles").select(columns).order("created_at",{ascending:false}).limit(1000), "profiles request");
+      if(result.error){
+        window.LavidaAuth.debug("profile avatar columns unavailable", result.error);
+        result = await withTimeout(db.from("profiles").select(fallback).order("created_at",{ascending:false}).limit(1000), "profiles fallback request");
+      }
+      if(result.error){
+        window.LavidaAuth.debug("profile optional columns unavailable", result.error);
+        result = await withTimeout(db.from("profiles").select(minimal).order("created_at",{ascending:false}).limit(1000), "profiles minimal request");
+      }
+      if(result.error) throw result.error;
+      return result.data || [];
+    }
+    async function loadUsersFromRows(payload){
+      $("loadStatus").textContent = "Loading";
+      const map = new Map();
+      const profiles = payload.profiles || [];
+      const roles = payload.roles || payload.user_roles || [];
+      const authUsers = payload.auth_users || [];
+      authUsers.forEach((row)=>mergeAuthUser(map,row));
+      profiles.forEach((row)=>mergeProfile(map,row));
+      roles.forEach((row)=>mergeRole(map,row));
+      users = Array.from(map.values());
+      addActivity("Market 365",payload.market_orders || payload.marketplace_orders || []);
+      addActivity("Print 365",payload.print_orders || payload.printing_orders || []);
+      addActivity("Games 365",payload.chess_players || []);
+      addActivity("Games 365",payload.bawo_players || []);
+      users.sort((a,b)=>new Date(b.created_at || 0)-new Date(a.created_at || 0));
+      buildFilters();
+      renderAll();
+      $("loadStatus").textContent = "Ready";
+    }
+    async function loadUsersDirect(){
+      const [profiles, roles, marketOrders, printOrders, chessPlayers, bawoPlayers] = await Promise.all([
+        loadProfiles(),
+        selectRows("user_roles","email,full_name,role,phone,active,created_at"),
+        selectRows("marketplace_orders","email,phone,created_at,updated_at"),
+        selectRows("printing_orders","user_id,customer_email,customer_phone,created_at,updated_at"),
+        selectRows("chess_players","user_id,email,created_at,updated_at"),
+        selectRows("bawo_players","user_id,email,created_at,updated_at")
+      ]);
+      await loadUsersFromRows({profiles,roles,market_orders:marketOrders,print_orders:printOrders,chess_players:chessPlayers,bawo_players:bawoPlayers});
+    }
+    async function loadUsers(){
+      $("loadStatus").textContent = "Loading";
+      try{
+        const {data,error} = await withTimeout(db.functions.invoke("manage-staff-user",{body:{action:"list"}}), "User Management request", 15000);
+        if(error) throw error;
+        await loadUsersFromRows(data || {});
+      }catch(error){
+        window.LavidaAuth.debug("user management function list failed; trying direct RLS reads", error);
+        await loadUsersDirect();
+      }
+    }
+    function filteredUsers(){
+      const q = normal($("searchBox").value);
+      const role = normal($("roleFilter").value);
+      const status = $("statusFilter").value;
+      const moduleName = $("moduleFilter").value;
+      return users.filter((user)=>{
+        const searchText = normal(`${user.full_name} ${user.email} ${user.phone}`);
+        return (!q || searchText.includes(q)) && (!role || normal(user.role) === role) && (!status || userStatus(user) === status) && (!moduleName || user.modules.has(moduleName));
+      });
+    }
+    function buildFilters(){
+      const roleValues = [...new Set(users.map((user)=>user.role).filter(Boolean))].sort();
+      $("roleFilter").innerHTML = `<option value="">All roles</option>${roleValues.map((role)=>`<option value="${esc(role)}">${esc(role)}</option>`).join("")}`;
+      $("moduleFilter").innerHTML = `<option value="">All modules</option>${MODULES.map((moduleName)=>`<option value="${esc(moduleName)}">${esc(moduleName)}</option>`).join("")}`;
+    }
+    function renderSummary(list){
+      const firstDay = new Date(); firstDay.setDate(1); firstDay.setHours(0,0,0,0);
+      const active = users.filter((user)=>userStatus(user)==="Active").length;
+      const suspended = users.filter((user)=>userStatus(user)==="Suspended").length;
+      const newThisMonth = users.filter((user)=>user.created_at && new Date(user.created_at) >= firstDay).length;
+      $("summaryCards").innerHTML = [
+        ["Total registered users", users.length],
+        ["Active users", active],
+        ["New users this month", newThisMonth],
+        ["Suspended users", suspended]
+      ].map(([label,value])=>`<div class="summary-card"><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join("");
+      $("resultCount").textContent = `${list.length} user${list.length===1?"":"s"} shown`;
+    }
+    function renderUsers(){
+      const list = filteredUsers();
+      renderSummary(list);
+      $("usersBody").innerHTML = list.map((user)=>{
+        const status = userStatus(user);
+        const statusClass = status === "Active" ? "ok" : status === "Suspended" ? "bad" : "warn";
+        return `<tr>
+          <td><div class="user-cell">${avatarHtml(user,false)}<div><b>${esc(user.full_name || "Unnamed user")}</b><br><span class="muted">${esc(user.email || "No email")}</span></div></div></td>
+          <td>${esc(user.phone || "Not available")}</td>
+          <td><span class="pill">${esc(user.role || "customer")}</span></td>
+          <td><div class="pill-list">${[...user.modules].map((moduleName)=>`<span class="pill">${esc(moduleName)}</span>`).join("")}</div></td>
+          <td><span class="status ${statusClass}">${esc(status)}</span></td>
+          <td>${esc(dateLabel(user.created_at))}</td>
+          <td>${esc(dateTimeLabel(user.last_active))}</td>
+          <td><button class="secondary" type="button" data-view-user="${esc(user.key)}">View</button></td>
+        </tr>`;
+      }).join("") || `<tr><td colspan="8"><div class="empty">No users match the current filters.</div></td></tr>`;
+    }
+    function renderDetails(){
+      const user = users.find((item)=>item.key === selectedUserKey) || filteredUsers()[0];
+      if(!user){$("detailPanel").classList.add("hidden");return;}
+      selectedUserKey = user.key;
+      const status = userStatus(user);
+      $("detailPanel").classList.remove("hidden");
+      $("detailTitle").textContent = user.full_name || user.email || "User Details";
+      $("detailSubtitle").textContent = user.email || "No email recorded";
+      $("detailStatus").textContent = status;
+      $("detailStatus").className = `status ${status === "Active" ? "ok" : status === "Suspended" ? "bad" : "warn"}`;
+      $("detailContent").innerHTML = `<div class="detail-card">${avatarHtml(user,true)}<h3 style="margin-top:12px">${esc(user.full_name || "Unnamed user")}</h3><p class="muted">${esc(user.email || "No email recorded")}</p><div class="pill-list">${[...user.modules].map((moduleName)=>`<span class="pill">${esc(moduleName)}</span>`).join("")}</div></div>
+      <div class="detail-card">
+        ${[
+          ["Phone", user.phone || "Not available"],
+          ["Account role", user.role || "customer"],
+          ["Account status", status],
+          ["Registration date", dateTimeLabel(user.created_at)],
+          ["Last active date", dateTimeLabel(user.last_active)],
+          ["Profile ID", user.id || "Not recorded"]
+        ].map(([label,value])=>`<div class="detail-row"><b>${esc(label)}</b><span>${esc(value)}</span></div>`).join("")}
+        <div class="grid" style="margin-top:12px">
+          <select id="detailRole">${ROLE_OPTIONS.map((role)=>`<option value="${esc(role)}" ${normal(user.role)===role?"selected":""}>${esc(role)}</option>`).join("")}</select>
+          <select id="detailStatusSelect"><option value="activate" ${status==="Active"?"selected":""}>Active</option><option value="disable" ${status==="Suspended"?"selected":""}>Suspended</option></select>
+          <button id="saveRoleBtn" type="button">Change Role</button>
+          <button id="saveStatusBtn" class="secondary" type="button">Change Status</button>
+        </div>
+        <div id="detailMessage" class="notice hidden" style="margin-top:12px"></div>
+      </div>`;
+      $("saveRoleBtn").addEventListener("click",()=>changeRole(user));
+      $("saveStatusBtn").addEventListener("click",()=>changeStatus(user));
+    }
+    function renderAll(){
+      renderUsers();
+      renderDetails();
+    }
+    function detailNotice(text,type){
+      const box = $("detailMessage");
+      if(!box) return;
+      box.textContent = text;
+      box.className = `notice ${type || ""}`;
+    }
+    async function invokeUserAction(body){
+      const {data,error} = await db.functions.invoke("manage-staff-user",{body});
+      if(error) throw error;
+      return data;
+    }
+    async function changeRole(user){
+      const role = $("detailRole").value;
+      if(!user.email){detailNotice("This profile needs an email address before role changes can be applied.","bad");return;}
+      if(role === normal(user.role)){detailNotice("This user already has that role.");return;}
+      if(!confirm(`Change ${user.full_name || user.email} to ${role}?`)) return;
+      $("saveRoleBtn").disabled = true;
+      try{
+        await invokeUserAction({action:"update",email:user.email,role});
+        detailNotice("User role updated.");
+        await loadUsers();
+      }catch(error){
+        window.LavidaAuth.debug("user role update failed", error, {email:user.email,role});
+        detailNotice(window.LavidaAuth.friendlyError(error,"LAVIDA could not update this role. Please try again."),"bad");
+      }finally{
+        const btn = $("saveRoleBtn"); if(btn) btn.disabled = false;
+      }
+    }
+    async function changeStatus(user){
+      const action = $("detailStatusSelect").value;
+      const label = action === "activate" ? "activate" : "suspend";
+      if(!user.email){detailNotice("This profile needs an email address before status changes can be applied.","bad");return;}
+      if(!confirm(`Confirm you want to ${label} ${user.full_name || user.email}?`)) return;
+      $("saveStatusBtn").disabled = true;
+      try{
+        await invokeUserAction({action,email:user.email});
+        detailNotice(action === "activate" ? "User account activated." : "User account suspended.");
+        await loadUsers();
+      }catch(error){
+        window.LavidaAuth.debug("user status update failed", error, {email:user.email,action});
+        detailNotice(window.LavidaAuth.friendlyError(error,"LAVIDA could not update this account status. Please try again."),"bad");
+      }finally{
+        const btn = $("saveStatusBtn"); if(btn) btn.disabled = false;
+      }
+    }
+    async function requireAccess(){
+      window.LavidaAuth.rememberReturnTo();
+      setStatus("authStatus","Checking access","warn");
+      hidePanels();
+      session = await withTimeout(window.LavidaAuth.getSession(db), "Session check");
+      if(!session?.user){
+        setStatus("authStatus","Session expired","warn");
+        showMessage("Your LAVIDA session has expired. Redirecting to sign in.","",false);
+        setTimeout(()=>{location.href = "./marketplace.html#print365";}, 350);
+        return false;
+      }
+      adminRole = normal(await withTimeout(window.LavidaAuth.loadRole(db,session), "Role check"));
+      if(!roleAllowed(adminRole)){
+        setStatus("authStatus","Access denied","bad");
+        showMessage("Access denied. Your LAVIDA account does not have access to User Management.","bad",false);
+        $("loginBox").classList.remove("hidden");
+        return false;
+      }
+      setStatus("authStatus",`${adminRole} access`,"ok");
+      hideMessage();
+      showPanels();
+      return true;
+    }
+    async function init(options={}){
+      if(initStarted && !options.force) return;
+      initStarted = true;
+      try{
+        if(await requireAccess()) await loadUsers();
+      }catch(error){
+        window.LavidaAuth.debug("user management init failed", error);
+        setStatus("authStatus","Unavailable","bad");
+        showMessage(window.LavidaAuth.friendlyError(error,error?.message || "LAVIDA could not load User Management. Please try again."),"bad",true);
+      }finally{
+        initStarted = false;
+      }
+    }
+    async function signIn(){
+      const email = $("email").value.trim();
+      const password = $("password").value;
+      if(!email || !password){$("pageMessage").textContent = "Enter your email and password to continue.";$("pageMessage").className = "notice bad";return;}
+      try{
+        await window.LavidaAuth.signIn(db,email,password);
+        $("password").value = "";
+        await init({force:true});
+      }catch(error){
+        $("pageMessage").textContent = window.LavidaAuth.friendlyError(error,"We could not sign you in. Please try again.");
+        $("pageMessage").className = "notice bad";
+      }
+    }
+    async function logout(){
+      await window.LavidaAuth.signOut(db);
+      location.href = "./marketplace.html#home";
+    }
+    $("loginBtn").addEventListener("click",signIn);
+    $("logoutBtn").addEventListener("click",logout);
+    $("refreshBtn").addEventListener("click",()=>init({force:true}));
+    ["searchBox","roleFilter","statusFilter","moduleFilter"].forEach((id)=>$(id).addEventListener("input",renderAll));
+    $("usersBody").addEventListener("click",(event)=>{
+      const button = event.target.closest("[data-view-user]");
+      if(!button) return;
+      selectedUserKey = button.dataset.viewUser;
+      renderDetails();
+      $("detailPanel").scrollIntoView({behavior:"smooth",block:"start"});
+    });
+    window.LavidaAuth.listen(db,(event)=>{if(event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "SIGNED_OUT") init({force:true});});
+    init();
+  </script>
+</body>
+</html>
