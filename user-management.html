@@ -382,7 +382,8 @@
       if(!session?.user){
         setStatus("authStatus","Session expired","warn");
         showMessage("Your LAVIDA session has expired. Redirecting to sign in.","",false);
-        setTimeout(()=>{location.href = "./marketplace.html#print365";}, 350);
+        const returnTo = "user-management.html";
+        setTimeout(()=>{location.href = `./signin.html?returnTo=${encodeURIComponent(returnTo)}`;}, 350);
         return false;
       }
       adminRole = normal(await withTimeout(window.LavidaAuth.loadRole(db,session), "Role check"));

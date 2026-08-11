@@ -79,14 +79,19 @@
     return ROLE_DESTINATIONS[String(role || "").toLowerCase()] || DEFAULT_DESTINATION;
   }
 
+  function pageNameFromPath(pathname){
+    const raw = String(pathname || "").split("/").pop() || "index.html";
+    return /\.[a-z0-9]+$/i.test(raw) ? raw : `${raw}.html`;
+  }
+
   function safeDestination(value, fallback){
     const base = new URL(root.location.href);
     if(!value) return fallback || DEFAULT_DESTINATION;
     try{
       const next = new URL(value, base);
       if(next.origin !== base.origin) return fallback || DEFAULT_DESTINATION;
-      const currentFile = base.pathname.split("/").pop() || "index.html";
-      const file = next.pathname.split("/").pop() || "index.html";
+      const currentFile = pageNameFromPath(base.pathname);
+      const file = pageNameFromPath(next.pathname);
       if(!SAFE_PAGES.has(file) || /supabase|grandmaster365:|grandmaster\//i.test(next.href)) return fallback || DEFAULT_DESTINATION;
       if(file === currentFile && next.hash === base.hash) return fallback || DEFAULT_DESTINATION;
       return `${file}${next.search}${next.hash}`;
@@ -96,7 +101,7 @@
   }
 
   function rememberReturnTo(){
-    const value = `${root.location.pathname.split("/").pop() || "index.html"}${root.location.search}${root.location.hash}`;
+    const value = `${pageNameFromPath(root.location.pathname)}${root.location.search}${root.location.hash}`;
     if(!/signin|register|forgot-password|reset-password|index\.html/i.test(value)) sessionStorage.setItem("lavida_auth_return_to", value);
   }
 
