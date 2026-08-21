@@ -169,6 +169,7 @@
     let categories = [];
     let cryptoAssets = [];
     let cryptoFeeRanges = [];
+    let cryptoSavedNetworks = [];
     const DELIVERY_STATEMENT = "Free delivery is available within Biwi and surrounding areas for orders of 10 bottles or more. For other locations, the applicable delivery fee will be calculated according to the distance range from the seller's location and confirmed before the order is approved.";
 
     function roleAllowed(value){ return ["owner","admin","executive","manager"].includes(String(value || "").toLowerCase()); }
@@ -297,6 +298,15 @@
     function networkCode(value){
       return String(value || "").trim().toUpperCase().replace(/[^A-Z0-9]+/g, "_").replace(/^_+|_+$/g, "");
     }
+    function readNetworkLines(){
+      const seen = new Set();
+      return fieldValue("cryptoNetworks")
+        .split(/\n|,/)
+        .map((name)=>name.trim())
+        .filter(Boolean)
+        .map((name,index)=>({network_name:name,network_code:networkCode(name),is_enabled:true,sort_order:(index+1)*10}))
+        .filter((row)=>row.network_code && !seen.has(row.network_code) && seen.add(row.network_code));
+    }
     function toggleCryptoFields(){
       const enabled = isCryptoCategory($("category").value);
       $("cryptoSettings").classList.toggle("hidden", !enabled);
@@ -344,6 +354,7 @@
     }
     async function loadCryptoForm(productId){
       renderFeeRanges(defaultFeeRanges());
+      cryptoSavedNetworks = [];
       if(!productId) return;
       try{
         const {data:asset} = await db.from("crypto_assets").select("*").eq("marketplace_product_id", productId).maybeSingle();
@@ -355,8 +366,10 @@
           $("cryptoMinPurchase").value = asset.minimum_purchase || "";
           $("cryptoMaxPurchase").value = asset.maximum_purchase || "";
           $("cryptoAvailability").value = asset.availability_status || "available";
-          const {data:networks} = await db.from("crypto_asset_networks").select("*").eq("asset_id", asset.id).order("sort_order");
-          $("cryptoNetworks").value = (networks || []).map((row)=>row.network_name).join("\n");
+          const {data:networks,error:networkError} = await db.from("crypto_asset_networks").select("*").eq("asset_id", asset.id).order("sort_order");
+          if(networkError) throw networkError;
+          cryptoSavedNetworks = networks || [];
+          $("cryptoNetworks").value = cryptoSavedNetworks.filter((row)=>row.is_enabled !== false).map((row)=>row.network_name).join("\n");
         }
         let {data:ranges} = await db.from("crypto_fee_ranges").select("*").eq("marketplace_product_id", productId).order("sort_order");
         if(!ranges || !ranges.length){
@@ -376,6 +389,7 @@
       $("freeDeliveryArea").value = "Biwi and surrounding areas";
       $("deliveryPricingMethod").value = "distance_range";
       ["cryptoAssetName","cryptoAssetSymbol","cryptoSupplierRate","cryptoMinPurchase","cryptoMaxPurchase","cryptoNetworks"].forEach((id)=>$(id).value="");
+      cryptoSavedNetworks = [];
       $("cryptoRateCurrency").value = "MWK";
       $("cryptoAvailability").value = "available";
       renderFeeRanges(defaultFeeRanges());
@@ -514,7 +528,7 @@
         if(!fieldValue("cryptoAssetName")) return setStatus("cryptoStatus","Asset name is required","bad");
         if(!fieldValue("cryptoAssetSymbol")) return setStatus("cryptoStatus","Asset symbol is required","bad");
         if(!(numberValue("cryptoSupplierRate") > 0)) return setStatus("cryptoStatus","Supplier/Base Rate must be greater than zero","bad");
-        if(!fieldValue("cryptoNetworks")) return setStatus("cryptoStatus","At least one supported network is required","bad");
+        if(!readNetworkLines().length) return setStatus("cryptoStatus","At least one supported network is required","bad");
       }
       setStatus("saveStatus","Saving...","warn");
       $("saveProductBtn").disabled = true;
@@ -558,7 +572,9 @@
       }catch(error){
         console.error("Marketplace product save failed", error);
         const missing = /does not exist|schema cache|marketplace_products/i.test(error?.message || "");
-        setStatus("saveStatus", missing ? "Connect product table is not installed yet. Run the SQL migration." : (error.message || "Product could not be saved."), "bad");
+        const message = missing ? "Connect product table is not installed yet. Run the SQL migration." : (error.message || "Product could not be saved.");
+        setStatus("saveStatus", message, "bad");
+        if(cryptoCategory) setStatus("cryptoStatus", message, "bad");
       }finally{
         $("saveProductBtn").disabled = false;
       }
@@ -584,12 +600,30 @@
       if(!selectedId) assetPayload.created_by = session.user.id;
       const {data:asset,error:assetError} = await db.from("crypto_assets").upsert(assetPayload,{onConflict:"marketplace_product_id"}).select("*").single();
       if(assetError) throw assetError;
-      await db.from("crypto_asset_networks").delete().eq("asset_id", asset.id);
-      const networks = fieldValue("cryptoNetworks").split(/\n|,/).map((name)=>name.trim()).filter(Boolean);
-      if(networks.length){
-        const {error} = await db.from("crypto_asset_networks").insert(networks.map((name,index)=>({asset_id:asset.id,network_name:name,network_code:networkCode(name),is_enabled:true,sort_order:(index+1)*10})));
-        if(error) throw error;
+      if(!asset?.id) throw new Error("Crypto asset was saved without an asset ID.");
+      const networks = readNetworkLines();
+      const networkRows = networks.map((row)=>({...row,asset_id:asset.id}));
+      if(!networkRows.length) throw new Error("At least one supported network is required.");
+      const {error:networkError} = await db
+        .from("crypto_asset_networks")
+        .upsert(networkRows,{onConflict:"asset_id,network_code"})
+        .select("id");
+      if(networkError) throw new Error(`Crypto networks could not be saved: ${networkError.message || networkError}`);
+      const activeCodes = networks.map((row)=>row.network_code);
+      const removeCodes = cryptoSavedNetworks
+        .filter((row)=>row.asset_id === asset.id && !activeCodes.includes(row.network_code))
+        .map((row)=>row.network_code);
+      if(removeCodes.length){
+        const {error:disableError} = await db
+          .from("crypto_asset_networks")
+          .update({is_enabled:false,updated_at:new Date().toISOString()})
+          .eq("asset_id", asset.id)
+          .in("network_code", removeCodes);
+        if(disableError) throw new Error(`Removed crypto networks could not be disabled: ${disableError.message || disableError}`);
       }
+      const {data:freshNetworks,error:freshNetworkError} = await db.from("crypto_asset_networks").select("*").eq("asset_id", asset.id).order("sort_order");
+      if(freshNetworkError) throw freshNetworkError;
+      cryptoSavedNetworks = freshNetworks || [];
       await db.from("crypto_fee_ranges").delete().eq("marketplace_product_id", productId);
       const ranges = readFeeRanges().filter((row)=>Number.isFinite(row.amount_min) && (row.requires_admin_review || Number.isFinite(row.fee_usdt_equivalent)));
       if(ranges.length){
