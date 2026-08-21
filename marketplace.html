@@ -393,7 +393,7 @@
     ];
     function productName(p){return p.marketplace_name || p.name || "Product"} function productPrice(p){return Number(p.marketplace_price ?? p.selling_price ?? 0)} function productCategory(p){return p.marketplace_category || p.category || "Product"} function categoryLooksCrypto(value){return /crypto|cryptocurrency|digital assets?|usdt|usdc|btc|bitcoin|ethereum|eth/i.test(String(value || ""))} function categoryLabel(value){return value && categoryLooksCrypto(value) ? "Crypto" : value || "All"} function productDescription(p){return p.marketplace_description || p.description || "Available from LAVIDA Connect."} function availableQty(p){return Number(p.available_for_new_orders ?? p.available_quantity ?? p.stock_qty ?? 0)} function minQty(p){return Math.max(1,Number(p.minimum_order_quantity || 1))} function maxQty(p){const max=Number(p.maximum_order_quantity || 0); const available=availableQty(p); return Math.max(minQty(p), Math.min(max > 0 ? max : available, available || max || 999999))}
     function placeholder(p){return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640"><rect width="100%" height="100%" fill="#03163d"/><text x="50%" y="46%" fill="#fff" font-family="Arial" font-size="54" font-weight="800" text-anchor="middle">LAVIDA</text><text x="50%" y="58%" fill="#f5b821" font-family="Arial" font-size="27" text-anchor="middle">Connect</text><text x="50%" y="70%" fill="#fff" font-family="Arial" font-size="22" text-anchor="middle">${esc(productName(p))}</text></svg>`)}`}
-    function imageUrl(p){return p.marketplace_image_url || p.image_url || placeholder(p)} function isDigital(p){return /digital|usdt|crypto|asset|wallet/i.test(`${productCategory(p)} ${p.unit || ""} ${productName(p)}`)} function isCryptoProduct(p){return categoryLooksCrypto(`${productCategory(p)} ${p.unit || ""} ${productName(p)}`)}
+    function imageUrl(p){return p.marketplace_image_url || p.image_url || placeholder(p)} function isDigital(p){return /digital|usdt|crypto|asset|wallet/i.test(`${productCategory(p)} ${p.unit || ""} ${productName(p)}`)} function isCryptoProduct(p){return categoryLooksCrypto(`${productCategory(p)} ${p.unit || ""} ${productName(p)}`)} function cryptoSymbolForProduct(p){const text=`${p?.asset_symbol || ""} ${p?.marketplace_asset_symbol || ""} ${p?.unit || ""} ${productName(p)}`.toUpperCase();const known=text.match(/\b(USDT|USDC|BTC|ETH|BNB|SOL|TRX|POL|KERNEL)\b/);if(known)return known[1];return String(p?.unit || productName(p) || "").toUpperCase().replace(/[^A-Z0-9]+/g,"").slice(0,12)}
     function saveCart(){localStorage.setItem(CART_KEY,JSON.stringify(cart));renderCart()} function cartCount(){return cart.reduce((s,i)=>s+Number(i.quantity||0),0)} function cartSubtotal(){return cart.reduce((s,i)=>s+Number(i.quantity||0)*Number(i.unit_price||0),0)} function deliveryFee(){return $("fulfilment").value==="delivery"?Number(settings.delivery_fee||settings.default_delivery_fee||0):0} function cartTotal(){return cartSubtotal()+deliveryFee()}
     function authUserKey(session){return session?.user?.id || session?.user?.email || ""}
     function updateAuthControls(){
@@ -577,13 +577,27 @@
       $("cryptoAssetSummary").textContent = "Loading crypto settings...";
       $("cryptoNetwork").innerHTML = `<option value="">Select network</option>`;
       try{
-        const {data:asset,error:assetError}=await db.from("crypto_assets").select("*").eq("marketplace_product_id", productId).maybeSingle();
+        let asset = null;
+        const {data:assetByProduct,error:assetError}=await db.from("crypto_assets").select("*").eq("marketplace_product_id", productId).maybeSingle();
         if(assetError) throw assetError;
+        asset = assetByProduct;
+        if(!asset && selectedCryptoProduct){
+          const symbol = cryptoSymbolForProduct(selectedCryptoProduct);
+          if(symbol){
+            const {data:symbolAssets,error:symbolError}=await db.from("crypto_assets").select("*").ilike("asset_symbol", symbol).eq("is_active", true).limit(10);
+            if(symbolError) throw symbolError;
+            asset = (symbolAssets || []).find((row)=>String(row.marketplace_product_id)===String(productId))
+              || (symbolAssets || []).find((row)=>Number(row.supplier_base_rate_mwk || row.lavida_selling_rate_mwk || 0) > 0)
+              || (symbolAssets || [])[0]
+              || null;
+          }
+        }
         if(!asset) throw new Error("Crypto settings are not available for this asset yet.");
         const {data:networks,error:networkError}=await db.from("crypto_asset_networks").select("*").eq("asset_id", asset.id).eq("is_enabled", true).order("sort_order");
         if(networkError) throw networkError;
         selectedCryptoAsset = asset;
         selectedCryptoNetworks = networks || [];
+        if(!selectedCryptoNetworks.length) throw new Error("No supported networks are available for this crypto asset yet.");
         $("cryptoNetwork").innerHTML = `<option value="">Select network</option>` + selectedCryptoNetworks.map((n)=>`<option value="${esc(n.id)}">${esc(n.network_name)}</option>`).join("");
         $("cryptoAssetSummary").innerHTML = `<b>${esc(asset.asset_name)} (${esc(asset.asset_symbol)})</b><br>Rate: ${esc(money(asset.supplier_base_rate_mwk))} / ${esc(asset.asset_symbol)}<br>Minimum: ${esc(asset.minimum_purchase)} ${esc(asset.asset_symbol)}${asset.maximum_purchase?` | Maximum: ${esc(asset.maximum_purchase)} ${esc(asset.asset_symbol)}`:""}`;
         renderCryptoReview();
