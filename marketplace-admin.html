@@ -10,7 +10,7 @@
     *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--soft);color:var(--ink)} button,input,select,textarea{font:inherit} button{border:0;border-radius:7px;background:var(--navy);color:var(--white);font-weight:900;padding:11px 14px;cursor:pointer} button.secondary{background:#eef3fb;color:var(--navy)} button.ghost{background:transparent;color:var(--navy);border:1px solid var(--line)} button.danger{background:var(--bad)} button:disabled{opacity:.55;cursor:not-allowed} input,select,textarea{width:100%;border:1px solid var(--line);border-radius:7px;background:var(--white);padding:11px;color:var(--ink)} textarea{min-height:88px;resize:vertical} a{color:inherit;text-decoration:none}
     .admin-header{position:sticky;top:0;z-index:1100;min-height:68px;padding:calc(8px + env(safe-area-inset-top,0px)) 16px 8px;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:var(--white);box-shadow:0 12px 34px rgba(6,20,51,.18)}.admin-brand{min-width:0;line-height:1}.admin-brand strong{display:block;color:var(--white);font-size:24px;line-height:1;letter-spacing:1px;white-space:nowrap}.admin-brand span{display:block;margin-top:4px;color:var(--gold2);font-size:12px;line-height:1;letter-spacing:1.2px;white-space:nowrap}.admin-header-actions{display:flex;align-items:center;gap:8px}.admin-header-actions button{width:44px;height:44px;display:grid;place-items:center;border:0;border-radius:12px;background:var(--white);color:var(--navy);padding:0}.admin-header-actions svg{width:24px;height:24px;stroke:currentColor}.admin-desktop-actions{display:none;gap:8px}.admin-desktop-actions a,.admin-desktop-actions button{min-height:42px;display:flex;align-items:center;background:var(--white);color:var(--navy);border-radius:10px;padding:0 12px;font-weight:900}.admin-header-menu{position:fixed;top:calc(76px + env(safe-area-inset-top,0px));right:14px;z-index:1200;width:min(240px,calc(100vw - 28px));padding:8px;border:1px solid var(--line);border-radius:14px;background:var(--white);box-shadow:0 16px 35px rgba(0,0,0,.18)}.admin-header-menu a,.admin-header-menu button{width:100%;min-height:46px;display:flex;align-items:center;padding:0 14px;border:0;border-radius:10px;background:transparent;color:var(--navy);font:inherit;font-weight:800;text-decoration:none;text-align:left}.admin-header-menu a:hover,.admin-header-menu button:hover{background:var(--soft)}.admin-header-menu button{color:var(--bad)}
     main{max-width:1180px;margin:auto;padding:16px 16px 50px}.status{display:inline-flex;border-radius:999px;background:#eef3fb;color:var(--navy);padding:5px 9px;font-size:12px;font-weight:900}.status.ok{background:#e8fff5;color:#08734e}.status.warn{background:#fff7d6;color:#7a5200}.status.bad{background:#fff0ed;color:var(--bad)}
-    .panel{background:var(--white);border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:16px;box-shadow:0 10px 24px rgba(6,20,51,.07)} .panel-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:12px}.panel h1,.panel h2{margin:0;color:var(--navy)} .muted{color:var(--muted)} .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.grid.two{grid-template-columns:repeat(2,1fr)} .grid.full{grid-template-columns:1fr}.checks{display:flex;flex-wrap:wrap;gap:10px}.checks label{display:flex;gap:6px;align-items:center;background:#f7f9fd;border:1px solid var(--line);border-radius:7px;padding:9px}.checks input{width:auto}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px} table{width:100%;border-collapse:collapse;min-width:900px} th,td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top;font-size:13px} th{background:var(--navy);color:var(--gold2);text-transform:uppercase;font-size:11px}.thumb{width:58px;height:48px;border-radius:6px;object-fit:cover;background:#e7edf6}.notice{background:#fff7d6;border:1px solid #f0d57b;border-radius:8px;padding:11px;color:#5d4300}.hidden{display:none!important}.progress{height:8px;background:#e8eef7;border-radius:99px;overflow:hidden}.progress span{display:block;height:100%;width:0;background:var(--gold);transition:.2s}
+    .panel{background:var(--white);border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:16px;box-shadow:0 10px 24px rgba(6,20,51,.07)} .panel-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:12px}.panel h1,.panel h2,.panel h3{margin:0;color:var(--navy)} .muted{color:var(--muted)} .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.grid.two{grid-template-columns:repeat(2,1fr)} .grid.full{grid-template-columns:1fr}.checks{display:flex;flex-wrap:wrap;gap:10px}.checks label{display:flex;gap:6px;align-items:center;background:#f7f9fd;border:1px solid var(--line);border-radius:7px;padding:9px}.checks input{width:auto}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px} table{width:100%;border-collapse:collapse;min-width:900px} th,td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top;font-size:13px} th{background:var(--navy);color:var(--gold2);text-transform:uppercase;font-size:11px}.thumb{width:58px;height:48px;border-radius:6px;object-fit:cover;background:#e7edf6}.notice{background:#fff7d6;border:1px solid #f0d57b;border-radius:8px;padding:11px;color:#5d4300}.hidden{display:none!important}.progress{height:8px;background:#e8eef7;border-radius:99px;overflow:hidden}.progress span{display:block;height:100%;width:0;background:var(--gold);transition:.2s}.crypto-settings{margin-top:12px;border:1px solid #cfd8e6;border-radius:8px;background:#fbfcff;padding:14px}.crypto-settings h3{font-size:18px}.fee-table{min-width:620px}.fee-table input,.fee-table select{min-height:40px;padding:8px}.fee-table button{padding:8px 10px}
     @media(min-width:768px){#adminMoreButton{display:none}.admin-desktop-actions{display:flex}}
     @media(max-width:850px){.grid,.grid.two{grid-template-columns:1fr}.panel-head{display:block}.panel{padding:14px}.panel h1{font-size:clamp(26px,7vw,38px);line-height:1.08}.panel h2{font-size:22px}}
   </style>
@@ -77,6 +77,25 @@
         <input id="freeDeliveryArea" placeholder="Free delivery area">
         <input id="deliveryPricingMethod" placeholder="Delivery pricing method">
       </div>
+      <section id="cryptoSettings" class="crypto-settings hidden">
+        <div class="panel-head"><div><h3>Crypto Pricing &amp; Fees</h3><p class="muted">These fields appear only when Category is Crypto. LAVIDA selling rate matches the supplier/base rate for this release.</p></div><span id="cryptoStatus" class="status">Ready</span></div>
+        <div class="grid">
+          <input id="cryptoAssetName" placeholder="Asset name">
+          <input id="cryptoAssetSymbol" placeholder="Asset symbol">
+          <input id="cryptoSupplierRate" type="number" step="0.01" min="0" placeholder="Supplier/Base Rate">
+          <input id="cryptoRateCurrency" value="MWK" disabled>
+          <input id="cryptoMinPurchase" type="number" step="0.00000001" min="0" placeholder="Minimum purchase">
+          <input id="cryptoMaxPurchase" type="number" step="0.00000001" min="0" placeholder="Maximum purchase optional">
+          <select id="cryptoAvailability">
+            <option value="available">Available</option>
+            <option value="paused">Paused</option>
+            <option value="unavailable">Unavailable</option>
+          </select>
+        </div>
+        <textarea id="cryptoNetworks" style="margin-top:10px" placeholder="Supported networks, one per line. Example: TRC20&#10;BEP20&#10;Ethereum ERC20"></textarea>
+        <div class="panel-head" style="margin-top:12px"><div><h3>Service Fee Ranges</h3><p class="muted">From Amount | To Amount | Fee (USDT) | Status. Leave To blank for open-ended ranges.</p></div><button id="addFeeRangeBtn" class="secondary" type="button">+ Add Fee Range</button></div>
+        <div class="table-wrap"><table class="fee-table"><thead><tr><th>From Amount</th><th>To Amount</th><th>Fee (USDT)</th><th>Status</th><th></th></tr></thead><tbody id="cryptoFeeRangesBody"></tbody></table></div>
+      </section>
       <div class="grid two" style="margin-top:10px">
         <input id="imageFile" type="file" accept="image/png,image/jpeg,image/webp">
         <input id="imageUrl" placeholder="Image URL saved after upload">
@@ -148,6 +167,8 @@
     let posProducts = [];
     let marketplaceProducts = [];
     let categories = [];
+    let cryptoAssets = [];
+    let cryptoFeeRanges = [];
     const DELIVERY_STATEMENT = "Free delivery is available within Biwi and surrounding areas for orders of 10 bottles or more. For other locations, the applicable delivery fee will be calculated according to the distance range from the seller's location and confirmed before the order is approved.";
 
     function roleAllowed(value){ return ["owner","admin","executive","manager"].includes(String(value || "").toLowerCase()); }
@@ -206,7 +227,7 @@
       }catch(error){}
     }
     async function loadCategories(){
-      const defaults = ["Alcoholic Beverages / Beer", "Groceries", "Drinks", "Electronics", "Home supplies", "Personal care", "Fashion", "Services", "Other"];
+      const defaults = ["Alcoholic Beverages / Beer", "Crypto", "Groceries", "Drinks", "Electronics", "Home supplies", "Personal care", "Fashion", "Services", "Other"];
       try{
         const {data} = await db.from("marketplace_categories").select("*").order("sort_order").order("name");
         categories = (data || []).map((row)=>row.name).filter(Boolean);
@@ -270,6 +291,83 @@
       $("unit").value = p.sale_unit || "unit";
       $("quantity").value = Number(p.current_stock_quantity ?? p.stock_qty ?? 0) || 0;
     }
+    function isCryptoCategory(value){
+      return String(value || "").trim().toLowerCase() === "crypto";
+    }
+    function networkCode(value){
+      return String(value || "").trim().toUpperCase().replace(/[^A-Z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+    }
+    function toggleCryptoFields(){
+      const enabled = isCryptoCategory($("category").value);
+      $("cryptoSettings").classList.toggle("hidden", !enabled);
+      if(enabled && !$("unit").value.trim()) $("unit").value = $("cryptoAssetSymbol").value.trim() || "USDT";
+    }
+    function defaultFeeRanges(){
+      return [
+        {amount_min:1, amount_max:50, fee_usdt_equivalent:1, is_enabled:true},
+        {amount_min:51, amount_max:100, fee_usdt_equivalent:2, is_enabled:true},
+        {amount_min:101, amount_max:250, fee_usdt_equivalent:3, is_enabled:true},
+        {amount_min:251, amount_max:500, fee_usdt_equivalent:5, is_enabled:true},
+        {amount_min:501, amount_max:1000, fee_usdt_equivalent:8, is_enabled:true},
+        {amount_min:1000.00000001, amount_max:"", fee_usdt_equivalent:"", requires_admin_review:true, is_enabled:true}
+      ];
+    }
+    function renderFeeRanges(rows){
+      cryptoFeeRanges = (rows && rows.length ? rows : defaultFeeRanges()).map((row)=>({
+        amount_min: row.amount_min ?? "",
+        amount_max: row.amount_max ?? "",
+        fee_usdt_equivalent: row.fee_usdt_equivalent ?? "",
+        requires_admin_review: Boolean(row.requires_admin_review),
+        is_enabled: row.is_enabled !== false
+      }));
+      $("cryptoFeeRangesBody").innerHTML = cryptoFeeRanges.map((row,index)=>`<tr data-fee-row="${index}">
+        <td><input data-fee-field="amount_min" type="number" step="0.00000001" min="0" value="${esc(row.amount_min)}"></td>
+        <td><input data-fee-field="amount_max" type="number" step="0.00000001" min="0" value="${esc(row.amount_max)}"></td>
+        <td><input data-fee-field="fee_usdt_equivalent" type="number" step="0.00000001" min="0" value="${esc(row.fee_usdt_equivalent)}" ${row.requires_admin_review ? "disabled" : ""}></td>
+        <td><select data-fee-field="status"><option value="enabled" ${row.is_enabled && !row.requires_admin_review ? "selected" : ""}>Enabled</option><option value="disabled" ${!row.is_enabled ? "selected" : ""}>Disabled</option><option value="review" ${row.requires_admin_review ? "selected" : ""}>Manual/Admin review</option></select></td>
+        <td><button class="ghost" type="button" data-remove-fee="${index}">Remove</button></td>
+      </tr>`).join("");
+    }
+    function readFeeRanges(){
+      return Array.from($("cryptoFeeRangesBody").querySelectorAll("tr")).map((tr,index)=>{
+        const field = (name)=>tr.querySelector(`[data-fee-field="${name}"]`);
+        const status = field("status").value;
+        return {
+          amount_min: Number(field("amount_min").value || 0),
+          amount_max: field("amount_max").value === "" ? null : Number(field("amount_max").value),
+          fee_usdt_equivalent: status === "review" ? null : Number(field("fee_usdt_equivalent").value || 0),
+          requires_admin_review: status === "review",
+          is_enabled: status !== "disabled",
+          sort_order: (index + 1) * 10
+        };
+      });
+    }
+    async function loadCryptoForm(productId){
+      renderFeeRanges(defaultFeeRanges());
+      if(!productId) return;
+      try{
+        const {data:asset} = await db.from("crypto_assets").select("*").eq("marketplace_product_id", productId).maybeSingle();
+        if(asset){
+          $("cryptoAssetName").value = asset.asset_name || "";
+          $("cryptoAssetSymbol").value = asset.asset_symbol || "";
+          $("cryptoSupplierRate").value = asset.supplier_base_rate_mwk || "";
+          $("cryptoRateCurrency").value = asset.rate_currency || "MWK";
+          $("cryptoMinPurchase").value = asset.minimum_purchase || "";
+          $("cryptoMaxPurchase").value = asset.maximum_purchase || "";
+          $("cryptoAvailability").value = asset.availability_status || "available";
+          const {data:networks} = await db.from("crypto_asset_networks").select("*").eq("asset_id", asset.id).order("sort_order");
+          $("cryptoNetworks").value = (networks || []).map((row)=>row.network_name).join("\n");
+        }
+        let {data:ranges} = await db.from("crypto_fee_ranges").select("*").eq("marketplace_product_id", productId).order("sort_order");
+        if(!ranges || !ranges.length){
+          const fallback = await db.from("crypto_fee_ranges").select("*").is("marketplace_product_id", null).order("sort_order");
+          ranges = fallback.data || [];
+        }
+        renderFeeRanges(ranges);
+      }catch(error){
+        setStatus("cryptoStatus","Crypto settings could not be loaded","bad");
+      }
+    }
     function clearForm(){
       selectedId="";
       ["productName","category","price","originalPrice","unit","quantity","minQty","maxQty","sellerName","sellerBranch","businessId","imageUrl","description"].forEach((id)=>$(id).value="");
@@ -277,6 +375,11 @@
       $("freeDeliveryMinimum").value = "10";
       $("freeDeliveryArea").value = "Biwi and surrounding areas";
       $("deliveryPricingMethod").value = "distance_range";
+      ["cryptoAssetName","cryptoAssetSymbol","cryptoSupplierRate","cryptoMinPurchase","cryptoMaxPurchase","cryptoNetworks"].forEach((id)=>$(id).value="");
+      $("cryptoRateCurrency").value = "MWK";
+      $("cryptoAvailability").value = "available";
+      renderFeeRanges(defaultFeeRanges());
+      toggleCryptoFields();
       $("status").value="draft";
       $("marketplaceOnly").checked=true;
       $("pickupEnabled").checked=true;
@@ -287,6 +390,7 @@
       $("imageFile").value = "";
       updateImagePreview("");
       setStatus("saveStatus","Ready","");
+      setStatus("cryptoStatus","Ready","");
     }
     function editProduct(id){
       const p = marketplaceProducts.find((row)=>String(row.id)===String(id));
@@ -317,6 +421,8 @@
       $("published").checked = Boolean(p.published);
       $("posProduct").value = p.linked_pos_product_id || "";
       updateImagePreview(p.image_url || "");
+      toggleCryptoFields();
+      loadCryptoForm(p.id);
       scrollTo({top:0,behavior:"smooth"});
     }
     async function compressImage(file){
@@ -387,12 +493,13 @@
       if($("saveProductBtn").disabled) return;
       const name = fieldValue("productName") || fieldValue("name");
       const category = fieldValue("category") || fieldValue("productCategory");
-      const price = numberValue("price");
+      const cryptoCategory = isCryptoCategory(category);
+      const price = cryptoCategory ? numberValue("cryptoSupplierRate") : numberValue("price");
       const linked = fieldValue("posProduct");
       const quantity = fieldValue("quantity") === "" ? null : numberValue("quantity");
       const minQty = fieldValue("minQty") === "" ? 1 : numberValue("minQty");
       const maxQty = fieldValue("maxQty") === "" ? null : numberValue("maxQty");
-      const unit = fieldValue("unit");
+      const unit = cryptoCategory ? (fieldValue("unit") || fieldValue("cryptoAssetSymbol").toUpperCase()) : fieldValue("unit");
       if(!name) return setStatus("saveStatus","Product name is required","bad");
       if(!category) return setStatus("saveStatus","Category is required","bad");
       if(!(price > 0)) return setStatus("saveStatus","Selling price must be greater than zero","bad");
@@ -403,6 +510,12 @@
       if(linked && !posProducts.some((p)=>String(p.id || p.barcode) === String(linked))) return setStatus("saveStatus","Selected POS product was not found","bad");
       if(!linked && quantity === null) return setStatus("saveStatus","Quantity is required for Connect-only products","bad");
       if(!validUrl($("imageUrl").value.trim())) return setStatus("saveStatus","Image URL is not valid","bad");
+      if(cryptoCategory){
+        if(!fieldValue("cryptoAssetName")) return setStatus("cryptoStatus","Asset name is required","bad");
+        if(!fieldValue("cryptoAssetSymbol")) return setStatus("cryptoStatus","Asset symbol is required","bad");
+        if(!(numberValue("cryptoSupplierRate") > 0)) return setStatus("cryptoStatus","Supplier/Base Rate must be greater than zero","bad");
+        if(!fieldValue("cryptoNetworks")) return setStatus("cryptoStatus","At least one supported network is required","bad");
+      }
       setStatus("saveStatus","Saving...","warn");
       $("saveProductBtn").disabled = true;
       try{
@@ -434,9 +547,11 @@
         };
         if(!selectedId) payload.created_by = session.user.id;
         payload.updated_by = session.user.id;
-        const query = selectedId ? db.from("marketplace_products").update(payload).eq("id", selectedId) : db.from("marketplace_products").insert(payload);
-        const {error} = await query;
+        const query = selectedId ? db.from("marketplace_products").update(payload).eq("id", selectedId).select("id").single() : db.from("marketplace_products").insert(payload).select("id").single();
+        const {data:savedProduct,error} = await query;
         if(error) throw error;
+        const savedProductId = selectedId || savedProduct?.id;
+        if(cryptoCategory) await saveCryptoConfiguration(savedProductId);
         setStatus("saveStatus","Product saved successfully.","ok");
         clearForm();
         await loadProducts();
@@ -447,6 +562,41 @@
       }finally{
         $("saveProductBtn").disabled = false;
       }
+    }
+    async function saveCryptoConfiguration(productId){
+      if(!productId) throw new Error("Product must be saved before crypto settings.");
+      setStatus("cryptoStatus","Saving crypto settings...","warn");
+      const supplierRate = numberValue("cryptoSupplierRate");
+      const assetPayload = {
+        marketplace_product_id: productId,
+        asset_name: fieldValue("cryptoAssetName"),
+        asset_symbol: fieldValue("cryptoAssetSymbol").toUpperCase(),
+        supplier_base_rate_mwk: supplierRate,
+        lavida_selling_rate_mwk: supplierRate,
+        rate_currency: "MWK",
+        minimum_purchase: fieldValue("cryptoMinPurchase") === "" ? 1 : numberValue("cryptoMinPurchase"),
+        maximum_purchase: fieldValue("cryptoMaxPurchase") === "" ? null : numberValue("cryptoMaxPurchase"),
+        availability_status: $("cryptoAvailability").value,
+        is_active: $("cryptoAvailability").value !== "unavailable",
+        updated_by: session.user.id,
+        updated_at: new Date().toISOString()
+      };
+      if(!selectedId) assetPayload.created_by = session.user.id;
+      const {data:asset,error:assetError} = await db.from("crypto_assets").upsert(assetPayload,{onConflict:"marketplace_product_id"}).select("*").single();
+      if(assetError) throw assetError;
+      await db.from("crypto_asset_networks").delete().eq("asset_id", asset.id);
+      const networks = fieldValue("cryptoNetworks").split(/\n|,/).map((name)=>name.trim()).filter(Boolean);
+      if(networks.length){
+        const {error} = await db.from("crypto_asset_networks").insert(networks.map((name,index)=>({asset_id:asset.id,network_name:name,network_code:networkCode(name),is_enabled:true,sort_order:(index+1)*10})));
+        if(error) throw error;
+      }
+      await db.from("crypto_fee_ranges").delete().eq("marketplace_product_id", productId);
+      const ranges = readFeeRanges().filter((row)=>Number.isFinite(row.amount_min) && (row.requires_admin_review || Number.isFinite(row.fee_usdt_equivalent)));
+      if(ranges.length){
+        const {error} = await db.from("crypto_fee_ranges").insert(ranges.map((row)=>({...row,marketplace_product_id:productId,created_by:session.user.id,updated_by:session.user.id})));
+        if(error) throw error;
+      }
+      setStatus("cryptoStatus","Crypto settings saved","ok");
     }
     async function togglePublish(id){
       const p = marketplaceProducts.find((row)=>String(row.id)===String(id));
@@ -533,6 +683,12 @@
     $("logoutBtn").addEventListener("click", logout);
     $("logoutBtnDesktop").addEventListener("click", logout);
     $("posProduct").addEventListener("change", fillFromPos);
+    $("category").addEventListener("input", toggleCryptoFields);
+    $("cryptoAssetSymbol").addEventListener("input", ()=>{ if(isCryptoCategory($("category").value)) $("unit").value = $("cryptoAssetSymbol").value.trim().toUpperCase() || "USDT"; });
+    $("cryptoSupplierRate").addEventListener("input", ()=>{ if(isCryptoCategory($("category").value)) $("price").value = $("cryptoSupplierRate").value; });
+    $("addFeeRangeBtn").addEventListener("click", ()=>{ cryptoFeeRanges.push({amount_min:"", amount_max:"", fee_usdt_equivalent:"", is_enabled:true}); renderFeeRanges(cryptoFeeRanges); });
+    $("cryptoFeeRangesBody").addEventListener("click", (event)=>{ const remove=event.target.closest("[data-remove-fee]"); if(remove){ cryptoFeeRanges.splice(Number(remove.dataset.removeFee),1); renderFeeRanges(cryptoFeeRanges); } });
+    $("cryptoFeeRangesBody").addEventListener("change", (event)=>{ if(event.target.matches('[data-fee-field="status"]')) renderFeeRanges(readFeeRanges()); });
     $("saveProductBtn").addEventListener("click", saveProduct);
     $("newProductBtn").addEventListener("click", clearForm);
     $("kuchePresetBtn").addEventListener("click", prepareKucheKuche);

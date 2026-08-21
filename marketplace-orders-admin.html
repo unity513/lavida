@@ -41,7 +41,7 @@
     <section id="ordersPanel" class="panel hidden">
       <div class="panel-head"><div><h2>Connect Orders</h2><p class="muted">Newest orders first.</p></div><button id="reloadOrdersBtn" class="secondary" type="button">Refresh</button></div>
       <div class="grid" style="margin-bottom:10px">
-        <select id="statusFilter"><option value="">All orders</option><option value="pending_confirmation">Pending</option><option value="payment_review">Payment review</option><option value="approved">Approved</option><option value="processing">Processing</option><option value="ready_for_collection">Ready for collection</option><option value="out_for_delivery">Out for delivery</option><option value="completed">Completed</option><option value="rejected">Rejected</option><option value="cancelled">Cancelled</option></select>
+        <select id="statusFilter"><option value="">All orders</option><option value="pending_confirmation">Pending</option><option value="payment_review">Payment review</option><option value="approved">Approved</option><option value="processing">Processing</option><option value="crypto_sent">Crypto sent</option><option value="ready_for_collection">Ready for collection</option><option value="out_for_delivery">Out for delivery</option><option value="completed">Completed</option><option value="rejected">Rejected</option><option value="cancelled">Cancelled</option></select>
         <input id="searchBox" placeholder="Search reference, customer, phone">
         <button id="searchBtn" type="button">Search</button>
       </div>
@@ -64,8 +64,9 @@
     let session = null;
     let selectedOrderId = "";
     let selectedOrder = null;
+    let selectedCryptoDetails = null;
     function roleAllowed(value){return ["owner","admin","executive","manager"].includes(String(value || "").toLowerCase());}
-    function orderLabel(value){return ({pending_confirmation:"Pending confirmation",payment_review:"Payment under review",approved:"Order approved",processing:"Preparing your order",ready_for_collection:"Ready for collection",out_for_delivery:"Out for delivery",completed:"Completed",rejected:"Rejected",cancelled:"Cancelled"}[value] || String(value || "").replaceAll("_"," "));}
+    function orderLabel(value){return ({pending_confirmation:"Pending confirmation",payment_review:"Payment under review",approved:"Order approved",processing:"Preparing your order",crypto_sent:"Crypto sent",ready_for_collection:"Ready for collection",out_for_delivery:"Out for delivery",completed:"Completed",rejected:"Rejected",cancelled:"Cancelled"}[value] || String(value || "").replaceAll("_"," "));}
     function paymentLabel(value){return ({pending_confirmation:"Payment pending",proof_submitted:"Payment proof submitted",paid:"Payment confirmed",rejected:"Payment rejected",refunded:"Payment refunded"}[value] || String(value || "").replaceAll("_"," "));}
     function cleanDate(value){try{return value?new Date(value).toLocaleString():"";}catch(e){return value || "";}}
     function setStatus(id,text,type){const el=$(id);el.textContent=text;el.className=`status ${type || ""}`;}
@@ -137,6 +138,7 @@
     }
     function validActions(order){
       const actions = [];
+      const cryptoOrder = order.order_type === "crypto" || order.fulfilment_method === "crypto_wallet" || selectedCryptoDetails;
       if(order.payment_status !== "paid" && !["rejected","cancelled","completed"].includes(order.order_status)){
         actions.push(["confirm_payment", order.payment_method === "cash_on_pickup" || order.payment_method === "cash_on_delivery" ? "Confirm Cash Received" : "Confirm Payment"]);
         actions.push(["reject_payment","Reject Payment"]);
@@ -146,13 +148,42 @@
         actions.push(["reject_order","Reject Order"]);
       }
       if(order.order_status === "approved") actions.push(["start_processing","Start Processing"]);
-      if(order.order_status === "processing"){
+      if(order.order_status === "processing" && cryptoOrder){
+        actions.push(["mark_crypto_sent","Record Crypto Sent"]);
+      }else if(order.order_status === "processing"){
         actions.push(["mark_ready_for_collection","Mark Ready for Collection"]);
         actions.push(["mark_out_for_delivery","Mark Out for Delivery"]);
       }
-      if(["ready_for_collection","out_for_delivery","processing"].includes(order.order_status)) actions.push(["complete_order","Mark Completed"]);
+      if(["crypto_sent","ready_for_collection","out_for_delivery","processing"].includes(order.order_status)) actions.push(["complete_order","Mark Completed"]);
       if(!["completed","cancelled","rejected"].includes(order.order_status)) actions.push(["cancel_order","Cancel Order"]);
       return actions;
+    }
+    async function loadCryptoOrderDetails(orderId){
+      try{
+        const {data,error} = await db.rpc("get_crypto_order_details",{p_order_id:orderId,p_phone:null});
+        if(error) throw error;
+        return data || null;
+      }catch(error){
+        return null;
+      }
+    }
+    function cryptoDetailsHtml(details){
+      if(!details) return "";
+      return `<h3 style="margin-top:16px">Crypto Fulfilment</h3>
+        <div class="details-grid">
+          <div class="detail-box"><b>Asset</b><br>${esc(details.asset_name)} (${esc(details.asset_symbol)})<br>Receive: ${esc(details.receive_amount)} ${esc(details.asset_symbol)}</div>
+          <div class="detail-box"><b>Network & Wallet</b><br>${esc(details.network_name)}<br>${esc(details.wallet_address)}</div>
+          <div class="detail-box"><b>Rate & Fee</b><br>Rate: ${esc(money(details.lavida_selling_rate_mwk))}<br>Value: ${esc(money(details.crypto_value_mwk))}<br>Fee: ${details.requires_admin_review ? "Manual/Admin review" : `${esc(details.service_fee_usdt_equivalent)} USDT / ${esc(money(details.service_fee_mwk))}`}</div>
+          <div class="detail-box"><b>Fulfilment Reference</b><br>TXID: ${esc(details.tx_hash || "Not sent yet")}<br>Amount sent: ${esc(details.amount_sent || "")}<br>Sent: ${esc(cleanDate(details.sent_at))}</div>
+        </div>
+        <div id="cryptoFulfilmentFields" class="${details.tx_hash ? "hidden" : ""}" style="margin-top:10px">
+          <div class="grid">
+            <input id="cryptoTxHash" placeholder="Transaction hash / TXID">
+            <input id="cryptoAmountSent" type="number" step="0.00000001" min="0" value="${esc(details.receive_amount)}" placeholder="Amount sent">
+            <input id="cryptoSentNetwork" value="${esc(details.network_name)}" placeholder="Network">
+          </div>
+          <textarea id="cryptoAdminNotes" style="margin-top:10px" placeholder="Admin notes optional"></textarea>
+        </div>`;
     }
     async function openOrder(orderId){
       selectedOrderId = orderId;
@@ -164,6 +195,7 @@
         selectedOrder = data?.order || {};
         const items = data?.items || [];
         const history = data?.history || [];
+        selectedCryptoDetails = await loadCryptoOrderDetails(orderId);
         const proof = await paymentProofLink(selectedOrder.payment_proof_url);
         $("detailsTitle").textContent = selectedOrder.order_reference || "Order Details";
         $("detailsSubtitle").textContent = `${selectedOrder.customer_name || ""} ${selectedOrder.phone || ""}`.trim();
@@ -175,6 +207,7 @@
           <div class="detail-box"><b>Total</b><br>Subtotal: ${esc(money(selectedOrder.subtotal))}<br>Delivery: ${esc(money(selectedOrder.delivery_fee))}<br><b>${esc(money(selectedOrder.grand_total))}</b></div>
         </div>
         <div class="items">${items.map((item)=>`<div class="item-row"><div><b>${esc(item.product_name || "Product")}</b><br>${esc(item.quantity)} ${esc(item.unit || "")} x ${esc(money(item.unit_price))}</div><b>${esc(money(item.line_total))}</b></div>`).join("") || `<div class="item-row">No items returned.</div>`}</div>
+        ${cryptoDetailsHtml(selectedCryptoDetails)}
         <textarea id="actionReason" style="margin-top:10px" placeholder="Reason or internal note optional">${esc(selectedOrder.internal_notes || "")}</textarea>
         <div class="actions" style="margin-top:10px">${validActions(selectedOrder).map(([action,label])=>`<button type="button" class="${/reject|cancel/i.test(action) ? "danger" : ""}" data-order-action="${esc(action)}">${esc(label)}</button>`).join("") || `<span class="status ok">No further action required</span>`}</div>
         <h3 style="margin-top:16px">Audit History</h3>
@@ -185,7 +218,7 @@
       }
     }
     function successMessage(action){
-      return ({confirm_payment:"Payment confirmed successfully.",reject_payment:"Payment rejected.",approve_order:"Order approved successfully.",reject_order:"Order rejected.",start_processing:"Order moved to processing.",mark_ready_for_collection:"Order is ready for collection.",mark_out_for_delivery:"Order marked as out for delivery.",complete_order:"Order completed successfully.",cancel_order:"Order cancelled."}[action] || "Order updated.");
+      return ({confirm_payment:"Payment confirmed successfully.",reject_payment:"Payment rejected.",approve_order:"Order approved successfully.",reject_order:"Order rejected.",start_processing:"Order moved to processing.",mark_crypto_sent:"Crypto fulfilment recorded.",mark_ready_for_collection:"Order is ready for collection.",mark_out_for_delivery:"Order marked as out for delivery.",complete_order:"Order completed successfully.",cancel_order:"Order cancelled."}[action] || "Order updated.");
     }
     async function runAction(action){
       const reason = $("actionReason")?.value?.trim() || null;
@@ -194,9 +227,23 @@
           button.disabled=true;
           if(action === "complete_order" && button.dataset.orderAction === "complete_order") button.textContent = "Completing order...";
         });
-        const rpc = action === "complete_order"
-          ? db.rpc("complete_lavida_order",{p_order_id:selectedOrderId,p_reason:reason})
-          : db.rpc("update_marketplace_order_status",{p_order_id:selectedOrderId,p_action:action,p_reason:reason});
+        let rpc;
+        if(action === "mark_crypto_sent"){
+          rpc = db.rpc("mark_crypto_order_sent",{
+            p_order_id:selectedOrderId,
+            p_tx_hash:$("cryptoTxHash")?.value?.trim() || "",
+            p_amount_sent:Number($("cryptoAmountSent")?.value || 0),
+            p_network:$("cryptoSentNetwork")?.value?.trim() || selectedCryptoDetails?.network_name || "",
+            p_sent_at:new Date().toISOString(),
+            p_admin_notes:$("cryptoAdminNotes")?.value?.trim() || reason
+          });
+        }else if(action === "complete_order" && selectedCryptoDetails){
+          rpc = db.rpc("complete_crypto_order",{p_order_id:selectedOrderId,p_reason:reason});
+        }else if(action === "complete_order"){
+          rpc = db.rpc("complete_lavida_order",{p_order_id:selectedOrderId,p_reason:reason});
+        }else{
+          rpc = db.rpc("update_marketplace_order_status",{p_order_id:selectedOrderId,p_action:action,p_reason:reason});
+        }
         const {error} = await rpc;
         if(error) throw error;
         showMessage(successMessage(action),"");
