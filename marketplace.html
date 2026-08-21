@@ -577,13 +577,22 @@
       $("cryptoAssetSummary").textContent = "Loading crypto settings...";
       $("cryptoNetwork").innerHTML = `<option value="">Select network</option>`;
       try{
-        let asset = null;
-        const {data:assetByProduct,error:assetError}=await db.from("crypto_assets").select("*").eq("marketplace_product_id", productId).maybeSingle();
-        if(assetError) throw assetError;
-        asset = assetByProduct;
-        if(!asset && selectedCryptoProduct){
-          const symbol = cryptoSymbolForProduct(selectedCryptoProduct);
-          if(symbol){
+        let asset = null, networks = null;
+        const symbol = selectedCryptoProduct ? cryptoSymbolForProduct(selectedCryptoProduct) : "";
+        if(symbol){
+          const {data:config,error:configError}=await db.rpc("get_public_crypto_asset_config",{p_marketplace_product_id:productId,p_asset_symbol:symbol});
+          if(!configError && config?.asset){
+            asset = config.asset;
+            networks = config.networks || [];
+          }else if(configError && !["PGRST202","42883"].includes(configError.code)){
+            throw configError;
+          }
+        }
+        if(!asset){
+          const {data:assetByProduct,error:assetError}=await db.from("crypto_assets").select("*").eq("marketplace_product_id", productId).maybeSingle();
+          if(assetError) throw assetError;
+          asset = assetByProduct;
+          if(!asset && symbol){
             const {data:symbolAssets,error:symbolError}=await db.from("crypto_assets").select("*").ilike("asset_symbol", symbol).eq("is_active", true).limit(10);
             if(symbolError) throw symbolError;
             asset = (symbolAssets || []).find((row)=>String(row.marketplace_product_id)===String(productId))
@@ -593,8 +602,11 @@
           }
         }
         if(!asset) throw new Error("Crypto settings are not available for this asset yet.");
-        const {data:networks,error:networkError}=await db.from("crypto_asset_networks").select("*").eq("asset_id", asset.id).eq("is_enabled", true).order("sort_order");
-        if(networkError) throw networkError;
+        if(!networks){
+          const {data:networkRows,error:networkError}=await db.from("crypto_asset_networks").select("*").eq("asset_id", asset.id).eq("is_enabled", true).order("sort_order");
+          if(networkError) throw networkError;
+          networks = networkRows || [];
+        }
         selectedCryptoAsset = asset;
         selectedCryptoNetworks = networks || [];
         if(!selectedCryptoNetworks.length) throw new Error("No supported networks are available for this crypto asset yet.");
