@@ -22,7 +22,7 @@
     .print-link-button{white-space:nowrap}
     .page-panel{scroll-margin-top:104px}
     .drawer:not(.open){display:none}.drawer.open{display:flex}
-    #confirmCryptoOrderButton{width:100%;line-height:1.2}
+    #confirmCryptoOrderButton{width:100%;line-height:1.2}.crypto-diagnostic{border:1px solid #f59e0b;background:#111827;color:#f9fafb;border-radius:10px;padding:12px;user-select:text}.crypto-diagnostic-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.crypto-diagnostic strong{font-size:13px;letter-spacing:.04em;color:#fbbf24}.crypto-diagnostic button{border:1px solid #4b5563;background:#1f2937;color:#fff;border-radius:8px;padding:7px 9px;font-weight:700}.crypto-diagnostic pre{white-space:pre-wrap;overflow:auto;max-height:420px;margin:0;font:12px/1.45 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;color:#e5e7eb}
     .crypto-drawer .drawer-head{padding:16px 18px 14px}.crypto-drawer .drawer-body{gap:9px;padding:12px 18px 16px}.crypto-drawer .field-label{font-size:15px;font-weight:600;line-height:1.28;color:var(--navy)}.crypto-drawer input::placeholder,.crypto-drawer textarea::placeholder{color:#6b7280;font-weight:400}.crypto-drawer textarea{min-height:66px}.crypto-warning{background:#fff4f2;border-color:#f1b8b3;color:#b42318;font-size:15px;font-weight:500;line-height:1.45;padding:11px 12px}.crypto-review{gap:0;padding:12px;background:#f8fafc}.crypto-review div{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:12px;padding:7px 0;border-bottom:1px solid #e7ecf3}.crypto-review div:first-child{padding-top:0}.crypto-review div:last-child{border-bottom:0;padding-bottom:0}.crypto-review span{font-size:15px;font-weight:400;line-height:1.35;color:#344054}.crypto-review strong{font-size:16px;font-weight:700;line-height:1.3;color:var(--navy);text-align:right}.crypto-review .crypto-review-total span,.crypto-review .crypto-review-total strong{font-weight:800}.crypto-drawer .crypto-confirmation{margin-top:1px;color:var(--ink);font-size:14px;font-weight:400;line-height:1.45}.crypto-drawer .crypto-confirmation input{width:28px;height:28px;min-height:28px}.crypto-drawer h3{font-size:22px;font-weight:600;line-height:1.25;margin:3px 0 1px}.crypto-drawer #cryptoNotice{font-size:14px;line-height:1.45}.crypto-drawer #confirmCryptoOrderButton{min-height:48px;font-size:16px;font-weight:600}
     .marketplace-header{min-height:72px}.desktop-nav-link{font-size:15px;font-weight:750}.marketplace-brand strong{font-size:26px}.marketplace-brand span{font-size:13px}.desktop-search{height:42px}.desktop-search input{min-height:40px;font-size:14px}.profile-menu-button{min-width:48px}.profile-menu-button .profile-name,.profile-menu-button .profile-chevron{display:none}.profile-avatar{width:36px;height:36px}.profile-avatar svg{width:20px;height:20px;stroke:currentColor}.print-page{gap:12px}.print-hero{min-height:282px;padding:26px;border-radius:16px}.print-hero h1{font-size:clamp(28px,3vw,36px);line-height:1.08;font-weight:850}.print-hero p{font-size:16px;line-height:1.5;margin-top:12px}.print-actions{gap:12px;margin-top:18px}.print-button{min-height:46px;padding:0 20px;font-size:15px;font-weight:800}.print-trust{font-size:13px;font-weight:750;margin-top:16px}.print-section-head h2,.print-panel-head h2{font-size:21px;font-weight:850}.print-link-button{font-size:14px;font-weight:750}.print-service{min-height:94px;padding:13px 16px;gap:14px}.print-service-icon{width:52px;height:52px}.print-service b{font-size:16px;font-weight:800;line-height:1.2}.print-service small{font-size:12px;line-height:1.35}.print-service-price{font-size:14px;font-weight:800}.print-how-panel{padding:14px 20px}.print-how-panel h2{font-size:18px;font-weight:850}.print-how-steps b{font-size:13px;font-weight:800}.print-how-steps small{font-size:12px;line-height:1.3}.print-contact-card h2,.print-recent-card h2{font-size:20px;font-weight:850}.print-contact-card,.print-recent-card{font-size:14px}.print-contact-items b,.print-contact-items a{font-size:13px;font-weight:800}.print-ready-note{font-size:14px;line-height:1.4}.print-dashboard-grid.guest{grid-template-columns:1fr}.print-dashboard-grid.guest .print-contact-card{grid-column:1/-1}.print-recent-card.hidden{display:none!important}body:not(.is-authenticated) .print-recent-card{display:none!important}body:not(.is-authenticated) .print-dashboard-grid{grid-template-columns:1fr}@media(min-width:1100px){body.is-authenticated .profile-menu-button .profile-name{display:inline-grid}.profile-menu-button{min-width:48px}body.is-authenticated .profile-menu-button{min-width:92px}}@media(min-width:768px){.marketplace-main{padding-top:18px}.marketplace-header{padding-top:10px;padding-bottom:10px}.header-menu{top:68px}.page-panel{scroll-margin-top:86px}}@media(max-width:767px){.print-hero h1{font-size:27px;line-height:1.12}.print-hero p{font-size:15px}.print-button{font-size:14px}.print-service b{font-size:16px}.print-section-head h2{font-size:20px}.print-contact-card,.print-recent-card{font-size:14px}.page-panel{scroll-margin-top:94px}}
     .print-recent-orders{min-width:0;overflow-x:auto}
@@ -328,6 +328,10 @@
       <input id="cryptoPaymentReference" placeholder="Payment reference (optional)">
       <label class="field-label" for="cryptoPaymentProof">Upload proof of payment<input id="cryptoPaymentProof" type="file" accept="image/*,.pdf"></label>
       <div id="cryptoNotice" class="notice hidden"></div>
+      <div id="cryptoDiagnosticPanel" class="crypto-diagnostic hidden">
+        <div class="crypto-diagnostic-head"><strong>CRYPTO CHECKOUT DIAGNOSTIC</strong><button id="copyCryptoDiagnostic" type="button">Copy Diagnostic</button></div>
+        <pre id="cryptoDiagnosticText"></pre>
+      </div>
       <button id="confirmCryptoOrderButton" type="button">Proceed to Payment</button>
     </div>
   </aside>
@@ -675,6 +679,193 @@
       if(/\b(BTC|BITCOIN)\b/.test(networkText))return /^(bc1[ac-hj-np-z02-9]{11,87}|[13][1-9A-HJ-NP-Za-km-z]{25,34})$/i.test(value);
       if(/\b(SOL|SOLANA)\b/.test(networkText))return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(value);
       return value.length>=8;
+    }
+    function diagnosticValue(value,seen=new WeakSet()){
+      if(value instanceof Error)return {name:value.name,message:value.message,stack:value.stack,cause:diagnosticValue(value.cause,seen),...Object.fromEntries(Object.keys(value).map((key)=>[key,diagnosticValue(value[key],seen)]))};
+      if(typeof File!=="undefined"&&value instanceof File)return {name:value.name,size:value.size,type:value.type,lastModified:value.lastModified};
+      if(value===null||typeof value!=="object")return value;
+      if(seen.has(value))return "[Circular]";
+      seen.add(value);
+      if(Array.isArray(value))return value.map((item)=>diagnosticValue(item,seen));
+      return Object.fromEntries(Object.keys(value).map((key)=>[key,diagnosticValue(value[key],seen)]));
+    }
+    function diagnosticJson(value){try{return JSON.stringify(diagnosticValue(value),null,2)}catch(error){return String(value)}}
+    function diagnosticError(error){return diagnosticValue(error)}
+    function cryptoDiagnosticsEnabled(){try{return new URLSearchParams(location.search).get("crypto_debug")==="1"||localStorage.getItem("lavida_crypto_checkout_debug")==="1"}catch(error){return false}}
+    function cryptoPageEnvironment(){if(location.protocol==="file:")return"local";if(/^(localhost|127\.0\.0\.1)$/i.test(location.hostname))return"local";if(location.hostname==="app.lavida.agency")return"production";return location.hostname||"unknown"}
+    function cryptoSupabaseHost(){try{return new URL(SUPABASE_URL).host}catch(error){return""}}
+    function buildCryptoDiagnostic(){
+      const networkId=$("cryptoNetwork")?.value||"";
+      const network=selectedCryptoNetwork(networkId);
+      const proofFile=$("cryptoPaymentProof")?.files?.[0]||null;
+      return {
+        timestamp:new Date().toISOString(),
+        stage:"00_INIT",
+        diagnostic_mode_enabled:cryptoDiagnosticsEnabled(),
+        page_environment:cryptoPageEnvironment(),
+        page_url:location.href,
+        supabase_project_host:cryptoSupabaseHost(),
+        authenticated:null,
+        session_exists:null,
+        user_id:null,
+        product_id:selectedCryptoProduct?.id||null,
+        crypto_asset_id:selectedCryptoAsset?.id||null,
+        selected_network_id:networkId||null,
+        asset_symbol:selectedCryptoAsset?.asset_symbol||cryptoSymbolForProduct(selectedCryptoProduct)||null,
+        product_name:selectedCryptoProduct?productName(selectedCryptoProduct):null,
+        network_name:network?.network_name||null,
+        network_code:network?.network_code||null,
+        proof_file_selected:Boolean(proofFile),
+        proof_file_name:proofFile?.name||null,
+        proof_file_size:proofFile?.size||null,
+        proof_file_type:proofFile?.type||null,
+        proof_upload_attempted:false,
+        proof_upload_success:null,
+        proof_storage_path:null,
+        proof_upload_error:null,
+        rpc_function:"submit_crypto_marketplace_order",
+        rpc_argument_name:"p_order",
+        rpc_argument_type:"object / JSON",
+        rpc_request_url:`${SUPABASE_URL}/rest/v1/rpc/submit_crypto_marketplace_order`,
+        rpc_request_method:"POST",
+        payload:null,
+        rpc_called:false,
+        rpc_data:null,
+        rpc_error:null,
+        rpc_result:null,
+        exception:null
+      };
+    }
+    function setCryptoDiagnosticStage(diagnostic,stage){
+      if(!diagnostic)return;
+      diagnostic.stage=stage;
+      diagnostic.updated_at=new Date().toISOString();
+      window.__LAVIDA_CRYPTO_CHECKOUT_DIAGNOSTIC__=diagnostic;
+    }
+    function formatCryptoDiagnostic(diagnostic){
+      return `-----------------------------------------
+CRYPTO CHECKOUT DIAGNOSTIC
+-----------------------------------------
+
+Timestamp:
+${diagnostic?.timestamp||""}
+
+Updated:
+${diagnostic?.updated_at||""}
+
+Environment:
+${diagnostic?.page_environment||""}
+
+Diagnostic Mode Enabled:
+${diagnostic?.diagnostic_mode_enabled}
+
+Page URL:
+${diagnostic?.page_url||""}
+
+Stage:
+${diagnostic?.stage||""}
+
+Supabase project:
+${diagnostic?.supabase_project_host||""}
+
+Authenticated:
+${diagnostic?.authenticated}
+
+Session Exists:
+${diagnostic?.session_exists}
+
+User ID:
+${diagnostic?.user_id||"null"}
+
+Product ID:
+${diagnostic?.product_id||"null"}
+
+Crypto Asset ID:
+${diagnostic?.crypto_asset_id||"null"}
+
+Asset Symbol:
+${diagnostic?.asset_symbol||"null"}
+
+Product Name:
+${diagnostic?.product_name||"null"}
+
+Network Name:
+${diagnostic?.network_name||"null"}
+
+Network Code:
+${diagnostic?.network_code||"null"}
+
+Selected Network ID:
+${diagnostic?.selected_network_id||"null"}
+
+RPC Function:
+${diagnostic?.rpc_function||""}
+
+RPC Argument Name:
+${diagnostic?.rpc_argument_name||""}
+
+RPC Argument Type:
+${diagnostic?.rpc_argument_type||""}
+
+Request URL:
+${diagnostic?.rpc_request_url||""}
+
+Request Method:
+${diagnostic?.rpc_request_method||""}
+
+Payload:
+${diagnosticJson(diagnostic?.payload??null)}
+
+Proof Upload:
+${diagnosticJson({file_selected:diagnostic?.proof_file_selected,file_name:diagnostic?.proof_file_name,file_size:diagnostic?.proof_file_size,file_type:diagnostic?.proof_file_type,attempted:diagnostic?.proof_upload_attempted,success:diagnostic?.proof_upload_success,storage_path:diagnostic?.proof_storage_path,error:diagnostic?.proof_upload_error})}
+
+RPC Data:
+${diagnosticJson(diagnostic?.rpc_data??null)}
+
+RPC Error:
+${diagnosticJson(diagnostic?.rpc_error??null)}
+
+RPC Result:
+${diagnosticJson(diagnostic?.rpc_result??null)}
+
+Original Exception:
+${diagnosticJson(diagnostic?.exception??null)}
+
+-----------------------------------------`;
+    }
+    function showCryptoDiagnostic(diagnostic){
+      window.__LAVIDA_CRYPTO_CHECKOUT_DIAGNOSTIC__=diagnostic;
+      if(!cryptoDiagnosticsEnabled())return;
+      const panel=$("cryptoDiagnosticPanel"), text=$("cryptoDiagnosticText");
+      if(panel&&text){text.textContent=formatCryptoDiagnostic(diagnostic);panel.classList.remove("hidden")}
+    }
+    function hideCryptoDiagnostic(){const panel=$("cryptoDiagnosticPanel");if(panel)panel.classList.add("hidden")}
+    function logCryptoDiagnostic(diagnostic){
+      console.group("LAVIDA CRYPTO CHECKOUT DIAGNOSTIC");
+      console.log(diagnosticValue(diagnostic));
+      console.groupEnd();
+    }
+    async function captureCryptoDiagnosticAuth(diagnostic){
+      try{
+        const {data,error}=await db.auth.getSession();
+        if(error)diagnostic.auth_error=diagnosticError(error);
+        const session=data?.session||authSession||null;
+        diagnostic.session_exists=Boolean(session);
+        diagnostic.authenticated=Boolean(session?.user);
+        diagnostic.user_id=session?.user?.id||null;
+      }catch(error){
+        diagnostic.auth_error=diagnosticError(error);
+        diagnostic.session_exists=Boolean(authSession);
+        diagnostic.authenticated=Boolean(authSession?.user);
+        diagnostic.user_id=authSession?.user?.id||null;
+      }
+      window.__LAVIDA_CRYPTO_CHECKOUT_DIAGNOSTIC__=diagnostic;
+    }
+    function failCryptoDiagnostic(diagnostic,message,error){
+      if(error)diagnostic.exception=diagnosticError(error);
+      showCryptoDiagnostic(diagnostic);
+      logCryptoDiagnostic(diagnostic);
+      cryptoNotice(message,"bad");
     }
     function cryptoOrderFingerprint(payload){return JSON.stringify({product_id:payload.product_id,receive_amount:payload.receive_amount,network_id:payload.network_id,wallet_address:payload.wallet_address,customer_name:payload.customer_name,phone:payload.phone,email:payload.email,payment_method:payload.payment_method,payment_reference:payload.payment_reference})}
     function cryptoOrderIdempotencyKey(payload){const fingerprint=cryptoOrderFingerprint(payload);try{const saved=JSON.parse(sessionStorage.getItem(CRYPTO_ORDER_ATTEMPT_KEY)||"null");if(saved?.fingerprint===fingerprint&&saved?.key)return saved.key}catch(error){}const key=crypto.randomUUID();sessionStorage.setItem(CRYPTO_ORDER_ATTEMPT_KEY,JSON.stringify({fingerprint,key}));return key}
@@ -1043,47 +1234,87 @@
       }finally{$("checkoutButton").disabled=false}
     }
     async function submitCryptoOrder(){
-      if(settings.is_open===false)return cryptoNotice("Connect is currently closed. Please try again during operating hours.","bad");
-      if(!selectedCryptoProduct || !selectedCryptoAsset)return cryptoNotice("Select a crypto asset first.","bad");
+      const diagnostic=buildCryptoDiagnostic();
+      hideCryptoDiagnostic();
+      setCryptoDiagnosticStage(diagnostic,"01_VALIDATE_PRODUCT");
+      if(settings.is_open===false)return failCryptoDiagnostic(diagnostic,"Connect is currently closed. Please try again during operating hours.");
+      if(!selectedCryptoProduct || !selectedCryptoAsset)return failCryptoDiagnostic(diagnostic,"Select a crypto asset first.");
       const amount=cryptoAmount(), networkId=$("cryptoNetwork").value, wallet=$("cryptoWalletAddress").value.trim();
       const name=$("cryptoCustomerName").value.trim(), phone=$("cryptoCustomerPhone").value.trim(), email=$("cryptoCustomerEmail").value.trim();
       const paymentMethod=$("cryptoPaymentMethod").value, paymentReference=$("cryptoPaymentReference").value.trim();
       const proofFile=$("cryptoPaymentProof").files[0];
-      if(!(amount>0))return cryptoNotice("Enter the crypto amount you want to receive.","bad");
-      if(amount<Number(selectedCryptoAsset.minimum_purchase||0))return cryptoNotice(`Minimum purchase is ${selectedCryptoAsset.minimum_purchase} ${selectedCryptoAsset.asset_symbol}.`,"bad");
-      if(selectedCryptoAsset.maximum_purchase&&amount>Number(selectedCryptoAsset.maximum_purchase))return cryptoNotice(`Maximum purchase is ${selectedCryptoAsset.maximum_purchase} ${selectedCryptoAsset.asset_symbol}.`,"bad");
-      if(!networkId)return cryptoNotice("Select a supported network.","bad");
+      setCryptoDiagnosticStage(diagnostic,"02_VALIDATE_AMOUNT");
+      if(!(amount>0))return failCryptoDiagnostic(diagnostic,"Enter the crypto amount you want to receive.");
+      if(amount<Number(selectedCryptoAsset.minimum_purchase||0))return failCryptoDiagnostic(diagnostic,`Minimum purchase is ${selectedCryptoAsset.minimum_purchase} ${selectedCryptoAsset.asset_symbol}.`);
+      if(selectedCryptoAsset.maximum_purchase&&amount>Number(selectedCryptoAsset.maximum_purchase))return failCryptoDiagnostic(diagnostic,`Maximum purchase is ${selectedCryptoAsset.maximum_purchase} ${selectedCryptoAsset.asset_symbol}.`);
+      setCryptoDiagnosticStage(diagnostic,"03_VALIDATE_NETWORK");
+      if(!networkId)return failCryptoDiagnostic(diagnostic,"Select a supported network.");
       const network=selectedCryptoNetwork(networkId);
-      if(!network)return cryptoNotice("This network is not available for this asset. Please select another network.","bad");
-      if(!validCryptoWalletForNetwork(wallet,network))return cryptoNotice("Please enter a valid wallet address for the selected network.","bad");
-      if(!$("cryptoRiskConfirm").checked)return cryptoNotice("Confirm the selected network and wallet address before placing the order.","bad");
-      if(!name)return cryptoNotice("Please enter your full name.","bad");
-      if(!phoneLooksValid(phone))return cryptoNotice("Please enter a valid phone number.","bad");
-      if(!emailLooksValid(email))return cryptoNotice("Please enter a valid email address, or leave it blank.","bad");
-      if(isAirtelMoney(paymentMethod)&&!paymentReference&&!proofFile)return cryptoNotice("Airtel Money requires a payment reference or uploaded payment proof.","bad");
+      diagnostic.network_name=network?.network_name||null;
+      diagnostic.network_code=network?.network_code||null;
+      if(!network)return failCryptoDiagnostic(diagnostic,"This network is not available for this asset. Please select another network.");
+      setCryptoDiagnosticStage(diagnostic,"04_VALIDATE_WALLET");
+      if(!validCryptoWalletForNetwork(wallet,network))return failCryptoDiagnostic(diagnostic,"Please enter a valid wallet address for the selected network.");
+      if(!$("cryptoRiskConfirm").checked)return failCryptoDiagnostic(diagnostic,"Confirm the selected network and wallet address before placing the order.");
+      setCryptoDiagnosticStage(diagnostic,"05_VALIDATE_CUSTOMER");
+      if(!name)return failCryptoDiagnostic(diagnostic,"Please enter your full name.");
+      if(!phoneLooksValid(phone))return failCryptoDiagnostic(diagnostic,"Please enter a valid phone number.");
+      if(!emailLooksValid(email))return failCryptoDiagnostic(diagnostic,"Please enter a valid email address, or leave it blank.");
+      setCryptoDiagnosticStage(diagnostic,"06_VALIDATE_PAYMENT_METHOD");
+      if(isAirtelMoney(paymentMethod)&&!paymentReference&&!proofFile)return failCryptoDiagnostic(diagnostic,"Airtel Money requires a payment reference or uploaded payment proof.");
       const button=$("confirmCryptoOrderButton"), originalButtonText=button.textContent;
       button.disabled=true;
       button.textContent="Preparing your order...";
       let payload=null;
       try{
         await renderCryptoReview();
+        setCryptoDiagnosticStage(diagnostic,"07_PREPARE_PROOF");
         let proofUrl="";
-        try{proofUrl=await uploadCryptoProof(phone.replace(/\D/g,"")||"guest")}catch(uploadError){logCryptoCheckoutError(uploadError,{payment_method:paymentMethod,payment_reference:paymentReference,payment_proof_selected:Boolean(proofFile)});if(!paymentReference)throw uploadError;cryptoNotice("Payment proof could not be uploaded, so the order will use your payment reference only.","warn")}
+        if(proofFile){
+          diagnostic.proof_upload_attempted=true;
+          setCryptoDiagnosticStage(diagnostic,"08_UPLOAD_PROOF");
+          try{
+            proofUrl=await uploadCryptoProof(phone.replace(/\D/g,"")||"guest");
+            diagnostic.proof_upload_success=true;
+            diagnostic.proof_storage_path=proofUrl;
+          }catch(uploadError){
+            diagnostic.proof_upload_success=false;
+            diagnostic.proof_upload_error=diagnosticError(uploadError);
+            uploadError.checkout_step=diagnostic.stage;
+            throw uploadError;
+          }
+        }
+        setCryptoDiagnosticStage(diagnostic,"09_BUILD_ORDER_PAYLOAD");
         payload={product_id:selectedCryptoProduct.id,receive_amount:amount,network_id:networkId,wallet_address:wallet,customer_name:name,phone,email,payment_method:paymentMethod,payment_reference:paymentReference,payment_proof_url:proofUrl,source_device_id:localStorage.getItem("lavida_marketplace_device")||crypto.randomUUID()};
         payload.idempotency_key = cryptoOrderIdempotencyKey(payload);
+        diagnostic.payload={...payload,crypto_asset_id:selectedCryptoAsset?.id||null,asset_symbol:selectedCryptoAsset?.asset_symbol||null,product_name:productName(selectedCryptoProduct),network_name:network?.network_name||null,network_code:network?.network_code||null,order_type:"crypto",service_fee:selectedCryptoFee||null};
         localStorage.setItem("lavida_marketplace_device",payload.source_device_id);
-        const{data,error}=await db.rpc("submit_crypto_marketplace_order",{p_order:payload});
+        await captureCryptoDiagnosticAuth(diagnostic);
+        setCryptoDiagnosticStage(diagnostic,"10_CALL_ORDER_RPC");
+        diagnostic.rpc_called=true;
+        const rpcResult=await db.rpc("submit_crypto_marketplace_order",{p_order:payload});
+        setCryptoDiagnosticStage(diagnostic,"11_RECEIVE_RPC_RESPONSE");
+        diagnostic.rpc_result=diagnosticValue(rpcResult);
+        diagnostic.rpc_data=diagnosticValue(rpcResult?.data??null);
+        diagnostic.rpc_error=diagnosticValue(rpcResult?.error??null);
+        const{data,error}=rpcResult;
         if(error)throw error;
+        setCryptoDiagnosticStage(diagnostic,"12_PARSE_ORDER_RESPONSE");
         clearCryptoOrderAttempt();
         localStorage.setItem("lavida_connect_customer_phone", phone);
         if(email) localStorage.setItem("lavida_connect_customer_email", email);
+        setCryptoDiagnosticStage(diagnostic,"13_CONFIRM_ORDER");
         closeCryptoDrawer();
         $("confirmation").classList.remove("hidden");
         $("confirmation").innerHTML=`<h2>Crypto order submitted</h2><p>Your reference is <b>${esc(data?.order_reference||"")}</b>.</p><p>${data?.requires_admin_review ? "Service fee and total payable will be confirmed during review." : `Total payable: <b>${esc(money(data?.grand_total||0))}</b>`}</p><span class="pill">${esc(publicOrderLabel(data?.order_status||"pending_confirmation"))}</span>`;
+        setCryptoDiagnosticStage(diagnostic,"14_CONTINUE_TO_PAYMENT");
         loadMyOrders();
         scrollTo({top:0,behavior:"smooth"});
       }catch(error){
+        diagnostic.exception=diagnosticError(error);
         logCryptoCheckoutError(error,payload);
+        showCryptoDiagnostic(diagnostic);
+        logCryptoDiagnostic(diagnostic);
         cryptoNotice(cryptoCheckoutErrorMessage(error),"bad");
       }finally{button.disabled=false;button.textContent=originalButtonText}
     }
@@ -1510,7 +1741,7 @@
     $("togglePrintServicesButton").addEventListener("click",()=>{printServicesExpanded=!printServicesExpanded;renderPrintServices();});
     $("printRecentOrdersButton").addEventListener("click",()=>navigateRoute("printing-orders",{resetScroll:true}));
     $("printFiles").addEventListener("change",(event)=>{if(!printSession?.user){event.stopImmediatePropagation();$("printFiles").value="";requirePrintAuth();}},true);
-$("marketplaceSearchButton").addEventListener("click",()=>{navigateRoute("market");setTimeout(()=>$("search").focus(),0)});$("marketplaceNotificationsButton").addEventListener("click",openNotificationsFromHeader);$("marketplaceAuthMenuButton").addEventListener("click",event=>{event.preventDefault();event.stopPropagation();handleMenuAuthAction();});$("marketplaceMenuButton").addEventListener("click",event=>{event.stopPropagation();toggleMarketplaceMenu()});$("marketplaceHeaderMenu").addEventListener("click",(event)=>{const destination=event.target.closest("[data-menu-destination]");if(destination){event.preventDefault();event.stopPropagation();handleMenuNavigation(destination.dataset.menuDestination);return}event.stopPropagation();});document.addEventListener("click",event=>{if(!$("marketplaceHeaderMenu").contains(event.target)&&!$("marketplaceMenuButton").contains(event.target))toggleMarketplaceMenu(false)});$("orderFilterButton").addEventListener("click",()=>{$("orderFilterPanel").classList.toggle("hidden")});$("marketCartButton").addEventListener("click",()=>navigateRoute("cart"));$("closeCart").addEventListener("click",()=>{if(currentRoute()==="cart")history.back();else closeCart()});$("closeCrypto").addEventListener("click",closeCryptoDrawer);["cryptoReceiveAmount","cryptoNetwork","cryptoWalletAddress"].forEach((id)=>$(id).addEventListener("input",renderCryptoReview));$("confirmCryptoOrderButton").addEventListener("click",submitCryptoOrder);$("fulfilment").addEventListener("change",renderCart);$("checkoutButton").addEventListener("click",checkout);$("trackButton").addEventListener("click",trackOrder);$("refreshOrdersButton").addEventListener("click",loadMyOrders);$("startPrintOrderButton").addEventListener("click",()=>{$("printOrderForm").classList.remove("hidden");showPrintStep(0);$("printOrderForm").scrollIntoView({behavior:"smooth",block:"start"});});$("myPrintOrdersButton").addEventListener("click",async()=>{const session=printSession||await refreshPrintSession();if(!session?.user){requestSignIn("marketplace.html#printing-orders");return}navigateRoute("printing-orders",{resetScroll:true});});$("printAuthContinueButton")?.addEventListener("click",()=>requestSignIn("marketplace.html#print365"));$("printFiles").addEventListener("change",()=>{const allowed=/(\.pdf|\.doc|\.docx|\.jpg|\.jpeg|\.png)$/i;Array.from($("printFiles").files||[]).forEach((file)=>{if(allowed.test(file.name))printFiles.push(defaultPrintOptions(file));});$("printFiles").value="";renderPrintUploads();});$("printDocumentOptions").addEventListener("input",(event)=>updatePrintOption(event.target));$("printDocumentOptions").addEventListener("change",(event)=>updatePrintOption(event.target));["printFulfilment","printPaymentMethod"].forEach((id)=>$(id).addEventListener("change",renderPrintSummary));$("printPrevButton").addEventListener("click",()=>showPrintStep(printStep-1));$("printNextButton").addEventListener("click",()=>{if(validPrintStep())showPrintStep(printStep+1);});document.querySelectorAll("[data-print-step-jump]").forEach((button)=>button.addEventListener("click",()=>{if(Number(button.dataset.printStepJump)<=printStep || validPrintStep())showPrintStep(button.dataset.printStepJump);}));$("editPrintOrderButton").addEventListener("click",()=>showPrintStep(0));$("confirmPrintOrderButton").addEventListener("click",submitPrintOrder);$("refreshPrintOrdersButton").addEventListener("click",loadPrintOrders);$("cancelExitButton").addEventListener("click",hideExitConfirmation);$("confirmExitButton").addEventListener("click",()=>{window.Capacitor?.Plugins?.App?.exitApp?.()});window.addEventListener("popstate",()=>{const wasOpen=!$("marketplaceHeaderMenu").hidden;if(wasOpen)toggleMarketplaceMenu(false);afterMenuClose(()=>routeFromHash());});window.addEventListener("hashchange",()=>{if(!$("marketplaceHeaderMenu").hidden){toggleMarketplaceMenu(false);afterMenuClose(()=>routeFromHash());return}routeFromHash();});window.addEventListener("focus",()=>{if(location.hash==="#orders"||location.hash==="#track")loadMyOrders();if(location.hash==="#printing-orders")loadPrintOrders();if($("marketplaceHeaderMenu").hidden)refreshAuthSession();});
+$("marketplaceSearchButton").addEventListener("click",()=>{navigateRoute("market");setTimeout(()=>$("search").focus(),0)});$("marketplaceNotificationsButton").addEventListener("click",openNotificationsFromHeader);$("marketplaceAuthMenuButton").addEventListener("click",event=>{event.preventDefault();event.stopPropagation();handleMenuAuthAction();});$("marketplaceMenuButton").addEventListener("click",event=>{event.stopPropagation();toggleMarketplaceMenu()});$("marketplaceHeaderMenu").addEventListener("click",(event)=>{const destination=event.target.closest("[data-menu-destination]");if(destination){event.preventDefault();event.stopPropagation();handleMenuNavigation(destination.dataset.menuDestination);return}event.stopPropagation();});document.addEventListener("click",event=>{if(!$("marketplaceHeaderMenu").contains(event.target)&&!$("marketplaceMenuButton").contains(event.target))toggleMarketplaceMenu(false)});$("orderFilterButton").addEventListener("click",()=>{$("orderFilterPanel").classList.toggle("hidden")});$("marketCartButton").addEventListener("click",()=>navigateRoute("cart"));$("closeCart").addEventListener("click",()=>{if(currentRoute()==="cart")history.back();else closeCart()});$("closeCrypto").addEventListener("click",closeCryptoDrawer);["cryptoReceiveAmount","cryptoNetwork","cryptoWalletAddress"].forEach((id)=>$(id).addEventListener("input",renderCryptoReview));$("confirmCryptoOrderButton").addEventListener("click",submitCryptoOrder);$("copyCryptoDiagnostic")?.addEventListener("click",async()=>{const text=$("cryptoDiagnosticText")?.textContent||"";try{await navigator.clipboard.writeText(text);$("copyCryptoDiagnostic").textContent="Copied"}catch(error){console.warn("Could not copy crypto diagnostic",error)}});$("fulfilment").addEventListener("change",renderCart);$("checkoutButton").addEventListener("click",checkout);$("trackButton").addEventListener("click",trackOrder);$("refreshOrdersButton").addEventListener("click",loadMyOrders);$("startPrintOrderButton").addEventListener("click",()=>{$("printOrderForm").classList.remove("hidden");showPrintStep(0);$("printOrderForm").scrollIntoView({behavior:"smooth",block:"start"});});$("myPrintOrdersButton").addEventListener("click",async()=>{const session=printSession||await refreshPrintSession();if(!session?.user){requestSignIn("marketplace.html#printing-orders");return}navigateRoute("printing-orders",{resetScroll:true});});$("printAuthContinueButton")?.addEventListener("click",()=>requestSignIn("marketplace.html#print365"));$("printFiles").addEventListener("change",()=>{const allowed=/(\.pdf|\.doc|\.docx|\.jpg|\.jpeg|\.png)$/i;Array.from($("printFiles").files||[]).forEach((file)=>{if(allowed.test(file.name))printFiles.push(defaultPrintOptions(file));});$("printFiles").value="";renderPrintUploads();});$("printDocumentOptions").addEventListener("input",(event)=>updatePrintOption(event.target));$("printDocumentOptions").addEventListener("change",(event)=>updatePrintOption(event.target));["printFulfilment","printPaymentMethod"].forEach((id)=>$(id).addEventListener("change",renderPrintSummary));$("printPrevButton").addEventListener("click",()=>showPrintStep(printStep-1));$("printNextButton").addEventListener("click",()=>{if(validPrintStep())showPrintStep(printStep+1);});document.querySelectorAll("[data-print-step-jump]").forEach((button)=>button.addEventListener("click",()=>{if(Number(button.dataset.printStepJump)<=printStep || validPrintStep())showPrintStep(button.dataset.printStepJump);}));$("editPrintOrderButton").addEventListener("click",()=>showPrintStep(0));$("confirmPrintOrderButton").addEventListener("click",submitPrintOrder);$("refreshPrintOrdersButton").addEventListener("click",loadPrintOrders);$("cancelExitButton").addEventListener("click",hideExitConfirmation);$("confirmExitButton").addEventListener("click",()=>{window.Capacitor?.Plugins?.App?.exitApp?.()});window.addEventListener("popstate",()=>{const wasOpen=!$("marketplaceHeaderMenu").hidden;if(wasOpen)toggleMarketplaceMenu(false);afterMenuClose(()=>routeFromHash());});window.addEventListener("hashchange",()=>{if(!$("marketplaceHeaderMenu").hidden){toggleMarketplaceMenu(false);afterMenuClose(()=>routeFromHash());return}routeFromHash();});window.addEventListener("focus",()=>{if(location.hash==="#orders"||location.hash==="#track")loadMyOrders();if(location.hash==="#printing-orders")loadPrintOrders();if($("marketplaceHeaderMenu").hidden)refreshAuthSession();});
     window.LavidaAuth.listen(db,(event,session)=>{if(event==="TOKEN_REFRESHED"){if(session?.user){authSession=session;printSession=session;authState="authenticated";updateAuthControls();loadUnreadNotifications()}return}if(event==="SIGNED_OUT"){authSession=null;printSession=null;authState="unauthenticated";adminToolsLoadedFor="";setNotificationBadge(0);hideRestrictedLinks();updateAuthControls();return}authSession=session || null;printSession=session || null;authState=session?.user?"authenticated":"unauthenticated";updateAuthControls();if(session?.user){loadUnreadNotifications();const userKey=authUserKey(session);if(userKey!==adminToolsLoadedFor){adminToolsLoadedFor=userKey;hideRestrictedLinks();checkAdminTools()}}else{adminToolsLoadedFor="";hideRestrictedLinks();setNotificationBadge(0)}});
     refreshLavidaAppShell();loadSettings();loadProducts();renderCart();renderPrintServices();renderPrintUploads();updateAuthControls();refreshAuthSession();refreshPrintSession();checkAdminTools();setupOrdersRealtime();setupNativeBackButton();if(!location.hash)history.replaceState({route:"home"},"","#home");routeFromHash();
   </script>
