@@ -350,6 +350,7 @@
     const db = window.LavidaAuth.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const CART_KEY = "lavida_marketplace_cart_v1";
     const PRINT_DRAFT_KEY = "lavida_printing_draft_v1";
+    const CRYPTO_ORDER_ATTEMPT_KEY = "lavida_crypto_order_attempt_v1";
     const AUTH_RETURN_KEY = "lavida_auth_return_to";
     const SIGN_IN_DESTINATION = "signin.html";
     const HOME_DESTINATION = "marketplace.html#home";
@@ -663,6 +664,9 @@
         <div class="crypto-review-total"><span>Total payable</span><strong>${totalPayableText}</strong></div>`;
     }
     async function uploadCryptoProof(key){const file=$("cryptoPaymentProof").files[0];if(!file)return"";const path=`${key}/crypto-${Date.now()}-${file.name.replace(/[^\w.-]+/g,"_")}`;const{error}=await db.storage.from("marketplace-payment-proofs").upload(path,file,{upsert:false});if(error){error.checkout_step="payment_proof_upload";throw error}return path}
+    function cryptoOrderFingerprint(payload){return JSON.stringify({product_id:payload.product_id,receive_amount:payload.receive_amount,network_id:payload.network_id,wallet_address:payload.wallet_address,customer_name:payload.customer_name,phone:payload.phone,email:payload.email,payment_method:payload.payment_method,payment_reference:payload.payment_reference})}
+    function cryptoOrderIdempotencyKey(payload){const fingerprint=cryptoOrderFingerprint(payload);try{const saved=JSON.parse(sessionStorage.getItem(CRYPTO_ORDER_ATTEMPT_KEY)||"null");if(saved?.fingerprint===fingerprint&&saved?.key)return saved.key}catch(error){}const key=crypto.randomUUID();sessionStorage.setItem(CRYPTO_ORDER_ATTEMPT_KEY,JSON.stringify({fingerprint,key}));return key}
+    function clearCryptoOrderAttempt(){sessionStorage.removeItem(CRYPTO_ORDER_ATTEMPT_KEY)}
     function isAirtelMoney(method){return String(method||"").toLowerCase().includes("airtel")}
     function emailLooksValid(email){return !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)}
     function phoneLooksValid(phone){return String(phone||"").replace(/\D/g,"").length>=7}
@@ -683,6 +687,15 @@
       if(error?.checkout_step==="payment_proof_upload"&&(error?.statusCode==="403"||error?.statusCode===403||/permission|policy|row level|unauthorized/i.test(error?.message||"")))return "Payment proof upload was blocked by storage permissions. Enter the payment reference instead.";
       if(error?.checkout_step==="payment_proof_upload")return "Payment proof could not be uploaded. Enter the payment reference instead, or try the upload again.";
       return message||"Your order could not be submitted. Please try again.";
+    }
+    function cryptoCheckoutErrorMessage(error){
+      if(error?.checkout_step==="payment_proof_upload")return checkoutErrorMessage(error);
+      const code=String(error?.code||"");
+      const message=String(error?.message||"");
+      if(["PGRST202","PGRST205","42P01","42703","42883"].includes(code)||/schema cache|submit_crypto_marketplace_order|marketplace_orders|marketplace_order_items/i.test(message))return "We couldn't prepare your order for payment. Please try again.";
+      if(code==="42501"||/permission|row level|unauthorized/i.test(message))return "We couldn't prepare your order for payment. Please sign in again or contact support.";
+      if(/minimum purchase|maximum purchase|wallet address|network|not available|settings are missing/i.test(message))return message.replace(/^ERROR:\s*/i,"");
+      return "We couldn't prepare your order for payment. Please try again.";
     }
     function logCheckoutError(error,payload){
       console.error("LAVIDA Connect checkout RPC error:",{
@@ -1028,10 +1041,12 @@
         await renderCryptoReview();
         let proofUrl="";
         try{proofUrl=await uploadCryptoProof(phone.replace(/\D/g,"")||"guest")}catch(uploadError){if(!paymentReference)throw uploadError;cryptoNotice("Payment proof could not be uploaded, so the order will use your payment reference only.","warn")}
-        const payload={product_id:selectedCryptoProduct.id,receive_amount:amount,network_id:networkId,wallet_address:wallet,customer_name:name,phone,email,payment_method:paymentMethod,payment_reference:paymentReference,payment_proof_url:proofUrl,source_device_id:localStorage.getItem("lavida_marketplace_device")||crypto.randomUUID(),idempotency_key:crypto.randomUUID()};
+        const payload={product_id:selectedCryptoProduct.id,receive_amount:amount,network_id:networkId,wallet_address:wallet,customer_name:name,phone,email,payment_method:paymentMethod,payment_reference:paymentReference,payment_proof_url:proofUrl,source_device_id:localStorage.getItem("lavida_marketplace_device")||crypto.randomUUID()};
+        payload.idempotency_key = cryptoOrderIdempotencyKey(payload);
         localStorage.setItem("lavida_marketplace_device",payload.source_device_id);
         const{data,error}=await db.rpc("submit_crypto_marketplace_order",{p_order:payload});
         if(error)throw error;
+        clearCryptoOrderAttempt();
         localStorage.setItem("lavida_connect_customer_phone", phone);
         if(email) localStorage.setItem("lavida_connect_customer_email", email);
         closeCryptoDrawer();
@@ -1041,7 +1056,7 @@
         scrollTo({top:0,behavior:"smooth"});
       }catch(error){
         console.error("LAVIDA Connect crypto checkout error:", error);
-        cryptoNotice(error?.message || "Crypto order could not be submitted.","bad");
+        cryptoNotice(cryptoCheckoutErrorMessage(error),"bad");
       }finally{$("confirmCryptoOrderButton").disabled=false}
     }
     async function trackOrder(){const reference=$("trackReference").value.trim(),phone=$("trackPhone").value.trim();if(!reference||!phone){$("trackResult").innerHTML=`<div class="notice bad">Enter order reference and phone number.</div>`;return}try{const{data,error}=await db.rpc("get_marketplace_order_details",{p_order_id:null,p_order_reference:reference,p_phone:phone});if(error)throw error;if(data){$("trackResult").innerHTML=`<div class="notice"><b>${esc(data.order?.order_reference || reference)}</b><br>Status: ${esc(publicOrderLabel(data.order?.order_status))}<br>Total: ${esc(money(data.order?.grand_total))}</div>`;renderOrderDetails(data);if(data.order?.id)await appendCryptoOrderDetails(data.order.id, phone)}else $("trackResult").innerHTML=`<div class="notice bad">No matching order was found.</div>`}catch(e){console.error("LAVIDA Connect track order error:", e);$("trackResult").innerHTML=`<div class="notice bad">${esc(e?.message || "Order tracking is unavailable. Please try again.")}</div>`}}
