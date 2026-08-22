@@ -664,6 +664,18 @@
         <div class="crypto-review-total"><span>Total payable</span><strong>${totalPayableText}</strong></div>`;
     }
     async function uploadCryptoProof(key){const file=$("cryptoPaymentProof").files[0];if(!file)return"";const path=`${key}/crypto-${Date.now()}-${file.name.replace(/[^\w.-]+/g,"_")}`;const{error}=await db.storage.from("marketplace-payment-proofs").upload(path,file,{upsert:false});if(error){error.checkout_step="payment_proof_upload";throw error}return path}
+    function cryptoNetworkText(network){return `${network?.network_code||""} ${network?.network_name||""}`.toUpperCase()}
+    function selectedCryptoNetwork(networkId){return selectedCryptoNetworks.find((row)=>String(row.id)===String(networkId))||null}
+    function validCryptoWalletForNetwork(wallet,network){
+      const value=String(wallet||"").trim();
+      if(!value||/\s/.test(value)||value.length>128)return false;
+      const networkText=cryptoNetworkText(network);
+      if(/\b(TRON|TRC20|TRX)\b/.test(networkText))return /^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(value);
+      if(/\b(ETH|ETHEREUM|ERC[-_ ]?20|ERIC20|BEP[-_ ]?20|BSC|BNB|POLYGON|MATIC|AVAX|AVALANCHE|BASE|ARBITRUM|OPTIMISM)\b/.test(networkText))return /^0x[a-fA-F0-9]{40}$/.test(value);
+      if(/\b(BTC|BITCOIN)\b/.test(networkText))return /^(bc1[ac-hj-np-z02-9]{11,87}|[13][1-9A-HJ-NP-Za-km-z]{25,34})$/i.test(value);
+      if(/\b(SOL|SOLANA)\b/.test(networkText))return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(value);
+      return value.length>=8;
+    }
     function cryptoOrderFingerprint(payload){return JSON.stringify({product_id:payload.product_id,receive_amount:payload.receive_amount,network_id:payload.network_id,wallet_address:payload.wallet_address,customer_name:payload.customer_name,phone:payload.phone,email:payload.email,payment_method:payload.payment_method,payment_reference:payload.payment_reference})}
     function cryptoOrderIdempotencyKey(payload){const fingerprint=cryptoOrderFingerprint(payload);try{const saved=JSON.parse(sessionStorage.getItem(CRYPTO_ORDER_ATTEMPT_KEY)||"null");if(saved?.fingerprint===fingerprint&&saved?.key)return saved.key}catch(error){}const key=crypto.randomUUID();sessionStorage.setItem(CRYPTO_ORDER_ATTEMPT_KEY,JSON.stringify({fingerprint,key}));return key}
     function clearCryptoOrderAttempt(){sessionStorage.removeItem(CRYPTO_ORDER_ATTEMPT_KEY)}
@@ -699,6 +711,17 @@
     }
     function logCheckoutError(error,payload){
       console.error("LAVIDA Connect checkout RPC error:",{
+        code:error?.code||null,
+        message:error?.message||String(error||""),
+        details:error?.details||null,
+        hint:error?.hint||null,
+        submitted_payload:payload||null,
+        raw_error:error
+      });
+    }
+    function logCryptoCheckoutError(error,payload){
+      console.error("Crypto marketplace order creation failed:",{
+        stage:error?.checkout_step||"rpc",
         code:error?.code||null,
         message:error?.message||String(error||""),
         details:error?.details||null,
@@ -1030,18 +1053,23 @@
       if(amount<Number(selectedCryptoAsset.minimum_purchase||0))return cryptoNotice(`Minimum purchase is ${selectedCryptoAsset.minimum_purchase} ${selectedCryptoAsset.asset_symbol}.`,"bad");
       if(selectedCryptoAsset.maximum_purchase&&amount>Number(selectedCryptoAsset.maximum_purchase))return cryptoNotice(`Maximum purchase is ${selectedCryptoAsset.maximum_purchase} ${selectedCryptoAsset.asset_symbol}.`,"bad");
       if(!networkId)return cryptoNotice("Select a supported network.","bad");
-      if(wallet.length<8)return cryptoNotice("Enter the destination wallet address.","bad");
+      const network=selectedCryptoNetwork(networkId);
+      if(!network)return cryptoNotice("This network is not available for this asset. Please select another network.","bad");
+      if(!validCryptoWalletForNetwork(wallet,network))return cryptoNotice("Please enter a valid wallet address for the selected network.","bad");
       if(!$("cryptoRiskConfirm").checked)return cryptoNotice("Confirm the selected network and wallet address before placing the order.","bad");
       if(!name)return cryptoNotice("Please enter your full name.","bad");
       if(!phoneLooksValid(phone))return cryptoNotice("Please enter a valid phone number.","bad");
       if(!emailLooksValid(email))return cryptoNotice("Please enter a valid email address, or leave it blank.","bad");
       if(isAirtelMoney(paymentMethod)&&!paymentReference&&!proofFile)return cryptoNotice("Airtel Money requires a payment reference or uploaded payment proof.","bad");
-      $("confirmCryptoOrderButton").disabled=true;
+      const button=$("confirmCryptoOrderButton"), originalButtonText=button.textContent;
+      button.disabled=true;
+      button.textContent="Preparing your order...";
+      let payload=null;
       try{
         await renderCryptoReview();
         let proofUrl="";
-        try{proofUrl=await uploadCryptoProof(phone.replace(/\D/g,"")||"guest")}catch(uploadError){if(!paymentReference)throw uploadError;cryptoNotice("Payment proof could not be uploaded, so the order will use your payment reference only.","warn")}
-        const payload={product_id:selectedCryptoProduct.id,receive_amount:amount,network_id:networkId,wallet_address:wallet,customer_name:name,phone,email,payment_method:paymentMethod,payment_reference:paymentReference,payment_proof_url:proofUrl,source_device_id:localStorage.getItem("lavida_marketplace_device")||crypto.randomUUID()};
+        try{proofUrl=await uploadCryptoProof(phone.replace(/\D/g,"")||"guest")}catch(uploadError){logCryptoCheckoutError(uploadError,{payment_method:paymentMethod,payment_reference:paymentReference,payment_proof_selected:Boolean(proofFile)});if(!paymentReference)throw uploadError;cryptoNotice("Payment proof could not be uploaded, so the order will use your payment reference only.","warn")}
+        payload={product_id:selectedCryptoProduct.id,receive_amount:amount,network_id:networkId,wallet_address:wallet,customer_name:name,phone,email,payment_method:paymentMethod,payment_reference:paymentReference,payment_proof_url:proofUrl,source_device_id:localStorage.getItem("lavida_marketplace_device")||crypto.randomUUID()};
         payload.idempotency_key = cryptoOrderIdempotencyKey(payload);
         localStorage.setItem("lavida_marketplace_device",payload.source_device_id);
         const{data,error}=await db.rpc("submit_crypto_marketplace_order",{p_order:payload});
@@ -1055,9 +1083,9 @@
         loadMyOrders();
         scrollTo({top:0,behavior:"smooth"});
       }catch(error){
-        console.error("LAVIDA Connect crypto checkout error:", error);
+        logCryptoCheckoutError(error,payload);
         cryptoNotice(cryptoCheckoutErrorMessage(error),"bad");
-      }finally{$("confirmCryptoOrderButton").disabled=false}
+      }finally{button.disabled=false;button.textContent=originalButtonText}
     }
     async function trackOrder(){const reference=$("trackReference").value.trim(),phone=$("trackPhone").value.trim();if(!reference||!phone){$("trackResult").innerHTML=`<div class="notice bad">Enter order reference and phone number.</div>`;return}try{const{data,error}=await db.rpc("get_marketplace_order_details",{p_order_id:null,p_order_reference:reference,p_phone:phone});if(error)throw error;if(data){$("trackResult").innerHTML=`<div class="notice"><b>${esc(data.order?.order_reference || reference)}</b><br>Status: ${esc(publicOrderLabel(data.order?.order_status))}<br>Total: ${esc(money(data.order?.grand_total))}</div>`;renderOrderDetails(data);if(data.order?.id)await appendCryptoOrderDetails(data.order.id, phone)}else $("trackResult").innerHTML=`<div class="notice bad">No matching order was found.</div>`}catch(e){console.error("LAVIDA Connect track order error:", e);$("trackResult").innerHTML=`<div class="notice bad">${esc(e?.message || "Order tracking is unavailable. Please try again.")}</div>`}}
     function setupOrdersRealtime(){
