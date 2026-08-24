@@ -27,6 +27,7 @@
     .marketplace-header{min-height:72px}.desktop-nav-link{font-size:15px;font-weight:750}.marketplace-brand strong{font-size:26px}.marketplace-brand span{font-size:13px}.desktop-search{height:42px}.desktop-search input{min-height:40px;font-size:14px}.profile-menu-button{min-width:48px}.profile-menu-button .profile-name,.profile-menu-button .profile-chevron{display:none}.profile-avatar{width:36px;height:36px}.profile-avatar svg{width:20px;height:20px;stroke:currentColor}.print-page{gap:12px}.print-hero{min-height:282px;padding:26px;border-radius:16px}.print-hero h1{font-size:clamp(28px,3vw,36px);line-height:1.08;font-weight:850}.print-hero p{font-size:16px;line-height:1.5;margin-top:12px}.print-actions{gap:12px;margin-top:18px}.print-button{min-height:46px;padding:0 20px;font-size:15px;font-weight:800}.print-trust{font-size:13px;font-weight:750;margin-top:16px}.print-section-head h2,.print-panel-head h2{font-size:21px;font-weight:850}.print-link-button{font-size:14px;font-weight:750}.print-service{min-height:94px;padding:13px 16px;gap:14px}.print-service-icon{width:52px;height:52px}.print-service b{font-size:16px;font-weight:800;line-height:1.2}.print-service small{font-size:12px;line-height:1.35}.print-service-price{font-size:14px;font-weight:800}.print-how-panel{padding:14px 20px}.print-how-panel h2{font-size:18px;font-weight:850}.print-how-steps b{font-size:13px;font-weight:800}.print-how-steps small{font-size:12px;line-height:1.3}.print-contact-card h2,.print-recent-card h2{font-size:20px;font-weight:850}.print-contact-card,.print-recent-card{font-size:14px}.print-contact-items b,.print-contact-items a{font-size:13px;font-weight:800}.print-ready-note{font-size:14px;line-height:1.4}.print-dashboard-grid.guest{grid-template-columns:1fr}.print-dashboard-grid.guest .print-contact-card{grid-column:1/-1}.print-recent-card.hidden{display:none!important}body:not(.is-authenticated) .print-recent-card{display:none!important}body:not(.is-authenticated) .print-dashboard-grid{grid-template-columns:1fr}@media(min-width:1100px){body.is-authenticated .profile-menu-button .profile-name{display:inline-grid}.profile-menu-button{min-width:48px}body.is-authenticated .profile-menu-button{min-width:92px}}@media(min-width:768px){.marketplace-main{padding-top:18px}.marketplace-header{padding-top:10px;padding-bottom:10px}.header-menu{top:68px}.page-panel{scroll-margin-top:86px}}@media(max-width:767px){.print-hero h1{font-size:27px;line-height:1.12}.print-hero p{font-size:15px}.print-button{font-size:14px}.print-service b{font-size:16px}.print-section-head h2{font-size:20px}.print-contact-card,.print-recent-card{font-size:14px}.page-panel{scroll-margin-top:94px}}
     .print-recent-orders{min-width:0;overflow-x:auto}
     .print-recent-card{min-width:0}.print-recent-table{max-width:100%}@media(max-width:767px){.print-recent-table th,.print-recent-table td{white-space:nowrap}.print-recent-table{width:max-content;min-width:100%}}
+    .crypto-line{display:block;margin-top:5px;color:#536073;font-size:13px;font-weight:800;line-height:1.3}.crypto-wallet-value{overflow-wrap:anywhere;word-break:break-word}.crypto-total-breakdown{display:grid;gap:4px}.crypto-total-breakdown div{display:flex;justify-content:space-between;gap:12px}.crypto-total-breakdown strong{color:var(--green)}
   </style>
 </head>
 <body>
@@ -921,14 +922,28 @@ ${diagnosticJson(diagnostic?.exception??null)}
         raw_error:error
       });
     }
-    function publicOrderLabel(value){
+    const cryptoOrderSummaries = new Map();
+    function isCryptoOrder(order){return order?.order_type==="crypto"||order?.fulfilment_method==="crypto_wallet"||order?.fulfilment_method==="digital"||cryptoOrderSummaries.has(order?.id)}
+    function cryptoNetworkFromOrder(order){const text=String(order?.delivery_notes||"");const match=text.match(/crypto network:\s*(.+)$/i);return match?match[1].trim():""}
+    function cryptoSummary(order){
+      const payload=cryptoOrderSummaries.get(order?.id)||{};
+      const fullOrder={...order,...(payload.order||{})};
+      const item=(payload.items||[])[0]||{};
+      const rawName=String(item.product_name||item.name||"").trim();
+      const symbol=String(item.unit||rawName.split("/").pop()||rawName||"Crypto").trim();
+      const waitingForSummary=!cryptoOrderSummaries.has(order?.id)&&["digital","crypto_wallet"].includes(fullOrder.fulfilment_method)&&fullOrder.payment_status==="pending_confirmation";
+      return {order:fullOrder,item,symbol,amount:item.quantity,network:cryptoNetworkFromOrder(fullOrder),proofSubmitted:Boolean(fullOrder.payment_proof_url||fullOrder.payment_reference||["proof_submitted","paid"].includes(fullOrder.payment_status)||waitingForSummary)};
+    }
+    function publicOrderLabel(value,order=null){
+      if(order&&isCryptoOrder(order)&&value==="pending_confirmation"&&cryptoSummary(order).proofSubmitted)return"Awaiting payment confirmation";
       return ({pending_confirmation:"Awaiting payment",payment_review:"Payment under review",approved:"Approved",processing:"Processing",crypto_sent:"Crypto sent",ready_for_collection:"Ready for pickup",out_for_delivery:"Out for delivery",completed:"Completed",rejected:"Rejected",cancelled:"Cancelled"}[value] || String(value || "Pending confirmation").replaceAll("_"," "));
     }
-    function publicPaymentLabel(value){
+    function publicPaymentLabel(value,order=null){
+      if(order&&isCryptoOrder(order)&&value==="pending_confirmation"&&cryptoSummary(order).proofSubmitted)return"Proof submitted - awaiting confirmation";
       return ({pending_confirmation:"Pending",proof_submitted:"Proof submitted",paid:"Confirmed",rejected:"Rejected",refunded:"Refunded"}[value] || String(value || "Payment pending").replaceAll("_"," "));
     }
     function paymentMethodLabel(value){return ({airtel_money:"Airtel Money",tnm_mpamba:"TNM Mpamba",bank_transfer:"Bank Transfer",cash_on_pickup:"Cash on Pickup",cash_on_delivery:"Cash on Delivery",cash:"Cash"}[value] || String(value || "Payment method").replaceAll("_"," ").replace(/\b\w/g,(c)=>c.toUpperCase()));}
-    function fulfilmentLabel(value){return ({delivery:"Home Delivery",pickup:"Store Pickup",crypto_wallet:"Crypto Wallet"}[value] || String(value || "Fulfilment").replaceAll("_"," ").replace(/\b\w/g,(c)=>c.toUpperCase()));}
+    function fulfilmentLabel(value,order=null){if(order&&isCryptoOrder(order))return"Digital Asset Delivery";return ({delivery:"Home Delivery",pickup:"Store Pickup",crypto_wallet:"Crypto Wallet",digital:"Digital"}[value] || String(value || "Fulfilment").replaceAll("_"," ").replace(/\b\w/g,(c)=>c.toUpperCase()));}
     function orderBucket(order){
       const status = order?.order_status || "";
       const payment = order?.payment_status || "";
@@ -949,6 +964,7 @@ ${diagnosticJson(diagnostic?.exception??null)}
       if(bucket === "ready") return {label:order?.fulfilment_method === "pickup" ? "Ready for pickup" : "Ready", cls:"status-ready", icon:"check"};
       if(bucket === "processing") return {label:"Processing", cls:"status-processing", icon:"gear"};
       if(order?.payment_status === "paid") return {label:"Payment confirmed", cls:"status-paid", icon:"check"};
+      if(isCryptoOrder(order)&&cryptoSummary(order).proofSubmitted)return {label:"Awaiting payment confirmation", cls:"status-awaiting", icon:"clock"};
       return {label:"Awaiting Payment", cls:"status-awaiting", icon:"clock"};
     }
     function iconSvg(name){
@@ -974,10 +990,11 @@ ${diagnosticJson(diagnostic?.exception??null)}
     function orderLocation(order){return order.delivery_address || (order.fulfilment_method === "pickup" ? (settings.pickup_location || settings.pickup_address || "Store pickup") : "Delivery address");}
     function progressSteps(order){
       if(["cancelled","rejected"].includes(order.order_status)) return [];
-      const deliveryStep = order.fulfilment_method === "crypto_wallet" ? "Crypto Sent" : order.fulfilment_method === "pickup" ? "Ready" : "Delivery";
-      const steps = ["Order Placed","Payment","Processing",deliveryStep,"Completed"];
+      const crypto=isCryptoOrder(order);
+      const deliveryStep = crypto ? "Crypto Sent" : order.fulfilment_method === "pickup" ? "Ready" : "Delivery";
+      const steps = crypto ? ["Order Placed","Payment Review","Processing","Crypto Sent","Completed"] : ["Order Placed","Payment","Processing",deliveryStep,"Completed"];
       let current = 0;
-      if(order.payment_status === "paid" || ["approved","processing","ready_for_collection","out_for_delivery","completed"].includes(order.order_status)) current = 1;
+      if(cryptoSummary(order).proofSubmitted || order.payment_status === "paid" || ["payment_review","approved","processing","ready_for_collection","out_for_delivery","completed"].includes(order.order_status)) current = 1;
       if(["processing","ready_for_collection","out_for_delivery","completed"].includes(order.order_status)) current = 2;
       if(["crypto_sent","ready_for_collection","out_for_delivery","completed"].includes(order.order_status)) current = 3;
       if(order.order_status === "completed") current = 4;
@@ -1031,7 +1048,11 @@ ${diagnosticJson(diagnostic?.exception??null)}
     function orderActions(order){
       const actions = [[`<button class="order-action-primary" type="button" data-order-details="${esc(order.id)}">${iconSvg("eye")}View Order</button>`]];
       if(order.fulfilment_method === "delivery" && !["completed","cancelled","rejected"].includes(order.order_status)) actions.push([`<button class="order-action-secondary" type="button" data-track-existing="${esc(order.id)}">${iconSvg("pin")}Track Order</button>`]);
-      if(order.payment_status !== "paid" && !["cancelled","rejected","completed"].includes(order.order_status)) actions.push([`<button class="order-action-primary" type="button" data-order-details="${esc(order.id)}">${iconSvg("card")}Pay Now</button>`]);
+      if(order.payment_status !== "paid" && !["cancelled","rejected","completed"].includes(order.order_status)){
+        const crypto=isCryptoOrder(order), submitted=cryptoSummary(order).proofSubmitted;
+        if(crypto&&submitted)actions.push([`<button class="order-action-secondary" type="button" data-order-details="${esc(order.id)}">${iconSvg("card")}View Payment Details</button>`]);
+        else actions.push([`<button class="order-action-primary" type="button" data-order-details="${esc(order.id)}">${iconSvg("card")}Pay Now</button>`]);
+      }
       if(order.order_status === "ready_for_collection" && order.fulfilment_method === "pickup") actions.push([`<button class="order-action-secondary" type="button" data-order-details="${esc(order.id)}">${iconSvg("check")}Confirm Collection</button>`]);
       const html = actions.slice(0,2).map((item)=>item[0]).join("");
       return `<div class="order-card-actions ${actions.length === 1 ? "single" : ""}">${html}</div>`;
@@ -1049,27 +1070,31 @@ ${diagnosticJson(diagnostic?.exception??null)}
       }
       $("myOrdersList").innerHTML = rows.map((order)=>{
         const badge = orderBadge(order);
+        const crypto=isCryptoOrder(order), summary=cryptoSummary(order);
+        const displayTitle=crypto?(summary.symbol&&summary.symbol!=="Crypto"?`${summary.symbol} Order`:"Crypto Order"):order.order_reference;
+        const cryptoLine=crypto&&summary.amount?`<span class="crypto-line">${esc(summary.amount)} ${esc(summary.symbol)}${summary.network?` | ${esc(summary.network)}`:""}</span>`:"";
         return `<article class="order-card">
           <div class="order-card-top">
             <div class="order-icon ${badge.cls}">${iconSvg("bag")}</div>
-            <div><b class="order-number">${esc(order.order_reference)}</b><span class="order-date">${esc(cleanDate(order.created_at))}</span></div>
+            <div><b class="order-number">${esc(displayTitle)}</b><span class="order-date">Reference: ${esc(order.order_reference)}<br>${esc(cleanDate(order.created_at))}</span>${cryptoLine}</div>
             <div class="order-total"><strong>${esc(money(order.grand_total))}</strong><span class="status-badge ${badge.cls}">${badge.icon==="check" ? "OK" : ""} ${esc(badge.label)}</span></div>
           </div>
           <div class="order-meta">
-            <div class="order-info">${iconSvg("box")}<div><span>Items</span><b>${esc(order.item_count || 0)} ${Number(order.item_count || 0) === 1 ? "item" : "items"}</b></div></div>
+            <div class="order-info">${iconSvg("box")}<div><span>${crypto?"Receive":"Items"}</span><b>${crypto&&summary.amount?`${esc(summary.amount)} ${esc(summary.symbol)}`:`${esc(order.item_count || 0)} ${Number(order.item_count || 0) === 1 ? "item" : "items"}`}</b></div></div>
             <div class="order-info">${iconSvg("wallet")}<div><span>Payment Method</span><b>${esc(paymentMethodLabel(order.payment_method))}</b></div></div>
-            <div class="order-info">${iconSvg("card")}<div><span>Payment Status</span><b><i class="inline-dot"></i>${esc(publicPaymentLabel(order.payment_status))}</b></div></div>
-            <div class="order-info">${iconSvg("pin")}<div><span>${order.fulfilment_method === "pickup" ? "Pickup Location" : "Delivery Address"}</span><b>${esc(orderLocation(order))}</b></div></div>
-            <div class="order-info">${iconSvg("truck")}<div><span>Fulfilment</span><b>${esc(fulfilmentLabel(order.fulfilment_method))}</b></div></div>
-            <div class="order-info">${iconSvg("clipboard")}<div><span>Order Status</span><b><i class="inline-dot"></i>${esc(publicOrderLabel(order.order_status))}</b></div></div>
+            <div class="order-info">${iconSvg("card")}<div><span>Payment Status</span><b><i class="inline-dot"></i>${esc(publicPaymentLabel(order.payment_status,order))}</b></div></div>
+            <div class="order-info">${iconSvg("pin")}<div><span>${crypto ? "Wallet Address" : order.fulfilment_method === "pickup" ? "Pickup Location" : "Delivery Address"}</span><b class="${crypto?"crypto-wallet-value":""}">${esc(orderLocation(summary.order))}</b></div></div>
+            <div class="order-info">${iconSvg("truck")}<div><span>${crypto?"Network":"Fulfilment"}</span><b>${esc(crypto?(summary.network||"To be confirmed"):fulfilmentLabel(order.fulfilment_method,order))}</b></div></div>
+            <div class="order-info">${iconSvg("clipboard")}<div><span>Order Status</span><b><i class="inline-dot"></i>${esc(publicOrderLabel(order.order_status,order))}</b></div></div>
           </div>
           ${renderOrderProgress(order)}
           ${orderActions(order)}
         </article>`;
       }).join("");
     }
-    function orderStatusMessage(value){
-      return ({pending_confirmation:"Your order is pending confirmation.",payment_review:"Your payment is under review.",approved:"Your order has been approved.",processing:"Your order is being prepared.",ready_for_collection:"Your order is ready for collection.",out_for_delivery:"Your order is out for delivery.",completed:"Your order has been completed.",rejected:"Your order was rejected.",cancelled:"Your order was cancelled."}[value] || "Your order is pending confirmation.");
+    function orderStatusMessage(value,order=null){
+      if(order&&isCryptoOrder(order)&&value==="pending_confirmation"&&cryptoSummary(order).proofSubmitted)return"Your payment proof has been submitted and is awaiting confirmation.";
+      return ({pending_confirmation:"Your order is pending confirmation.",payment_review:"Your payment is under review.",approved:"Your order has been approved.",processing:"Your order is being prepared.",crypto_sent:"Your crypto has been sent.",ready_for_collection:"Your order is ready for collection.",out_for_delivery:"Your order is out for delivery.",completed:"Your order has been completed.",rejected:"Your order was rejected.",cancelled:"Your order was cancelled."}[value] || "Your order is pending confirmation.");
     }
     function cleanDate(value){try{return value?new Date(value).toLocaleString():"";}catch(e){return value || "";}}
     function savedCustomerPhone(){return localStorage.getItem("lavida_connect_customer_phone") || $("customerPhone")?.value?.trim() || "";}
@@ -1078,28 +1103,41 @@ ${diagnosticJson(diagnostic?.exception??null)}
       const order = payload?.order || payload || {};
       const items = payload?.items || [];
       const history = payload?.history || [];
-      const orderLabel = payload?.order_label || publicOrderLabel(order.order_status);
-      const paymentLabel = payload?.payment_label || publicPaymentLabel(order.payment_status);
+      const crypto=isCryptoOrder(order);
+      const summary=cryptoSummary(order);
+      const orderLabel = payload?.order_label || publicOrderLabel(order.order_status,order);
+      const paymentLabel = payload?.payment_label || publicPaymentLabel(order.payment_status,order);
+      const totalHtml = crypto
+        ? `<div class="crypto-total-breakdown"><div><span>Subtotal</span><b>${esc(money(order.subtotal))}</b></div><div><span>Service fee</span><b>${esc(money(order.service_fee))}${order.service_fee_label?` / ${esc(order.service_fee_label)}`:""}</b></div><div><span>Total</span><strong>${esc(money(order.grand_total))}</strong></div></div>`
+        : esc(money(order.grand_total));
+      const itemRows = items.map((item)=>{
+        const itemName = crypto ? String(item.unit || item.product_name || "Crypto").split("/").pop().trim() : (item.product_name || item.name || "Product");
+        const detail = crypto
+          ? `${esc(item.quantity)} ${esc(item.unit || summary.symbol)} x ${esc(money(item.unit_price))}${summary.network?`<br><small>Network: ${esc(summary.network)}</small>`:""}`
+          : `${esc(item.quantity)} ${esc(item.unit || "")} x ${esc(money(item.unit_price))}`;
+        return `<div class="order-item"><div><b>${esc(itemName)}</b><br>${detail}</div><b>${esc(money(item.line_total))}</b></div>`;
+      }).join("");
       $("orderDetails").classList.remove("hidden");
       $("orderDetails").innerHTML = `<div class="orders-head"><h3>${esc(order.order_reference || "Order details")}</h3><span class="pill">${esc(orderLabel)}</span></div>
-        <p>${esc(orderStatusMessage(order.order_status))}</p>
+        <p>${esc(orderStatusMessage(order.order_status,order))}</p>
         <div class="order-detail-grid">
           <div><b>Date</b><br>${esc(cleanDate(order.created_at))}</div>
           <div><b>Customer</b><br>${esc(order.customer_name || "")}</div>
           <div><b>Phone</b><br>${esc(order.phone || "")}</div>
           <div><b>Email</b><br>${esc(order.email || "")}</div>
-          <div><b>Fulfilment</b><br>${esc(order.fulfilment_method || "")}</div>
-          <div><b>Location</b><br>${esc(order.delivery_address || "Pickup")}</div>
-          <div><b>Payment</b><br>${esc(order.payment_method || "")}</div>
+          <div><b>Fulfilment</b><br>${esc(fulfilmentLabel(order.fulfilment_method,order))}</div>
+          <div><b>${crypto?"Wallet Address":"Location"}</b><br><span class="${crypto?"crypto-wallet-value":""}">${esc(order.delivery_address || "Pickup")}</span></div>
+          ${crypto?`<div><b>Network</b><br>${esc(summary.network||"To be confirmed")}</div>`:""}
+          <div><b>Payment</b><br>${esc(paymentMethodLabel(order.payment_method))}</div>
           <div><b>Payment status</b><br>${esc(paymentLabel)}</div>
           <div><b>Payment reference</b><br>${esc(order.payment_reference || "Not supplied")}</div>
-          <div><b>Total</b><br>${esc(money(order.grand_total))}</div>
+          <div><b>${crypto?"Totals":"Total"}</b><br>${totalHtml}</div>
         </div>
-        <div class="order-items">${items.map((item)=>`<div class="order-item"><div><b>${esc(item.product_name || item.name || "Product")}</b><br>${esc(item.quantity)} ${esc(item.unit || "")} x ${esc(money(item.unit_price))}</div><b>${esc(money(item.line_total))}</b></div>`).join("") || `<div class="notice">No order items were returned.</div>`}</div>
+        <div class="order-items">${itemRows || `<div class="notice">No order items were returned.</div>`}</div>
         ${order.delivery_notes ? `<p><b>Notes:</b> ${esc(order.delivery_notes)}</p>` : ""}
         ${order.status_reason ? `<p><b>Reason:</b> ${esc(order.status_reason)}</p>` : ""}
         <h3>Status timeline</h3>
-        <div class="timeline">${history.length ? history.map((h)=>`<div class="timeline-step"><span class="timeline-dot"></span><div><b>${esc(publicOrderLabel(h.new_order_status))}</b><br><small>${esc(cleanDate(h.changed_at))}${h.reason ? ` - ${esc(h.reason)}` : ""}</small></div></div>`).join("") : `<div class="timeline-step"><span class="timeline-dot"></span><div><b>Order placed</b><br><small>${esc(cleanDate(order.created_at))}</small></div></div>`}</div>`;
+        <div class="timeline">${history.length ? history.map((h)=>`<div class="timeline-step"><span class="timeline-dot"></span><div><b>${esc(publicOrderLabel(h.new_order_status,order))}</b><br><small>${esc(cleanDate(h.changed_at))}${h.reason ? ` - ${esc(h.reason)}` : ""}</small></div></div>`).join("") : `<div class="timeline-step"><span class="timeline-dot"></span><div><b>Order placed</b><br><small>${esc(cleanDate(order.created_at))}</small></div></div>`}</div>`;
       $("orderDetails").scrollIntoView({behavior:"smooth", block:"start"});
     }
     async function viewOrderDetails(orderId){
@@ -1122,12 +1160,12 @@ ${diagnosticJson(diagnostic?.exception??null)}
         const box=document.createElement("div");
         box.className="order-detail";
         box.innerHTML=`<h3>Crypto Details</h3><div class="order-detail-grid">
-          <div><b>Asset</b><br>${esc(data.asset_name)} (${esc(data.asset_symbol)})</div>
-          <div><b>You receive</b><br>${esc(data.receive_amount)} ${esc(data.asset_symbol)}</div>
+          <div><b>Asset</b><br>${esc(data.asset_symbol || data.asset_name)}</div>
+          <div><b>Receive amount</b><br>${esc(data.receive_amount)} ${esc(data.asset_symbol)}</div>
           <div><b>Network</b><br>${esc(data.network_name)}</div>
-          <div><b>Wallet address</b><br>${esc(data.wallet_address)}</div>
+          <div><b>Wallet address</b><br><span class="crypto-wallet-value">${esc(data.wallet_address)}</span></div>
           <div><b>Rate</b><br>${esc(money(data.lavida_selling_rate_mwk))}</div>
-          <div><b>Service fee</b><br>${data.requires_admin_review ? "To be confirmed" : esc(money(data.service_fee_mwk))}</div>
+          <div><b>Service fee</b><br>${data.requires_admin_review ? "To be confirmed" : `${esc(money(data.service_fee_mwk))}${data.service_fee_usdt_equivalent?` / ${esc(data.service_fee_usdt_equivalent)} USDT`:""}`}</div>
           <div><b>Total payable</b><br>${data.requires_admin_review ? "Calculated at review" : esc(money(data.total_payable_mwk))}</div>
           <div><b>TXID</b><br>${esc(data.tx_hash || "Not sent yet")}</div>
         </div>`;
@@ -1144,12 +1182,25 @@ ${diagnosticJson(diagnostic?.exception??null)}
         if(error) throw error;
         customerOrders = (data || []).slice().sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
         renderOrders();
+        hydrateCryptoOrderSummaries(customerOrders);
       }catch(error){
         console.error("LAVIDA Connect My Orders error:", error);
         list.innerHTML = `<div class="notice bad">${esc(error?.message || "Your orders could not be loaded.")}</div>`;
       }finally{
         refresh.classList.remove("loading");
       }
+    }
+    async function hydrateCryptoOrderSummaries(orders){
+      const candidates=(orders||[]).filter((order)=>order.fulfilment_method==="digital"||order.fulfilment_method==="crypto_wallet");
+      if(!candidates.length)return;
+      await Promise.all(candidates.map(async(order)=>{
+        try{
+          const {data,error}=await db.rpc("get_marketplace_order_details",{p_order_id:order.id,p_order_reference:null,p_phone:savedCustomerPhone()});
+          if(error||!data?.order)return;
+          if(data.order.order_type==="crypto"||data.order.fulfilment_method==="digital")cryptoOrderSummaries.set(order.id,data);
+        }catch(error){}
+      }));
+      renderOrders();
     }
     async function checkAdminTools(){
       try{

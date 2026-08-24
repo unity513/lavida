@@ -9,7 +9,7 @@
     :root{--navy:#061433;--gold:#f4c542;--ink:#071126;--muted:#64748b;--line:#d9e2ef;--soft:#f6f8fb;--white:#fff;--good:#0f8a5f;--bad:#b42318}
     *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--soft);color:var(--ink)} button,input,select,textarea{font:inherit} button{border:0;border-radius:7px;background:var(--navy);color:#fff;font-weight:900;padding:11px 14px;cursor:pointer} button.secondary{background:#eef3fb;color:var(--navy)} button.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)} button.danger{background:var(--bad)} button:disabled{opacity:.55;cursor:not-allowed} input,select,textarea{width:100%;border:1px solid var(--line);border-radius:7px;background:#fff;padding:11px;color:var(--ink)} textarea{min-height:72px;resize:vertical} a{color:inherit;text-decoration:none}
     .admin-header{position:sticky;top:0;z-index:1100;min-height:68px;padding:calc(8px + env(safe-area-inset-top,0px)) 16px 8px;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;box-shadow:0 12px 34px rgba(6,20,51,.18)}.admin-brand strong{display:block;color:#fff;font-size:24px;line-height:1;letter-spacing:1px}.admin-brand span{display:block;margin-top:4px;color:var(--gold);font-size:12px;line-height:1;letter-spacing:1.2px}.admin-header-actions{display:flex;align-items:center;gap:8px}.admin-header-actions button{width:44px;height:44px;display:grid;place-items:center;border:0;border-radius:12px;background:#fff;color:var(--navy);padding:0}.admin-header-actions svg{width:24px;height:24px;stroke:currentColor}.admin-desktop-actions{display:none;gap:8px}.admin-desktop-actions a,.admin-desktop-actions button{min-height:42px;display:flex;align-items:center;background:#fff;color:var(--navy);border-radius:10px;padding:0 12px;font-weight:900}.admin-header-menu{position:fixed;top:calc(76px + env(safe-area-inset-top,0px));right:14px;z-index:1200;width:min(240px,calc(100vw - 28px));padding:8px;border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 16px 35px rgba(0,0,0,.18)}.admin-header-menu a,.admin-header-menu button{width:100%;min-height:46px;display:flex;align-items:center;padding:0 14px;border:0;border-radius:10px;background:transparent;color:var(--navy);font:inherit;font-weight:800;text-align:left}.admin-header-menu button{color:var(--bad)}
-    main{max-width:1180px;margin:auto;padding:16px 16px 50px}.panel{background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:16px;box-shadow:0 10px 24px rgba(6,20,51,.07)}.panel-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:12px}.panel h1,.panel h2,.panel h3{margin:0;color:var(--navy)}.muted{color:var(--muted)}.status{display:inline-flex;border-radius:999px;background:#eef3fb;color:var(--navy);padding:5px 9px;font-size:12px;font-weight:900}.status.ok{background:#e8fff5;color:#08734e}.status.warn{background:#fff7d6;color:#7a5200}.status.bad{background:#fff0ed;color:var(--bad)}.hidden{display:none!important}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px}table{width:100%;border-collapse:collapse;min-width:940px}th,td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top;font-size:13px}th{background:var(--navy);color:var(--gold);text-transform:uppercase;font-size:11px}.actions{display:flex;gap:8px;flex-wrap:wrap}.notice{background:#fff7d6;border:1px solid #f0d57b;border-radius:8px;padding:11px;color:#5d4300}.notice.bad{background:#fff0ed;border-color:#f5aaa2;color:var(--bad)}.details-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.detail-box{border:1px solid var(--line);border-radius:8px;padding:10px;background:#fbfcfe}.items{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-top:10px}.item-row{display:grid;grid-template-columns:1fr auto;gap:10px;padding:10px;border-bottom:1px solid var(--line)}.item-row:last-child{border-bottom:0}.timeline{display:grid;gap:8px;margin-top:10px}.timeline-step{display:flex;gap:8px;align-items:flex-start}.timeline-dot{width:10px;height:10px;border-radius:50%;background:var(--gold);margin-top:5px;flex:0 0 auto}
+    main{max-width:1180px;margin:auto;padding:16px 16px 50px}.panel{background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:16px;box-shadow:0 10px 24px rgba(6,20,51,.07)}.panel-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:12px}.panel h1,.panel h2,.panel h3{margin:0;color:var(--navy)}.muted{color:var(--muted)}.status{display:inline-flex;border-radius:999px;background:#eef3fb;color:var(--navy);padding:5px 9px;font-size:12px;font-weight:900}.status.ok{background:#e8fff5;color:#08734e}.status.warn{background:#fff7d6;color:#7a5200}.status.bad{background:#fff0ed;color:var(--bad)}.hidden{display:none!important}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px}table{width:100%;border-collapse:collapse;min-width:940px}th,td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top;font-size:13px}th{background:var(--navy);color:var(--gold);text-transform:uppercase;font-size:11px}.actions{display:flex;gap:8px;flex-wrap:wrap}.notice{background:#fff7d6;border:1px solid #f0d57b;border-radius:8px;padding:11px;color:#5d4300}.notice.bad{background:#fff0ed;border-color:#f5aaa2;color:var(--bad)}.details-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.detail-box{border:1px solid var(--line);border-radius:8px;padding:10px;background:#fbfcfe}.break-word{overflow-wrap:anywhere;word-break:break-word}.crypto-admin-total{display:grid;gap:5px}.crypto-admin-total div{display:flex;justify-content:space-between;gap:12px}.crypto-admin-total strong{color:var(--good)}.items{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-top:10px}.item-row{display:grid;grid-template-columns:1fr auto;gap:10px;padding:10px;border-bottom:1px solid var(--line)}.item-row:last-child{border-bottom:0}.timeline{display:grid;gap:8px;margin-top:10px}.timeline-step{display:flex;gap:8px;align-items:flex-start}.timeline-dot{width:10px;height:10px;border-radius:50%;background:var(--gold);margin-top:5px;flex:0 0 auto}
     @media(min-width:768px){#adminMoreButton{display:none}.admin-desktop-actions{display:flex}}@media(max-width:760px){.grid,.details-grid{grid-template-columns:1fr}.panel-head{display:block}table{min-width:820px}}
   </style>
 </head>
@@ -66,8 +66,13 @@
     let selectedOrder = null;
     let selectedCryptoDetails = null;
     function roleAllowed(value){return ["owner","admin","executive","manager"].includes(String(value || "").toLowerCase());}
-    function orderLabel(value){return ({pending_confirmation:"Pending confirmation",payment_review:"Payment under review",approved:"Order approved",processing:"Preparing your order",crypto_sent:"Crypto sent",ready_for_collection:"Ready for collection",out_for_delivery:"Out for delivery",completed:"Completed",rejected:"Rejected",cancelled:"Cancelled"}[value] || String(value || "").replaceAll("_"," "));}
-    function paymentLabel(value){return ({pending_confirmation:"Payment pending",proof_submitted:"Payment proof submitted",paid:"Payment confirmed",rejected:"Payment rejected",refunded:"Payment refunded"}[value] || String(value || "").replaceAll("_"," "));}
+    function cryptoNetworkFromOrder(order){const text=String(order?.delivery_notes||"");const match=text.match(/crypto network:\s*(.+)$/i);return match?match[1].trim():"";}
+    function isCryptoOrder(order,details=null){return Boolean(details)||order?.order_type==="crypto"||order?.fulfilment_method==="crypto_wallet"||order?.fulfilment_method==="digital";}
+    function cryptoProofSubmitted(order){return Boolean(order?.payment_proof_url||order?.payment_reference||["proof_submitted","paid"].includes(order?.payment_status));}
+    function orderLabel(value,order=null,details=null){if(isCryptoOrder(order,details)&&value==="pending_confirmation"&&cryptoProofSubmitted(order))return"Payment confirmation pending";return ({pending_confirmation:"Pending confirmation",payment_review:"Payment under review",approved:"Order approved",processing:"Processing",crypto_sent:"Crypto sent",ready_for_collection:"Ready for collection",out_for_delivery:"Out for delivery",completed:"Completed",rejected:"Rejected",cancelled:"Cancelled"}[value] || String(value || "").replaceAll("_"," "));}
+    function paymentLabel(value,order=null,details=null){if(isCryptoOrder(order,details)&&value==="pending_confirmation"&&cryptoProofSubmitted(order))return"Proof submitted - awaiting confirmation";return ({pending_confirmation:"Payment pending",proof_submitted:"Payment proof submitted",paid:"Payment confirmed",rejected:"Payment rejected",refunded:"Payment refunded"}[value] || String(value || "").replaceAll("_"," "));}
+    function fulfilmentLabel(value,order=null,details=null){if(isCryptoOrder(order,details))return"Digital Asset Delivery";return ({delivery:"Home Delivery",pickup:"Store Pickup",crypto_wallet:"Crypto Wallet",digital:"Digital"}[value] || String(value || "").replaceAll("_"," ").replace(/\b\w/g,(c)=>c.toUpperCase()));}
+    function cryptoItemName(item){const unit=String(item?.unit||"").trim();const raw=String(item?.product_name||item?.name||unit||"Crypto").trim();return unit||raw.split("/").pop().trim()||"Crypto";}
     function cleanDate(value){try{return value?new Date(value).toLocaleString():"";}catch(e){return value || "";}}
     function setStatus(id,text,type){const el=$(id);el.textContent=text;el.className=`status ${type || ""}`;}
     function showMessage(text,type){const el=$("pageMessage");el.textContent=text;el.className=`notice ${type || ""}`;}
@@ -114,9 +119,9 @@
           <td><b>${esc(o.order_reference || o.id)}</b><br><span class="muted">${esc(cleanDate(o.created_at))}</span></td>
           <td>${esc(o.customer_name || "")}<br>${esc(o.phone || "")}</td>
           <td>${esc(money(o.grand_total))}<br>${esc(o.item_count || 0)} item(s)</td>
-          <td>${esc(o.payment_method || "")}<br><span class="status ${o.payment_status === "paid" ? "ok" : o.payment_status === "rejected" ? "bad" : "warn"}">${esc(paymentLabel(o.payment_status))}</span></td>
-          <td><span class="status ${["completed","approved"].includes(o.order_status) ? "ok" : ["rejected","cancelled"].includes(o.order_status) ? "bad" : "warn"}">${esc(orderLabel(o.order_status))}</span></td>
-          <td>${esc(o.fulfilment_method || "")}</td>
+          <td>${esc(o.payment_method || "")}<br><span class="status ${o.payment_status === "paid" ? "ok" : o.payment_status === "rejected" ? "bad" : "warn"}">${esc(paymentLabel(o.payment_status,o))}</span></td>
+          <td><span class="status ${["completed","approved"].includes(o.order_status) ? "ok" : ["rejected","cancelled"].includes(o.order_status) ? "bad" : "warn"}">${esc(orderLabel(o.order_status,o))}</span></td>
+          <td>${esc(fulfilmentLabel(o.fulfilment_method,o))}</td>
           <td><button class="secondary" type="button" data-manage-order="${esc(o.id)}">View / Manage</button></td>
         </tr>`).join("") || `<tr><td colspan="7">No matching orders.</td></tr>`;
       }catch(error){
@@ -138,7 +143,7 @@
     }
     function validActions(order){
       const actions = [];
-      const cryptoOrder = order.order_type === "crypto" || order.fulfilment_method === "crypto_wallet" || selectedCryptoDetails;
+      const cryptoOrder = isCryptoOrder(order,selectedCryptoDetails);
       if(order.payment_status !== "paid" && !["rejected","cancelled","completed"].includes(order.order_status)){
         actions.push(["confirm_payment", order.payment_method === "cash_on_pickup" || order.payment_method === "cash_on_delivery" ? "Confirm Cash Received" : "Confirm Payment"]);
         actions.push(["reject_payment","Reject Payment"]);
@@ -167,20 +172,33 @@
         return null;
       }
     }
-    function cryptoDetailsHtml(details){
-      if(!details) return "";
+    function cryptoDetailsHtml(details,order={},items=[]){
+      if(!details&&!isCryptoOrder(order)) return "";
+      const item=(items||[])[0]||{};
+      const assetSymbol=String(details?.asset_symbol||item.unit||cryptoItemName(item)).trim();
+      const assetName=String(details?.asset_name||assetSymbol||"Crypto").trim();
+      const receiveAmount=details?.receive_amount ?? item.quantity ?? "";
+      const network=details?.network_name||cryptoNetworkFromOrder(order)||"To be confirmed";
+      const wallet=details?.wallet_address||order.delivery_address||"Not supplied";
+      const cryptoValue=details?.crypto_value_mwk ?? order.subtotal;
+      const serviceFee=details?.service_fee_mwk ?? order.service_fee;
+      const serviceFeeLabel=details?.service_fee_usdt_equivalent ? `${details.service_fee_usdt_equivalent} USDT / ${money(serviceFee)}` : order.service_fee_label ? `${money(serviceFee)} / ${order.service_fee_label}` : money(serviceFee);
+      const totalPayable=details?.total_payable_mwk ?? order.grand_total;
+      const txHash=details?.tx_hash||"";
+      const amountSent=details?.amount_sent||"";
+      const sentAt=details?.sent_at||"";
       return `<h3 style="margin-top:16px">Crypto Fulfilment</h3>
         <div class="details-grid">
-          <div class="detail-box"><b>Asset</b><br>${esc(details.asset_name)} (${esc(details.asset_symbol)})<br>Receive: ${esc(details.receive_amount)} ${esc(details.asset_symbol)}</div>
-          <div class="detail-box"><b>Network & Wallet</b><br>${esc(details.network_name)}<br>${esc(details.wallet_address)}</div>
-          <div class="detail-box"><b>Rate & Fee</b><br>Rate: ${esc(money(details.lavida_selling_rate_mwk))}<br>Value: ${esc(money(details.crypto_value_mwk))}<br>Fee: ${details.requires_admin_review ? "Manual/Admin review" : `${esc(details.service_fee_usdt_equivalent)} USDT / ${esc(money(details.service_fee_mwk))}`}</div>
-          <div class="detail-box"><b>Fulfilment Reference</b><br>TXID: ${esc(details.tx_hash || "Not sent yet")}<br>Amount sent: ${esc(details.amount_sent || "")}<br>Sent: ${esc(cleanDate(details.sent_at))}</div>
+          <div class="detail-box"><b>Crypto Asset</b><br>${esc(assetName)}${assetSymbol&&assetSymbol!==assetName?` (${esc(assetSymbol)})`:""}<br>Receive: ${esc(receiveAmount)} ${esc(assetSymbol)}</div>
+          <div class="detail-box"><b>Network</b><br>${esc(network)}<br><b>Wallet Address</b><br><span class="break-word">${esc(wallet)}</span></div>
+          <div class="detail-box"><b>Payment Breakdown</b><br><div class="crypto-admin-total"><div><span>Crypto value</span><b>${esc(money(cryptoValue))}</b></div><div><span>Service fee</span><b>${esc(serviceFeeLabel)}</b></div><div><span>Total payable</span><strong>${esc(money(totalPayable))}</strong></div></div></div>
+          <div class="detail-box"><b>Fulfilment Reference</b><br>TXID: <span class="break-word">${esc(txHash || "Not sent yet")}</span><br>Amount sent: ${esc(amountSent)}<br>Sent: ${esc(cleanDate(sentAt))}</div>
         </div>
-        <div id="cryptoFulfilmentFields" class="${details.tx_hash ? "hidden" : ""}" style="margin-top:10px">
+        <div id="cryptoFulfilmentFields" class="${txHash ? "hidden" : ""}" style="margin-top:10px">
           <div class="grid">
             <input id="cryptoTxHash" placeholder="Transaction hash / TXID">
-            <input id="cryptoAmountSent" type="number" step="0.00000001" min="0" value="${esc(details.receive_amount)}" placeholder="Amount sent">
-            <input id="cryptoSentNetwork" value="${esc(details.network_name)}" placeholder="Network">
+            <input id="cryptoAmountSent" type="number" step="0.00000001" min="0" value="${esc(receiveAmount)}" placeholder="Amount sent">
+            <input id="cryptoSentNetwork" value="${esc(network)}" placeholder="Network">
           </div>
           <textarea id="cryptoAdminNotes" style="margin-top:10px" placeholder="Admin notes optional"></textarea>
         </div>`;
@@ -196,22 +214,27 @@
         const items = data?.items || [];
         const history = data?.history || [];
         selectedCryptoDetails = await loadCryptoOrderDetails(orderId);
+        const cryptoOrder = isCryptoOrder(selectedOrder,selectedCryptoDetails);
         const proof = await paymentProofLink(selectedOrder.payment_proof_url);
         $("detailsTitle").textContent = selectedOrder.order_reference || "Order Details";
         $("detailsSubtitle").textContent = `${selectedOrder.customer_name || ""} ${selectedOrder.phone || ""}`.trim();
-        setStatus("detailsStatus", orderLabel(selectedOrder.order_status), ["rejected","cancelled"].includes(selectedOrder.order_status) ? "bad" : selectedOrder.order_status === "completed" ? "ok" : "warn");
+        setStatus("detailsStatus", orderLabel(selectedOrder.order_status,selectedOrder,selectedCryptoDetails), ["rejected","cancelled"].includes(selectedOrder.order_status) ? "bad" : selectedOrder.order_status === "completed" ? "ok" : "warn");
+        const network = cryptoNetworkFromOrder(selectedOrder)||selectedCryptoDetails?.network_name||"To be confirmed";
+        const totalHtml = cryptoOrder
+          ? `<div class="crypto-admin-total"><div><span>Crypto value</span><b>${esc(money(selectedOrder.subtotal))}</b></div><div><span>Service fee</span><b>${esc(money(selectedOrder.service_fee))}${selectedOrder.service_fee_label?` / ${esc(selectedOrder.service_fee_label)}`:""}</b></div><div><span>Total payable</span><strong>${esc(money(selectedOrder.grand_total))}</strong></div></div>`
+          : `Subtotal: ${esc(money(selectedOrder.subtotal))}<br>Delivery: ${esc(money(selectedOrder.delivery_fee))}<br><b>${esc(money(selectedOrder.grand_total))}</b>`;
         $("orderDetails").innerHTML = `<div class="details-grid">
           <div class="detail-box"><b>Customer</b><br>${esc(selectedOrder.customer_name || "")}<br>${esc(selectedOrder.phone || "")}<br>${esc(selectedOrder.email || "")}</div>
-          <div class="detail-box"><b>Payment</b><br>${esc(selectedOrder.payment_method || "")}<br>${esc(paymentLabel(selectedOrder.payment_status))}<br>Reference: ${esc(selectedOrder.payment_reference || "Not supplied")} ${proof ? `<br><a href="${esc(proof)}" target="_blank" rel="noopener"><b>View Payment Proof</b></a>` : ""}</div>
-          <div class="detail-box"><b>Fulfilment</b><br>${esc(selectedOrder.fulfilment_method || "")}<br>${esc(selectedOrder.delivery_address || "Pickup")}<br>${esc(selectedOrder.delivery_notes || "")}</div>
-          <div class="detail-box"><b>Total</b><br>Subtotal: ${esc(money(selectedOrder.subtotal))}<br>Delivery: ${esc(money(selectedOrder.delivery_fee))}<br><b>${esc(money(selectedOrder.grand_total))}</b></div>
+          <div class="detail-box"><b>Payment</b><br>${esc(selectedOrder.payment_method || "")}<br>${esc(paymentLabel(selectedOrder.payment_status,selectedOrder,selectedCryptoDetails))}<br>Reference: ${esc(selectedOrder.payment_reference || "Not supplied")} ${proof ? `<br><a href="${esc(proof)}" target="_blank" rel="noopener"><b>View Payment Proof</b></a>` : ""}</div>
+          <div class="detail-box"><b>Fulfilment</b><br>${esc(fulfilmentLabel(selectedOrder.fulfilment_method,selectedOrder,selectedCryptoDetails))}<br><b>${cryptoOrder?"Wallet Address":"Location"}</b><br><span class="${cryptoOrder?"break-word":""}">${esc(selectedOrder.delivery_address || "Pickup")}</span>${cryptoOrder?`<br><b>Network</b><br>${esc(network)}`:`<br>${esc(selectedOrder.delivery_notes || "")}`}</div>
+          <div class="detail-box"><b>${cryptoOrder?"Crypto Total":"Total"}</b><br>${totalHtml}</div>
         </div>
-        <div class="items">${items.map((item)=>`<div class="item-row"><div><b>${esc(item.product_name || "Product")}</b><br>${esc(item.quantity)} ${esc(item.unit || "")} x ${esc(money(item.unit_price))}</div><b>${esc(money(item.line_total))}</b></div>`).join("") || `<div class="item-row">No items returned.</div>`}</div>
-        ${cryptoDetailsHtml(selectedCryptoDetails)}
+        <div class="items">${items.map((item)=>`<div class="item-row"><div><b>${esc(cryptoOrder?cryptoItemName(item):(item.product_name || "Product"))}</b><br>${esc(item.quantity)} ${esc(item.unit || "")} x ${esc(money(item.unit_price))}${cryptoOrder?`<br><small>Network: ${esc(network)}</small>`:""}</div><b>${esc(money(item.line_total))}</b></div>`).join("") || `<div class="item-row">No items returned.</div>`}</div>
+        ${cryptoDetailsHtml(selectedCryptoDetails,selectedOrder,items)}
         <textarea id="actionReason" style="margin-top:10px" placeholder="Reason or internal note optional">${esc(selectedOrder.internal_notes || "")}</textarea>
         <div class="actions" style="margin-top:10px">${validActions(selectedOrder).map(([action,label])=>`<button type="button" class="${/reject|cancel/i.test(action) ? "danger" : ""}" data-order-action="${esc(action)}">${esc(label)}</button>`).join("") || `<span class="status ok">No further action required</span>`}</div>
         <h3 style="margin-top:16px">Audit History</h3>
-        <div class="timeline">${history.length ? history.map((h)=>`<div class="timeline-step"><span class="timeline-dot"></span><div><b>${esc(orderLabel(h.new_order_status))}</b> / ${esc(paymentLabel(h.new_payment_status))}<br><small>${esc(cleanDate(h.changed_at))}${h.reason ? ` - ${esc(h.reason)}` : ""}</small></div></div>`).join("") : `<div class="timeline-step"><span class="timeline-dot"></span><div><b>Order placed</b><br><small>${esc(cleanDate(selectedOrder.created_at))}</small></div></div>`}</div>`;
+        <div class="timeline">${history.length ? history.map((h)=>`<div class="timeline-step"><span class="timeline-dot"></span><div><b>${esc(orderLabel(h.new_order_status,selectedOrder,selectedCryptoDetails))}</b> / ${esc(paymentLabel(h.new_payment_status,selectedOrder,selectedCryptoDetails))}<br><small>${esc(cleanDate(h.changed_at))}${h.reason ? ` - ${esc(h.reason)}` : ""}</small></div></div>`).join("") : `<div class="timeline-step"><span class="timeline-dot"></span><div><b>Order placed</b><br><small>${esc(cleanDate(selectedOrder.created_at))}</small></div></div>`}</div>`;
       }catch(error){
         console.error("LAVIDA Connect admin order details error:", error);
         $("orderDetails").innerHTML = `<div class="notice bad">${esc(error?.message || "Order could not be loaded.")}</div>`;
