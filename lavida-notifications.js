@@ -204,9 +204,15 @@
     const card = byId("notificationPermissionCard");
     if(!card)return;
     const prefs = await ensurePreferences();
+    const config = await loadConfig();
     const permission = typeof Notification === "undefined" ? "unsupported" : Notification.permission;
     if(!prefs || prefs.push_enabled || permission === "granted"){
       card.classList.add("hidden");
+      return;
+    }
+    if(!config.vapid_public_key){
+      card.innerHTML = `<span class="notification-permission-icon">${icon("bell")}</span><div><h3>Stay updated</h3><p>In-app notifications are ready. Phone taskbar notifications will be enabled after the secure push key is configured.</p></div>`;
+      card.classList.remove("hidden");
       return;
     }
     if(permission === "denied"){
@@ -332,12 +338,12 @@
       return;
     }
     if(!("serviceWorker" in navigator) || !("PushManager" in window) || typeof Notification === "undefined"){
-      alert("Phone notifications are not supported on this device or browser.");
+      showInlinePushNotice("Phone notifications are not supported on this device or browser.");
       return;
     }
     const config = await loadConfig();
     if(!config.vapid_public_key){
-      alert("Phone notifications are ready in the app, but the server push key still needs to be configured.");
+      showInlinePushNotice("Phone notifications will be available after the secure push key is configured.");
       return;
     }
     const permission = await Notification.requestPermission();
@@ -369,6 +375,18 @@
     await database.from("notification_preferences").upsert({user_id:current.user.id,push_enabled:true},{onConflict:"user_id"});
     await renderPermissionCard();
     await renderSettings();
+  }
+  function showInlinePushNotice(message){
+    const card = byId("notificationPermissionCard");
+    if(card){
+      card.innerHTML = `<span class="notification-permission-icon">${icon("bell")}</span><div><h3>Phone notifications</h3><p>${html(message)}</p></div>`;
+      card.classList.remove("hidden");
+    }
+    const phone = byId("notificationPhoneStatus");
+    if(phone){
+      const status = phone.querySelector("span");
+      if(status)status.textContent = message;
+    }
   }
   async function updatePreference(input){
     const database = client();
