@@ -211,8 +211,7 @@
       return;
     }
     if(!config.vapid_public_key){
-      card.innerHTML = `<span class="notification-permission-icon">${icon("bell")}</span><div><h3>Stay updated</h3><p>In-app notifications are ready. Phone taskbar notifications will be enabled after the secure push key is configured.</p></div>`;
-      card.classList.remove("hidden");
+      card.classList.add("hidden");
       return;
     }
     if(permission === "denied"){
@@ -282,7 +281,7 @@
     const phoneEnabled = Boolean(prefs?.push_enabled) && permission === "granted";
     phone.innerHTML = `<div><strong>Phone Notifications</strong><span>${phoneEnabled ? "Enabled" : permission === "denied" ? "Blocked in device settings" : "Not Enabled"}</span></div><button class="notification-secondary" type="button" data-enable-phone-notifications ${config.vapid_public_key ? "" : "disabled"}>${phoneEnabled ? "Refresh" : "Enable Phone Notifications"}</button>`;
     if(!config.vapid_public_key){
-      phone.querySelector("span").textContent = "Ready after server push key setup";
+      phone.querySelector("span").textContent = "Not available on this device yet";
     }
     container.innerHTML = SETTINGS.map(([key,title,copy])=>`<label class="notification-setting-row"><span><b>${html(title)}</b><small>${html(copy)}</small></span><span class="notification-switch"><input type="checkbox" data-notification-pref="${html(key)}" ${prefs?.[key] !== false ? "checked" : ""}><span></span></span></label>`).join("");
   }
@@ -343,7 +342,7 @@
     }
     const config = await loadConfig();
     if(!config.vapid_public_key){
-      showInlinePushNotice("Phone notifications will be available after the secure push key is configured.");
+      showInlinePushNotice("Phone notifications are not available yet. You will still receive updates inside LAVIDA.");
       return;
     }
     const permission = await Notification.requestPermission();
@@ -375,6 +374,18 @@
     await database.from("notification_preferences").upsert({user_id:current.user.id,push_enabled:true},{onConflict:"user_id"});
     await renderPermissionCard();
     await renderSettings();
+  }
+  async function prepareLogout(){
+    const database = client();
+    const current = await currentSession();
+    if(!database || !current?.user || !("serviceWorker" in navigator))return;
+    try{
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager?.getSubscription?.();
+      if(subscription?.endpoint){
+        await database.from("push_subscriptions").update({active:false}).eq("endpoint",subscription.endpoint).eq("user_id",current.user.id);
+      }
+    }catch(error){}
   }
   function showInlinePushNotice(message){
     const card = byId("notificationPermissionCard");
@@ -495,7 +506,8 @@
     load:loadNotifications,
     refreshBadge,
     create:createNotification,
-    enablePhoneNotifications
+    enablePhoneNotifications,
+    prepareLogout
   };
 
   init();

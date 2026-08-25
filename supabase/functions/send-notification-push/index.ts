@@ -8,10 +8,15 @@ type QueueRow = {
   attempts: number;
   notifications: {
     id: string;
+    notification_type: string;
+    category: string;
     title: string;
     body: string;
     action_url: string | null;
     priority: string;
+    entity_type: string | null;
+    entity_id: string | null;
+    metadata: Record<string, unknown> | null;
   } | null;
   push_subscriptions: {
     id: string;
@@ -26,6 +31,7 @@ const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 const vapidSubject = Deno.env.get("VAPID_SUBJECT") || "mailto:info@lavida.agency";
 const vapidPublicKey = Deno.env.get("VAPID_PUBLIC_KEY") || "";
 const vapidPrivateKey = Deno.env.get("VAPID_PRIVATE_KEY") || "";
+const workerSecret = Deno.env.get("PUSH_WORKER_SECRET") || "";
 
 const admin = createClient(supabaseUrl, serviceRoleKey, {
   auth: { persistSession: false, autoRefreshToken: false }
@@ -33,6 +39,13 @@ const admin = createClient(supabaseUrl, serviceRoleKey, {
 
 if (vapidPublicKey && vapidPrivateKey) {
   webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
+}
+
+function isAuthorized(req: Request) {
+  if (!workerSecret) return false;
+  const bearer = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+  const explicit = req.headers.get("x-lavida-push-secret") || "";
+  return bearer === workerSecret || explicit === workerSecret;
 }
 
 async function markQueue(id: string, status: "sent" | "failed" | "skipped", error?: string) {
@@ -54,16 +67,25 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
   }
-  if (!serviceRoleKey || !vapidPublicKey || !vapidPrivateKey) {
+  if (!isAuthorized(req)) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!serviceRoleKey || !vapidPublicKey || !vapidPrivateKey || !workerSecret) {
     return Response.json({ error: "Push worker environment is not configured." }, { status: 500 });
   }
 
+  let limit = 50;
+  try {
+    const body = await req.json();
+    if (Number.isFinite(body?.limit)) limit = Math.max(1, Math.min(100, Number(body.limit)));
+  } catch (_error) {}
+
   const { data, error } = await admin
     .from("notification_push_queue")
-    .select("id,notification_id,subscription_id,attempts,notifications(id,title,body,action_url,priority),push_subscriptions(id,endpoint,p256dh,auth)")
+    .select("id,notification_id,subscription_id,attempts,notifications(id,notification_type,category,title,body,action_url,priority,entity_type,entity_id,metadata),push_subscriptions(id,endpoint,p256dh,auth)")
     .eq("status", "queued")
     .order("queued_at", { ascending: true })
-    .limit(50);
+    .limit(limit);
 
   if (error) {
     return Response.json({ error: error.message }, { status: 500 });
@@ -85,8 +107,15 @@ Deno.serve(async (req) => {
 
     const payload = JSON.stringify({
       notification_id: notification.id,
-      title: `LAVIDA - ${notification.title}`,
+      title: notification.title || "LAVIDA Connect",
       body: notification.body,
+      icon: "/assets/lavida-icon.svg",
+      badge: "/assets/lavida-icon.svg",
+      type: notification.notification_type,
+      category: notification.category,
+      entity_type: notification.entity_type,
+      entity_id: notification.entity_id,
+      metadata: notification.metadata || {},
       action_url: notification.action_url || "./marketplace.html#notifications",
       tag: notification.id,
       requireInteraction: notification.priority === "security"

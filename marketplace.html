@@ -727,6 +727,7 @@
       updateAuthControls();
       toggleMarketplaceMenu(false);
       try{
+        await window.LavidaNotifications?.prepareLogout?.();
         await window.LavidaAuth.signOut(db);
       }catch(error){
         window.LavidaAuth.debug("home logout failed", error);
@@ -2042,7 +2043,7 @@ ${diagnosticJson(diagnostic?.exception??null)}
       }
     }
     document.addEventListener("click",event=>{const printService=event.target.closest("[data-print-service]");if(printService){applyPrintServiceSelection(printService.dataset.printService);return}const printSignIn=event.target.closest("[data-print-sign-in]");if(printSignIn){requestSignIn("marketplace.html#print365");return}const startPrintInline=event.target.closest("[data-start-print-inline]");if(startPrintInline){$("printOrderForm").classList.remove("hidden");showPrintStep(0);$("printOrderForm").scrollIntoView({behavior:"smooth",block:"start"});return}const printDetails=event.target.closest("[data-print-order-details]");if(printDetails){viewPrintOrderDetails(printDetails.dataset.printOrderDetails);return}const removePrintFile=event.target.closest("[data-remove-print-file]");if(removePrintFile){printFiles=printFiles.filter((row)=>row.id!==removePrintFile.dataset.removePrintFile);renderPrintUploads();return}const tab=event.target.closest("[data-order-tab]");if(tab){activeOrderTab=tab.dataset.orderTab;renderOrders();return}const trackExisting=event.target.closest("[data-track-existing]");if(trackExisting){viewOrderDetails(trackExisting.dataset.trackExisting);return}const orderDetails=event.target.closest("[data-order-details]");if(orderDetails){viewOrderDetails(orderDetails.dataset.orderDetails);return}const add=event.target.closest("[data-add]");if(add){event.stopPropagation();addToCart(add.dataset.add);return}const details=event.target.closest("[data-details]");if(details){openDetails(details.dataset.details);return}const main=event.target.closest("[data-open-product]");if(main){openDetails(main.dataset.openProduct);return}const inc=event.target.closest("[data-inc]");if(inc){const item=cart.find(row=>String(row.product_id)===String(inc.dataset.inc));const p=products.find(row=>String(row.id)===String(inc.dataset.inc));if(item){item.quantity=Math.min(maxQty(p||{}),Number(item.quantity||0)+1);saveCart()}return}const dec=event.target.closest("[data-dec]");if(dec){const item=cart.find(row=>String(row.product_id)===String(dec.dataset.dec));if(item){item.quantity=Math.max(1,Number(item.quantity||0)-1);saveCart()}return}const rem=event.target.closest("[data-remove]");if(rem){cart=cart.filter(row=>String(row.product_id)!==String(rem.dataset.remove));saveCart()}})
-    const LAVIDA_CACHE_NAME = "lavida-connect-independent-v232";
+    const LAVIDA_CACHE_NAME = "lavida-connect-independent-v233";
     async function refreshLavidaAppShell(){
       try{
         if("caches" in window){

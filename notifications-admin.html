@@ -75,6 +75,12 @@
       </div>
     </section>
 
+    <section id="testPanel" class="panel hidden">
+      <div class="panel-head"><div><h2>Test Delivery</h2><p class="muted">Send one test notification to the signed-in admin account after enabling phone notifications from the customer notification page.</p></div><span id="testStatus" class="status">Ready</span></div>
+      <div class="actions"><button id="sendTestNotificationBtn" class="primary" type="button">Send Test Notification</button></div>
+      <div id="testNotice" class="notice hidden" style="margin-top:12px"></div>
+    </section>
+
     <section id="historyPanel" class="panel hidden">
       <div class="panel-head"><div><h2>Recent Notifications</h2><p class="muted">Latest notification records and push status.</p></div></div>
       <div class="table-wrap"><table><thead><tr><th>Title</th><th>Target</th><th>Category</th><th>Read</th><th>Push</th><th>Created</th></tr></thead><tbody id="historyBody"></tbody></table></div>
@@ -91,7 +97,7 @@
     function allowed(value){return ["owner","admin","executive","manager","notification_admin"].includes(String(value || "").toLowerCase())}
     function status(id,text,type){$(id).textContent=text;$(id).className=`status ${type||""}`}
     function notice(id,text,type){const el=$(id);el.textContent=text;el.className=`notice ${type||""}`;el.classList.toggle("hidden",!text)}
-    function showPanels(){["summaryPanel","composerPanel","releasePanel","configPanel","historyPanel"].forEach((id)=>$(id).classList.remove("hidden"));$("loginBox").classList.add("hidden")}
+    function showPanels(){["summaryPanel","composerPanel","releasePanel","configPanel","testPanel","historyPanel"].forEach((id)=>$(id).classList.remove("hidden"));$("loginBox").classList.add("hidden")}
     async function loadRole(){try{role=await window.LavidaAuth.loadRole(db,session)||""}catch(error){role=""}if(!allowed(role)){status("authStatus","Your LAVIDA account does not have access to this page.","bad");$("loginBox").classList.remove("hidden");return false}status("authStatus",`${role} access`,"ok");showPanels();return true}
     async function login(){try{session=await window.LavidaAuth.signIn(db,$("email").value.trim(),$("password").value);if(await loadRole())loadAll()}catch(error){status("authStatus",window.LavidaAuth.friendlyError(error,"We could not sign you in."),"bad")}}
     async function init(){window.LavidaAuth.rememberReturnTo();try{session=await window.LavidaAuth.getSession(db);if(!session){status("authStatus","Sign in with your LAVIDA account to continue.","warn");$("loginBox").classList.remove("hidden");return}if(await loadRole())loadAll()}catch(error){status("authStatus","LAVIDA could not check your session.","bad");$("loginBox").classList.remove("hidden")}}
@@ -137,9 +143,32 @@
       if(error){status("configStatus","Error","bad");return}
       status("configStatus","Saved","ok");
     }
+    async function sendTestNotification(){
+      if(!session?.user?.id){notice("testNotice","Sign in first.","bad");return}
+      status("testStatus","Sending...","warn");
+      const {error}=await db.rpc("create_lavida_notification",{
+        p_user_id:session.user.id,
+        p_email:session.user.email||null,
+        p_notification_type:"push_test",
+        p_category:"system",
+        p_title:"LAVIDA Connect",
+        p_body:"Push notifications are working.",
+        p_action_label:"Open Notifications",
+        p_action_url:"marketplace.html#notifications",
+        p_entity_type:"push_test",
+        p_entity_id:String(Date.now()),
+        p_priority:"system",
+        p_service_label:"LAVIDA Connect",
+        p_idempotency_key:`push-test:${session.user.id}:${Date.now()}`,
+        p_metadata:{source:"notifications_admin"},
+        p_send_push:true
+      });
+      if(error){status("testStatus","Error","bad");notice("testNotice",error.message||"Test notification could not be sent.","bad");return}
+      status("testStatus","Queued","ok");notice("testNotice","Test notification saved. Run the push delivery worker if it does not arrive within a few seconds.","");loadAll();
+    }
     async function loadAll(){try{await Promise.all([loadSummary(),loadHistory(),loadConfig()])}catch(error){status("authStatus","Notification tables are not installed yet.","bad")}}
     ["notificationType","notificationCategory","notificationPriority","notificationTitle","notificationAudience","notificationBody"].forEach((id)=>$(id).addEventListener("input",updatePreview));
-    $("publishNotificationBtn").addEventListener("click",publishNotification);$("publishReleaseBtn").addEventListener("click",publishRelease);$("refreshBtn").addEventListener("click",loadAll);$("saveConfigBtn").addEventListener("click",saveConfig);$("loginBtn").addEventListener("click",login);$("logoutBtn").addEventListener("click",async()=>{await window.LavidaAuth.signOut(db);location.href="./marketplace.html#home"});
+    $("publishNotificationBtn").addEventListener("click",publishNotification);$("publishReleaseBtn").addEventListener("click",publishRelease);$("refreshBtn").addEventListener("click",loadAll);$("saveConfigBtn").addEventListener("click",saveConfig);$("sendTestNotificationBtn").addEventListener("click",sendTestNotification);$("loginBtn").addEventListener("click",login);$("logoutBtn").addEventListener("click",async()=>{await window.LavidaAuth.signOut(db);location.href="./marketplace.html#home"});
     updatePreview();init();
   </script>
 </body>

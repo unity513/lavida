@@ -17,13 +17,14 @@ stable
 security definer
 set search_path = public
 as $$
-  select exists (
-    select 1
-    from public.user_roles ur
-    where lower(ur.email) = lower(coalesce(auth.jwt() ->> 'email', ''))
-      and coalesce(ur.active, true) = true
-      and lower(ur.role) in ('owner','admin','executive','manager','notification_admin','service_admin','printing_admin','games_admin')
-  );
+  select coalesce(auth.role(), '') = 'service_role'
+    or exists (
+      select 1
+      from public.user_roles ur
+      where lower(ur.email) = lower(coalesce(auth.jwt() ->> 'email', ''))
+        and coalesce(ur.active, true) = true
+        and lower(ur.role) in ('owner','admin','executive','manager','notification_admin','service_admin','printing_admin','games_admin')
+    );
 $$;
 
 create table if not exists public.notification_preferences (
@@ -78,6 +79,29 @@ create unique index if not exists notifications_email_idempotency_idx
 create index if not exists notifications_user_created_idx on public.notifications(user_id, created_at desc);
 create index if not exists notifications_email_created_idx on public.notifications(lower(email), created_at desc);
 create index if not exists notifications_unread_idx on public.notifications(user_id, is_read, created_at desc);
+
+create table if not exists public.notification_recipients (
+  id uuid primary key default gen_random_uuid(),
+  notification_id uuid not null references public.notifications(id) on delete cascade,
+  user_id uuid references auth.users(id) on delete cascade,
+  email text,
+  is_read boolean not null default false,
+  read_at timestamptz,
+  archived_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint notification_recipients_target_check check (user_id is not null or nullif(email, '') is not null)
+);
+
+create unique index if not exists notification_recipients_user_idx
+  on public.notification_recipients (notification_id, user_id)
+  where user_id is not null;
+
+create unique index if not exists notification_recipients_email_idx
+  on public.notification_recipients (notification_id, lower(email))
+  where user_id is null and email is not null;
+
+create index if not exists notification_recipients_user_unread_idx on public.notification_recipients(user_id, is_read, created_at desc);
 
 create table if not exists public.push_subscriptions (
   id uuid primary key default gen_random_uuid(),
@@ -162,6 +186,7 @@ on conflict (id) do nothing;
 
 alter table public.notification_preferences enable row level security;
 alter table public.notifications enable row level security;
+alter table public.notification_recipients enable row level security;
 alter table public.push_subscriptions enable row level security;
 alter table public.notification_push_queue enable row level security;
 alter table public.notification_campaigns enable row level security;
@@ -170,6 +195,7 @@ alter table public.notification_public_config enable row level security;
 
 grant select, insert, update on public.notification_preferences to authenticated;
 grant select, update on public.notifications to authenticated;
+grant select, update on public.notification_recipients to authenticated;
 grant select, insert, update, delete on public.push_subscriptions to authenticated;
 grant select on public.notification_push_queue to authenticated;
 grant select, insert, update on public.notification_campaigns to authenticated;
@@ -185,6 +211,11 @@ for each row execute function public.lavida_touch_updated_at();
 drop trigger if exists lavida_touch_notifications on public.notifications;
 create trigger lavida_touch_notifications
 before update on public.notifications
+for each row execute function public.lavida_touch_updated_at();
+
+drop trigger if exists lavida_touch_notification_recipients on public.notification_recipients;
+create trigger lavida_touch_notification_recipients
+before update on public.notification_recipients
 for each row execute function public.lavida_touch_updated_at();
 
 drop trigger if exists lavida_touch_push_subscriptions on public.push_subscriptions;
@@ -220,6 +251,17 @@ create policy "Users read own notifications"
 drop policy if exists "Users update own notification read state" on public.notifications;
 create policy "Users update own notification read state"
   on public.notifications for update to authenticated
+  using (user_id = auth.uid() or lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')) or public.lavida_is_notification_admin())
+  with check (user_id = auth.uid() or lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')) or public.lavida_is_notification_admin());
+
+drop policy if exists "Users read own notification recipients" on public.notification_recipients;
+create policy "Users read own notification recipients"
+  on public.notification_recipients for select to authenticated
+  using (user_id = auth.uid() or lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')) or public.lavida_is_notification_admin());
+
+drop policy if exists "Users update own notification recipient read state" on public.notification_recipients;
+create policy "Users update own notification recipient read state"
+  on public.notification_recipients for update to authenticated
   using (user_id = auth.uid() or lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')) or public.lavida_is_notification_admin())
   with check (user_id = auth.uid() or lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')) or public.lavida_is_notification_admin());
 
@@ -321,25 +363,37 @@ set search_path = public, auth
 as $$
 declare
   target_email text;
+  target_user_id uuid;
   existing public.notifications%rowtype;
   created public.notifications%rowtype;
   push_allowed boolean := false;
   sub record;
 begin
-  if p_user_id is null and nullif(trim(coalesce(p_email, '')), '') is null then
+  target_user_id := p_user_id;
+
+  if target_user_id is null and nullif(trim(coalesce(p_email, '')), '') is not null then
+    select u.id into target_user_id
+    from auth.users u
+    where lower(u.email) = lower(trim(p_email))
+    order by u.created_at desc
+    limit 1;
+  end if;
+
+  if target_user_id is null and nullif(trim(coalesce(p_email, '')), '') is null then
     raise exception 'Notification target is required.';
   end if;
 
   if not (
     public.lavida_is_notification_admin()
-    or p_user_id = auth.uid()
+    or coalesce(auth.role(), '') = 'service_role'
+    or target_user_id = auth.uid()
     or lower(coalesce(p_email, '')) = lower(coalesce(auth.jwt() ->> 'email', ''))
   ) then
     raise exception 'Not allowed to create this notification.';
   end if;
 
-  if p_user_id is not null then
-    select u.email into target_email from auth.users u where u.id = p_user_id;
+  if target_user_id is not null then
+    select u.email into target_email from auth.users u where u.id = target_user_id;
   end if;
   target_email := nullif(trim(coalesce(target_email, p_email)), '');
 
@@ -347,8 +401,8 @@ begin
     select * into existing
     from public.notifications n
     where (
-      (p_user_id is not null and n.user_id = p_user_id)
-      or (p_user_id is null and target_email is not null and lower(n.email) = lower(target_email))
+      (target_user_id is not null and n.user_id = target_user_id)
+      or (target_user_id is null and target_email is not null and lower(n.email) = lower(target_email))
     )
     and n.idempotency_key = p_idempotency_key
     limit 1;
@@ -363,23 +417,27 @@ begin
     idempotency_key, metadata
   )
   values (
-    p_user_id, target_email, p_notification_type, p_category, p_priority,
+    target_user_id, target_email, p_notification_type, p_category, p_priority,
     left(p_title, 120), left(p_body, 300), p_service_label, p_action_label,
     p_action_url, p_entity_type, p_entity_id, p_idempotency_key, coalesce(p_metadata, '{}'::jsonb)
   )
   returning * into created;
 
+  insert into public.notification_recipients (notification_id, user_id, email, is_read, read_at, archived_at)
+  values (created.id, target_user_id, target_email, created.is_read, created.read_at, created.archived_at)
+  on conflict do nothing;
+
   push_allowed := p_send_push
-    and p_user_id is not null
-    and public.lavida_notification_pref_allowed(p_user_id, p_category, p_priority)
+    and target_user_id is not null
+    and public.lavida_notification_pref_allowed(target_user_id, p_category, p_priority)
     and exists (
       select 1
       from public.notification_preferences np
-      where np.user_id = p_user_id and np.push_enabled = true
+      where np.user_id = target_user_id and np.push_enabled = true
     );
 
   if push_allowed then
-    for sub in select id from public.push_subscriptions where user_id = p_user_id and active = true loop
+    for sub in select id from public.push_subscriptions where user_id = target_user_id and active = true loop
       insert into public.notification_push_queue (notification_id, subscription_id, status)
       values (created.id, sub.id, 'queued');
     end loop;
@@ -412,6 +470,14 @@ begin
     and (user_id = auth.uid() or lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')))
     and is_read = false;
   get diagnostics affected = row_count;
+
+  update public.notification_recipients
+  set is_read = true, read_at = coalesce(read_at, now())
+  where archived_at is null
+    and (p_notification_ids is null or notification_id = any(p_notification_ids))
+    and (user_id = auth.uid() or lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')))
+    and is_read = false;
+
   return affected;
 end;
 $$;
@@ -763,7 +829,7 @@ begin
     title, body, 'View Order', 'marketplace.html#orders',
     'marketplace_order', new.id::text, 'transactional', 'Market 365',
     'marketplace_order:' || new.id::text || ':' || coalesce(new.order_status, new.payment_status, 'submitted'),
-    jsonb_build_object('order_reference', new.order_reference), false
+    jsonb_build_object('order_reference', new.order_reference), true
   );
   return new;
 end;
