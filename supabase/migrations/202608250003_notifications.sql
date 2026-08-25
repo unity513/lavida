@@ -1,4 +1,6 @@
 create extension if not exists pgcrypto;
+create extension if not exists pg_net with schema extensions;
+create extension if not exists pg_cron with schema extensions;
 
 create or replace function public.lavida_touch_updated_at()
 returns trigger
@@ -338,6 +340,80 @@ begin
   return true;
 end;
 $$;
+
+create or replace function public.lavida_dispatch_push_queue(p_limit integer default 50)
+returns void
+language plpgsql
+security definer
+set search_path = public, vault
+as $$
+declare
+  push_url text;
+  push_secret text;
+begin
+  select nullif(push_function_url, '') into push_url
+  from public.notification_public_config
+  where id = 1;
+
+  select decrypted_secret into push_secret
+  from vault.decrypted_secrets
+  where name = 'lavida_push_worker_secret'
+  order by updated_at desc
+  limit 1;
+
+  if push_url is null or nullif(push_secret, '') is null then
+    return;
+  end if;
+
+  perform net.http_post(
+    url := push_url,
+    body := jsonb_build_object('limit', greatest(1, least(100, coalesce(p_limit, 50)))),
+    params := '{}'::jsonb,
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'x-lavida-push-secret', push_secret
+    ),
+    timeout_milliseconds := 5000
+  );
+exception when others then
+  raise warning 'LAVIDA push dispatch request failed: %', sqlerrm;
+end;
+$$;
+
+create or replace function public.lavida_dispatch_push_queue_after_insert()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if new.status = 'queued' then
+    perform public.lavida_dispatch_push_queue(50);
+  end if;
+  return new;
+exception when others then
+  raise warning 'LAVIDA push queue trigger failed: %', sqlerrm;
+  return new;
+end;
+$$;
+
+drop trigger if exists lavida_dispatch_push_queue_insert on public.notification_push_queue;
+create trigger lavida_dispatch_push_queue_insert
+after insert on public.notification_push_queue
+for each row execute function public.lavida_dispatch_push_queue_after_insert();
+
+do $$
+begin
+  perform cron.unschedule('lavida-push-queue-worker');
+exception when others then
+  null;
+end $$;
+
+select cron.schedule(
+  'lavida-push-queue-worker',
+  '* * * * *',
+  'select public.lavida_dispatch_push_queue(50);'
+);
 
 create or replace function public.create_lavida_notification(
   p_user_id uuid,
