@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#03163d">
+  <title>LAVIDA Service Requests Admin</title>
+  <style>
+    :root{--navy:#03163d;--gold:#f5b821;--line:#dfe5ee;--muted:#667085;--soft:#f5f7fb;--bad:#b42318;--good:#08783e}*{box-sizing:border-box}body{margin:0;background:#f3f5f8;color:#071126;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}a{text-decoration:none;color:inherit}button,input,select,textarea{font:inherit}button{cursor:pointer}.admin-header{position:sticky;top:0;z-index:20;min-height:68px;padding:calc(8px + env(safe-area-inset-top,0px)) 16px 8px;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;box-shadow:0 12px 34px rgba(6,20,51,.18)}.admin-brand strong{display:block;color:#fff;font-size:24px;line-height:1;letter-spacing:1px}.admin-brand span{display:block;margin-top:4px;color:var(--gold);font-size:12px;letter-spacing:1.2px}.admin-actions{display:flex;gap:8px;align-items:center}.admin-actions a,.admin-actions button{min-height:42px;display:flex;align-items:center;background:#fff;color:var(--navy);border:0;border-radius:10px;padding:0 12px;font-weight:900}main{max-width:1180px;margin:auto;padding:16px 16px 54px}.panel{background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:16px;box-shadow:0 10px 24px rgba(6,20,51,.07)}.panel-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:12px}.panel h1,.panel h2,.panel h3{margin:0;color:var(--navy)}.muted{color:var(--muted)}.status{display:inline-flex;border-radius:999px;background:#eef3fb;color:var(--navy);padding:5px 9px;font-size:12px;font-weight:900}.status.ok{background:#e8fff5;color:var(--good)}.status.warn{background:#fff7d6;color:#7a5200}.status.bad{background:#fff0ed;color:var(--bad)}.hidden{display:none!important}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.detail-box{border:1px solid var(--line);border-radius:8px;padding:10px;background:#fbfcfe;overflow-wrap:anywhere}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px}table{width:100%;border-collapse:collapse;min-width:920px}th,td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top;font-size:13px}th{background:var(--navy);color:var(--gold);text-transform:uppercase;font-size:11px}.notice{background:#fff7d6;border:1px solid #f0d57b;border-radius:8px;padding:11px;color:#5d4300}.notice.bad{background:#fff0ed;border-color:#f5aaa2;color:var(--bad)}.actions{display:flex;gap:8px;flex-wrap:wrap}button.primary,.primary{border:0;background:var(--navy);color:#fff;border-radius:10px;min-height:42px;padding:0 14px;font-weight:900}button.secondary,.secondary{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:10px;min-height:42px;padding:0 14px;font-weight:900}input,select,textarea{width:100%;min-height:44px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:0 12px;color:#071126}textarea{min-height:92px;padding:10px 12px;resize:vertical}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.form-grid .full{grid-column:1/-1}.file-list,.timeline{display:grid;gap:8px}.file-row,.timeline-row{border:1px solid var(--line);border-radius:8px;background:#fff;padding:10px;display:grid;gap:4px}.timeline-row small,.file-row small{color:var(--muted)}@media(max-width:900px){.admin-actions{display:none}.grid,.detail-grid,.form-grid{grid-template-columns:1fr}.panel-head{display:block}main{padding-inline:12px}table{min-width:780px}}
+  </style>
+</head>
+<body>
+  <header class="admin-header">
+    <a class="admin-brand" href="./service-requests-admin.html"><strong>LAVIDA</strong><span>Service Requests Admin</span></a>
+    <nav class="admin-actions">
+      <a href="./marketplace.html#home">Home</a>
+      <a href="./marketplace-orders-admin.html">Orders</a>
+      <a href="./printing-admin.html">Print Admin</a>
+      <button id="signOutBtn" type="button">Sign Out</button>
+    </nav>
+  </header>
+  <main>
+    <section class="panel">
+      <div class="panel-head"><div><h1>Professional Service Requests</h1><p class="muted">Review Digital & Systems Support and Documents & Professional Profiles requests.</p></div><span id="authStatus" class="status warn">Checking access</span></div>
+      <div id="loginBox" class="notice hidden">Sign in with an authorised LAVIDA admin account to continue. <a href="./signin.html?returnTo=service-requests-admin.html"><b>Sign in</b></a></div>
+    </section>
+    <section id="summaryPanel" class="panel hidden">
+      <div id="summaryGrid" class="grid"></div>
+    </section>
+    <section id="requestsPanel" class="panel hidden">
+      <div class="panel-head"><div><h2>Requests</h2><p class="muted">Newest requests first.</p></div><button id="reloadRequestsBtn" class="secondary" type="button">Refresh</button></div>
+      <div class="grid">
+        <input id="searchBox" placeholder="Search customer, service or request ID">
+        <select id="statusFilter"><option value="">All statuses</option><option value="submitted">Submitted</option><option value="under_review">Under Review</option><option value="more_information_required">More Information Required</option><option value="scope_confirmed">Scope Confirmed</option><option value="quotation_ready">Quotation Ready</option><option value="quote_accepted">Quote Accepted</option><option value="invoice_issued">Invoice Issued</option><option value="awaiting_payment">Awaiting Payment</option><option value="payment_confirmed">Payment Confirmed</option><option value="in_progress">In Progress</option><option value="client_review">Client Review</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
+        <select id="areaFilter"><option value="">All areas</option><option value="digital">Digital & Systems</option><option value="documents">Documents</option></select>
+      </div>
+      <div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>Request</th><th>Customer</th><th>Service</th><th>Status</th><th>Deadline</th><th>Files</th><th>Submitted</th><th>Action</th></tr></thead><tbody id="requestsBody"></tbody></table></div>
+    </section>
+    <section id="detailPanel" class="panel hidden">
+      <div class="panel-head"><div><h2 id="detailTitle">Request Details</h2><p id="detailSubtitle" class="muted"></p></div><span id="detailStatus" class="status">Open</span></div>
+      <div id="detailNotice" class="notice hidden"></div>
+      <div id="detailBody"></div>
+    </section>
+  </main>
+  <script src="./vendor/supabase-js.js"></script>
+  <script src="./lavida-auth.js"></script>
+  <script>
+    const SUPABASE_URL = "https://cgvpoddtqswmtzvyrmwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndnBvZGR0cXN3bXR6dnlybXdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDE0OTMsImV4cCI6MjA5MTkxNzQ5M30.Ut_5jGo8L66zi8zxqR25nV_gkDBYLrT7p3Fx-4G5wGQ";
+    const db = window.LavidaAuth.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const $ = (id)=>document.getElementById(id);
+    const esc = (value)=>String(value ?? "").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const money = (value)=>"MWK " + Number(value || 0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    const ADMIN_ROLES = ["owner","admin","executive","manager","printing_admin","service_admin"];
+    const STATUSES = ["submitted","under_review","more_information_required","scope_confirmed","quotation_ready","quote_accepted","invoice_issued","awaiting_payment","payment_confirmed","in_progress","client_review","completed","cancelled","active_subscription","payment_due","suspended"];
+    let session = null, adminRole = "", requests = [], selected = null;
+    function label(value){return String(value || "").replaceAll("_"," ").replace(/\b\w/g,(c)=>c.toUpperCase())}
+    function cleanDate(value){try{return value ? new Date(value).toLocaleString() : ""}catch(error){return value || ""}}
+    function setStatus(text,cls){$("authStatus").textContent=text;$("authStatus").className=`status ${cls || ""}`}
+    function detailNotice(text,cls){$("detailNotice").textContent=text;$("detailNotice").className=`notice ${cls || ""}`;$("detailNotice").classList.toggle("hidden",!text)}
+    function roleAllowed(role){return ADMIN_ROLES.includes(String(role || "").toLowerCase())}
+    async function init(){
+      window.LavidaAuth.rememberReturnTo();
+      try{
+        session = await window.LavidaAuth.getSession(db);
+        if(!session){setStatus("Sign in required","warn");$("loginBox").classList.remove("hidden");return}
+        adminRole = String(await window.LavidaAuth.loadRole(db,session) || "").toLowerCase();
+        if(!roleAllowed(adminRole)){setStatus("Access denied","bad");$("loginBox").classList.remove("hidden");$("loginBox").textContent = "Your account is signed in but is not authorised for service request admin.";return}
+        setStatus(`${adminRole} access`,"ok");
+        $("loginBox").classList.add("hidden");
+        $("summaryPanel").classList.remove("hidden");
+        $("requestsPanel").classList.remove("hidden");
+        await loadRequests();
+      }catch(error){
+        console.error("Service admin init error",error);
+        setStatus("Access check failed","bad");
+        $("loginBox").classList.remove("hidden");
+      }
+    }
+    async function loadRequests(){
+      $("requestsBody").innerHTML = `<tr><td colspan="8">Loading requests...</td></tr>`;
+      try{
+        const {data,error}=await db.from("service_requests").select("*").order("created_at",{ascending:false}).limit(250);
+        if(error)throw error;
+        requests = data || [];
+        renderSummary();
+        renderRequests();
+      }catch(error){
+        console.error("Service requests load error",error);
+        $("requestsBody").innerHTML = `<tr><td colspan="8">${esc(error.message || "Service request tables are not installed yet.")}</td></tr>`;
+      }
+    }
+    function renderSummary(){
+      const count = (fn)=>requests.filter(fn).length;
+      const cards = [
+        ["New Requests",count((r)=>r.status==="submitted")],
+        ["Under Review",count((r)=>["under_review","more_information_required","scope_confirmed"].includes(r.status))],
+        ["Quotes/Invoices",count((r)=>["quotation_ready","quote_accepted","invoice_issued","awaiting_payment"].includes(r.status))],
+        ["Active Work",count((r)=>["payment_confirmed","in_progress","client_review","active_subscription"].includes(r.status))]
+      ];
+      $("summaryGrid").innerHTML = cards.map(([label,value])=>`<div class="detail-box"><span class="muted">${esc(label)}</span><h2>${esc(value)}</h2></div>`).join("");
+    }
+    function filteredRequests(){
+      const q=$("searchBox").value.trim().toLowerCase(), status=$("statusFilter").value, area=$("areaFilter").value;
+      return requests.filter((r)=>`${r.request_number} ${r.contact_name} ${r.contact_phone} ${r.contact_email} ${r.service_name} ${r.title}`.toLowerCase().includes(q) && (!status || r.status===status) && (!area || r.service_area===area));
+    }
+    function renderRequests(){
+      const rows = filteredRequests();
+      $("requestsBody").innerHTML = rows.map((r)=>`<tr><td><b>${esc(r.request_number)}</b><br>${esc(r.title || "")}</td><td>${esc(r.contact_name)}<br>${esc(r.contact_phone)}<br>${esc(r.contact_email)}</td><td>${esc(r.service_area_name)}<br><b>${esc(r.service_name)}</b></td><td><span class="status warn">${esc(label(r.status))}</span></td><td>${esc(r.deadline || "None")}</td><td>${esc(r.uploaded_file_count || 0)}</td><td>${esc(cleanDate(r.created_at))}</td><td><button class="primary" type="button" data-open-request="${esc(r.id)}">Manage</button></td></tr>`).join("") || `<tr><td colspan="8">No matching requests.</td></tr>`;
+    }
+    async function fileLink(path){
+      try{
+        const {data,error}=await db.storage.from("service-request-files").createSignedUrl(path,3600);
+        if(error)throw error;
+        return data?.signedUrl || "";
+      }catch(error){return""}
+    }
+    async function openRequest(id){
+      $("detailPanel").classList.remove("hidden");
+      $("detailBody").innerHTML = `<div class="notice">Loading details...</div>`;
+      detailNotice("");
+      try{
+        const {data,error}=await db.from("service_requests").select("*,service_request_files(*),service_quotes(*,service_quote_items(*)),service_invoices(*),service_project_updates(*),service_admin_notes(*)").eq("id",id).single();
+        if(error)throw error;
+        selected = data;
+        $("detailTitle").textContent = data.request_number;
+        $("detailSubtitle").textContent = `${data.service_area_name} · ${data.service_name}`;
+        $("detailStatus").textContent = label(data.status);
+        await renderDetail();
+        $("detailPanel").scrollIntoView({behavior:"smooth",block:"start"});
+      }catch(error){
+        $("detailBody").innerHTML = `<div class="notice bad">${esc(error.message || "Details unavailable.")}</div>`;
+      }
+    }
+    async function renderDetail(){
+      const files = selected.service_request_files || [];
+      const fileRows = await Promise.all(files.map(async(file)=>{
+        const link = await fileLink(file.storage_path);
+        return `<div class="file-row"><b>${esc(file.file_name)}</b><small>${esc(file.file_description || file.file_type || "")} · ${esc(cleanDate(file.created_at))}</small>${link ? `<a class="secondary" href="${esc(link)}" target="_blank" rel="noopener">Download</a>` : ""}</div>`;
+      }));
+      const updates = selected.service_project_updates || [];
+      const notes = selected.service_admin_notes || [];
+      const quote = (selected.service_quotes || [])[0] || null;
+      const invoice = (selected.service_invoices || [])[0] || null;
+      $("detailBody").innerHTML = `<div class="detail-grid">
+        <div class="detail-box"><b>Customer</b><br>${esc(selected.contact_name)}<br>${esc(selected.contact_phone)}<br>${esc(selected.contact_email)}</div>
+        <div class="detail-box"><b>Service</b><br>${esc(selected.service_area_name)}<br>${esc(selected.service_name)}</div>
+        <div class="detail-box"><b>Status</b><br>${esc(label(selected.status))}</div>
+        <div class="detail-box"><b>Deadline</b><br>${esc(selected.deadline || "Not specified")}</div>
+        <div class="detail-box"><b>Route</b><br>${esc(label(selected.commercial_route))}</div>
+        <div class="detail-box"><b>Existing URL</b><br>${esc(selected.existing_website_url || "None")}</div>
+      </div>
+      <div class="detail-box" style="margin-top:10px"><b>Request</b><p>${esc(selected.description || "")}</p><pre style="white-space:pre-wrap;overflow:auto">${esc(JSON.stringify(selected.answers || {},null,2))}</pre></div>
+      <h3 style="margin-top:14px">Files</h3><div class="file-list">${fileRows.join("") || `<div class="notice">No files uploaded.</div>`}</div>
+      <h3 style="margin-top:14px">Admin Actions</h3>
+      <div class="form-grid">
+        <label><span class="muted">Status</span><select id="requestStatusSelect">${STATUSES.map((s)=>`<option value="${s}" ${selected.status===s?"selected":""}>${label(s)}</option>`).join("")}</select></label>
+        <label><span class="muted">Assigned team member user ID</span><input id="assignedToInput" value="${esc(selected.assigned_to || "")}" placeholder="Optional UUID"></label>
+        <label class="full"><span class="muted">Customer update</span><textarea id="customerUpdateInput" placeholder="Visible message for customer"></textarea></label>
+        <label class="full"><span class="muted">Internal note</span><textarea id="internalNoteInput" placeholder="Private admin note"></textarea></label>
+        <button class="primary" type="button" data-save-request-status>Save Status / Updates</button>
+      </div>
+      <h3 style="margin-top:14px">Quote</h3>
+      ${quote ? `<div class="detail-box"><b>${esc(quote.quote_number)}</b><br>${esc(label(quote.status))}<br>${esc(money(quote.total_mwk))}<p>${esc(quote.scope || "")}</p></div>` : `<div class="notice">No quote created yet.</div>`}
+      <div class="form-grid">
+        <input id="quoteScope" class="full" placeholder="Scope and deliverables">
+        <input id="quoteTotal" type="number" min="0" step="0.01" placeholder="Quote total MWK">
+        <input id="quoteDelivery" placeholder="Estimated delivery period">
+        <button class="primary" type="button" data-create-service-quote>Create / Send Quote</button>
+      </div>
+      <h3 style="margin-top:14px">Invoice</h3>
+      ${invoice ? `<div class="detail-box"><b>${esc(invoice.invoice_number)}</b><br>${esc(label(invoice.status))}<br>${esc(money(invoice.total_mwk))}</div>` : `<div class="notice">No invoice issued yet.</div>`}
+      <div class="form-grid">
+        <input id="invoiceTotal" type="number" min="0" step="0.01" placeholder="Invoice total MWK" value="${esc(quote?.total_mwk || "")}">
+        <input id="invoiceNotes" placeholder="Invoice notes">
+        <button class="primary" type="button" data-create-service-invoice>Issue Invoice</button>
+      </div>
+      <h3 style="margin-top:14px">Customer Updates</h3><div class="timeline">${updates.map((u)=>`<div class="timeline-row"><b>${esc(u.message)}</b><small>${esc(cleanDate(u.created_at))} · ${u.visible_to_customer ? "Visible" : "Internal"}</small></div>`).join("") || `<div class="notice">No updates yet.</div>`}</div>
+      <h3 style="margin-top:14px">Private Notes</h3><div class="timeline">${notes.map((n)=>`<div class="timeline-row"><b>${esc(n.note)}</b><small>${esc(cleanDate(n.created_at))}</small></div>`).join("") || `<div class="notice">No private notes yet.</div>`}</div>`;
+    }
+    async function saveStatus(){
+      if(!selected)return;
+      detailNotice("Saving...");
+      const status = $("requestStatusSelect").value;
+      const assigned = $("assignedToInput").value.trim();
+      const customerUpdate = $("customerUpdateInput").value.trim();
+      const internalNote = $("internalNoteInput").value.trim();
+      try{
+        const payload = {status, assigned_to: assigned || null};
+        const {error}=await db.from("service_requests").update(payload).eq("id",selected.id);
+        if(error)throw error;
+        if(customerUpdate){
+          const {error:updateError}=await db.from("service_project_updates").insert({request_id:selected.id,created_by:session.user.id,visible_to_customer:true,update_type:"admin_update",message:customerUpdate});
+          if(updateError)throw updateError;
+        }
+        if(internalNote){
+          const {error:noteError}=await db.from("service_admin_notes").insert({request_id:selected.id,admin_user_id:session.user.id,note:internalNote});
+          if(noteError)throw noteError;
+        }
+        detailNotice("Request updated.","");
+        await loadRequests();
+        await openRequest(selected.id);
+      }catch(error){detailNotice(error.message || "Could not update request.","bad")}
+    }
+    function quoteNumber(){return `LVD-Q-${new Date().toISOString().slice(2,10).replaceAll("-","")}-${Math.floor(1000+Math.random()*9000)}`}
+    function invoiceNumber(){return `LVD-I-${new Date().toISOString().slice(2,10).replaceAll("-","")}-${Math.floor(1000+Math.random()*9000)}`}
+    async function createQuote(){
+      if(!selected)return;
+      const total = Number($("quoteTotal").value || 0);
+      const scope = $("quoteScope").value.trim();
+      if(!scope || !(total>=0)){detailNotice("Add scope and quote total.","bad");return}
+      try{
+        const payload = {request_id:selected.id,quote_number:quoteNumber(),scope,estimated_delivery_period:$("quoteDelivery").value.trim(),total_mwk:total,status:"sent",created_by:session.user.id};
+        const {data,error}=await db.from("service_quotes").insert(payload).select("*").single();
+        if(error)throw error;
+        await db.from("service_quote_items").insert({quote_id:data.id,item_name:selected.service_name,item_description:scope,quantity:1,unit_price_mwk:total,line_total_mwk:total});
+        await db.from("service_requests").update({status:"quotation_ready",quote_status:"sent"}).eq("id",selected.id);
+        await db.from("service_project_updates").insert({request_id:selected.id,created_by:session.user.id,visible_to_customer:true,update_type:"quote",message:"Your quotation is ready for review."});
+        await loadRequests();
+        await openRequest(selected.id);
+      }catch(error){detailNotice(error.message || "Quote could not be created.","bad")}
+    }
+    async function createInvoice(){
+      if(!selected)return;
+      const total = Number($("invoiceTotal").value || 0);
+      if(!(total>0)){detailNotice("Add an invoice total.","bad");return}
+      const quote = (selected.service_quotes || [])[0] || null;
+      try{
+        await db.from("service_invoices").insert({request_id:selected.id,quote_id:quote?.id || null,invoice_number:invoiceNumber(),subtotal_mwk:total,total_mwk:total,status:"issued",notes:$("invoiceNotes").value.trim(),created_by:session.user.id});
+        await db.from("service_requests").update({status:"invoice_issued",invoice_status:"issued",payment_status:"awaiting_payment"}).eq("id",selected.id);
+        await db.from("service_project_updates").insert({request_id:selected.id,created_by:session.user.id,visible_to_customer:true,update_type:"invoice",message:"Your invoice has been issued."});
+        await loadRequests();
+        await openRequest(selected.id);
+      }catch(error){detailNotice(error.message || "Invoice could not be issued.","bad")}
+    }
+    document.addEventListener("click",(event)=>{
+      const open = event.target.closest("[data-open-request]"); if(open){openRequest(open.dataset.openRequest);return}
+      if(event.target.closest("[data-save-request-status]"))saveStatus();
+      if(event.target.closest("[data-create-service-quote]"))createQuote();
+      if(event.target.closest("[data-create-service-invoice]"))createInvoice();
+    });
+    ["searchBox","statusFilter","areaFilter"].forEach((id)=>$(id).addEventListener("input",renderRequests));
+    $("reloadRequestsBtn").addEventListener("click",loadRequests);
+    $("signOutBtn").addEventListener("click",()=>window.LavidaAuth.signOut(db).then(()=>location.href="./signin.html?returnTo=service-requests-admin.html"));
+    init();
+  </script>
+</body>
+</html>
