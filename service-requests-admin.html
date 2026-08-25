@@ -157,6 +157,7 @@
         <label><span class="muted">Status</span><select id="requestStatusSelect">${STATUSES.map((s)=>`<option value="${s}" ${selected.status===s?"selected":""}>${label(s)}</option>`).join("")}</select></label>
         <label><span class="muted">Assigned team member user ID</span><input id="assignedToInput" value="${esc(selected.assigned_to || "")}" placeholder="Optional UUID"></label>
         <label class="full"><span class="muted">Customer update</span><textarea id="customerUpdateInput" placeholder="Visible message for customer"></textarea></label>
+        <label class="full" style="display:flex;align-items:center;gap:8px"><input id="notifyCustomerInput" type="checkbox" style="width:18px;min-height:18px"> Notify customer</label>
         <label class="full"><span class="muted">Internal note</span><textarea id="internalNoteInput" placeholder="Private admin note"></textarea></label>
         <button class="primary" type="button" data-save-request-status>Save Status / Updates</button>
       </div>
@@ -190,7 +191,8 @@
         const {error}=await db.from("service_requests").update(payload).eq("id",selected.id);
         if(error)throw error;
         if(customerUpdate){
-          const {error:updateError}=await db.from("service_project_updates").insert({request_id:selected.id,created_by:session.user.id,visible_to_customer:true,update_type:"admin_update",message:customerUpdate});
+          const notifyCustomer = Boolean($("notifyCustomerInput")?.checked);
+          const {error:updateError}=await db.from("service_project_updates").insert({request_id:selected.id,created_by:session.user.id,visible_to_customer:true,update_type:"admin_update",message:customerUpdate,metadata:{notify_customer:notifyCustomer}});
           if(updateError)throw updateError;
         }
         if(internalNote){

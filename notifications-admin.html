@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LAVIDA Notifications Admin</title>
+  <script src="./vendor/supabase-js.js"></script>
+  <script src="./lavida-auth.js"></script>
+  <style>
+    :root{--navy:#03163d;--gold:#f5b821;--ink:#071126;--muted:#667085;--line:#dfe5ee;--page:#f3f5f8;--bad:#b42318;--good:#08783e}*{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}a{text-decoration:none;color:inherit}.admin-header{position:sticky;top:0;z-index:20;min-height:68px;padding:calc(8px + env(safe-area-inset-top,0px)) 16px 8px;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;box-shadow:0 12px 34px rgba(6,20,51,.18)}.admin-brand strong{display:block;color:#fff;font-size:24px;line-height:1;letter-spacing:1px}.admin-brand span{display:block;margin-top:4px;color:var(--gold);font-size:12px;font-weight:900}.admin-actions{display:flex;gap:8px;align-items:center}.admin-actions a,.admin-actions button,.primary,.secondary,.danger{min-height:42px;border-radius:10px;padding:0 13px;font-weight:850;border:1px solid var(--line);background:#fff;color:var(--navy)}.primary{background:var(--navy);border-color:var(--navy);color:#fff}.danger{border-color:#f1b4ac;color:var(--bad)}main{max-width:1160px;margin:auto;padding:16px 14px 50px}.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 10px 24px rgba(6,20,51,.07)}.panel-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}.panel h1,.panel h2,.panel h3{margin:0;color:var(--navy)}.muted{color:var(--muted);line-height:1.45}.status{display:inline-flex;border-radius:999px;background:#eef3fb;color:var(--navy);padding:5px 9px;font-size:12px;font-weight:900}.status.ok{background:#e8fff5;color:var(--good)}.status.warn{background:#fff7d6;color:#7a5200}.status.bad{background:#fff0ed;color:var(--bad)}.hidden{display:none!important}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}label{display:grid;gap:6px;color:var(--navy);font-size:13px;font-weight:850}input,select,textarea{width:100%;min-height:46px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:0 12px;color:var(--ink)}textarea{min-height:112px;padding:12px;resize:vertical}.notice{background:#fff7d6;border:1px solid #f0d57b;border-radius:10px;padding:11px;color:#5d4300}.notice.bad{background:#fff0ed;border-color:#f5aaa2;color:var(--bad)}.summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.summary-card{border:1px solid var(--line);border-radius:10px;background:#f8fafc;padding:12px}.summary-card span{display:block;color:var(--muted);font-size:12px;font-weight:800}.summary-card strong{display:block;color:var(--navy);font-size:25px;margin-top:3px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:780px}th,td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top;font-size:13px}th{background:var(--navy);color:var(--gold);font-size:11px;text-transform:uppercase}.preview{border:1px solid var(--line);border-radius:12px;padding:13px;background:#f8fafc;display:grid;gap:5px}.preview b{color:var(--navy);font-size:18px}.actions{display:flex;gap:8px;flex-wrap:wrap}.config-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}@media(max-width:760px){.admin-header{align-items:flex-start}.admin-actions{flex-wrap:wrap;justify-content:flex-end}.admin-actions a{display:none}.panel{border-radius:10px;padding:14px}.panel-head,.config-row{grid-template-columns:1fr;display:grid}.grid,.grid.three,.summary-grid{grid-template-columns:1fr}.actions{display:grid;grid-template-columns:1fr}.actions button{width:100%}}
+  </style>
+</head>
+<body>
+  <header class="admin-header">
+    <a class="admin-brand" href="./notifications-admin.html"><strong>LAVIDA</strong><span>Notifications Admin</span></a>
+    <div class="admin-actions">
+      <a href="./marketplace.html#account">Account</a>
+      <a href="./service-requests-admin.html">Service Requests</a>
+      <button id="logoutBtn" type="button">Log Out</button>
+    </div>
+  </header>
+  <main>
+    <section class="panel">
+      <div class="panel-head"><div><h1>Notification Centre Admin</h1><p class="muted">Publish user-facing updates, promotions and release notices. Transactional invoice/order notifications are automatic.</p></div><span id="authStatus" class="status warn">Checking access</span></div>
+      <div id="loginBox" class="grid hidden"><input id="email" type="email" placeholder="Admin email"><input id="password" type="password" placeholder="Password"><button id="loginBtn" class="primary" type="button">Sign In</button></div>
+    </section>
+
+    <section id="summaryPanel" class="panel hidden">
+      <div class="panel-head"><div><h2>Delivery Snapshot</h2><p class="muted">Queued push delivery means the notification was saved and waiting for the push worker.</p></div><button id="refreshBtn" class="secondary" type="button">Refresh</button></div>
+      <div id="summaryCards" class="summary-grid"></div>
+    </section>
+
+    <section id="composerPanel" class="panel hidden">
+      <div class="panel-head"><div><h2>Create Notification</h2><p class="muted">Use this for promotions, tournament announcements and app/product updates. Preview before publishing.</p></div><span id="composerStatus" class="status">Ready</span></div>
+      <div class="grid three">
+        <label>Type<select id="notificationType"><option value="promotional_offer">Promotional offer</option><option value="new_feature">New feature</option><option value="tournament_announced">Chess 365 tournament</option><option value="marketplace_promotion">Marketplace promotion</option><option value="important_update">Important update</option></select></label>
+        <label>Category<select id="notificationCategory"><option value="marketing">Promotion</option><option value="games">Games 365</option><option value="marketplace">Marketplace</option><option value="system">Product/App Update</option><option value="service">Service Update</option></select></label>
+        <label>Priority<select id="notificationPriority"><option value="marketing">Marketing</option><option value="engagement">Engagement</option><option value="system">System</option><option value="transactional">Transactional</option></select></label>
+      </div>
+      <div class="grid" style="margin-top:10px">
+        <label>Title<input id="notificationTitle" maxlength="120" placeholder="Printing Week Offer"></label>
+        <label>Audience<select id="notificationAudience"><option value="all_users">All users</option><option value="selected_users">Selected users</option><option value="admins">Admins only</option></select></label>
+        <label>Selected User IDs<input id="selectedUserIds" placeholder="UUIDs separated by commas"></label>
+        <label>Action URL<input id="notificationActionUrl" placeholder="marketplace.html#print365"></label>
+        <label>Action Label<input id="notificationActionLabel" placeholder="View"></label>
+        <label>Send Phone Notification<select id="sendPhonePush"><option value="false">No</option><option value="true">Yes</option></select></label>
+      </div>
+      <label style="margin-top:10px">Message<textarea id="notificationBody" maxlength="300" placeholder="Get discounted colour printing this week."></textarea></label>
+      <div class="preview" style="margin-top:12px"><span class="muted">Preview</span><b id="previewTitle">Notification title</b><span id="previewBody">Short notification message appears here.</span><small id="previewMeta" class="muted">Audience and category preview</small></div>
+      <div class="actions" style="margin-top:12px"><button id="publishNotificationBtn" class="primary" type="button">Publish Notification</button></div>
+      <div id="composerNotice" class="notice hidden" style="margin-top:12px"></div>
+    </section>
+
+    <section id="releasePanel" class="panel hidden">
+      <div class="panel-head"><div><h2>Publish App Release</h2><p class="muted">Only notify users for meaningful user-facing releases.</p></div><span id="releaseStatus" class="status">Ready</span></div>
+      <div class="grid three">
+        <label>Version<input id="releaseVersion" placeholder="3.3.1"></label>
+        <label>Release Type<select id="releaseType"><option value="internal">Internal</option><option value="minor">Minor</option><option value="major">Major</option><option value="critical">Critical</option></select></label>
+        <label>Minimum Supported Version<input id="minimumVersion" placeholder="Optional"></label>
+        <label>Required Update<select id="releaseRequired"><option value="false">No</option><option value="true">Yes</option></select></label>
+        <label>Force Update<select id="forceUpdate"><option value="false">No</option><option value="true">Yes</option></select></label>
+        <label>Notify Users<select id="notifyReleaseUsers"><option value="false">No</option><option value="true">Yes</option></select></label>
+      </div>
+      <label style="margin-top:10px">Release Title<input id="releaseTitle" placeholder="LAVIDA Updated"></label>
+      <label style="margin-top:10px">Release Notes<textarea id="releaseNotes" placeholder="We've improved Digital & Systems Support and the service-request experience."></textarea></label>
+      <div class="actions" style="margin-top:12px"><button id="publishReleaseBtn" class="primary" type="button">Publish Release</button></div>
+      <div id="releaseNotice" class="notice hidden" style="margin-top:12px"></div>
+    </section>
+
+    <section id="configPanel" class="panel hidden">
+      <div class="panel-head"><div><h2>Push Configuration</h2><p class="muted">Store the public VAPID key used by the browser subscription flow. Keep private keys only in the server push worker.</p></div><span id="configStatus" class="status">Ready</span></div>
+      <div class="config-row">
+        <label>VAPID Public Key<input id="vapidPublicKey" placeholder="B..."></label>
+        <button id="saveConfigBtn" class="primary" type="button">Save Public Key</button>
+      </div>
+    </section>
+
+    <section id="historyPanel" class="panel hidden">
+      <div class="panel-head"><div><h2>Recent Notifications</h2><p class="muted">Latest notification records and push status.</p></div></div>
+      <div class="table-wrap"><table><thead><tr><th>Title</th><th>Target</th><th>Category</th><th>Read</th><th>Push</th><th>Created</th></tr></thead><tbody id="historyBody"></tbody></table></div>
+    </section>
+  </main>
+  <script>
+    const SUPABASE_URL = "https://cgvpoddtqswmtzvyrmwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndnBvZGR0cXN3bXR6dnlybXdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDE0OTMsImV4cCI6MjA5MTkxNzQ5M30.Ut_5jGo8L66zi8zxqR25nV_gkDBYLrT7p3Fx-4G5wGQ";
+    const db = window.LavidaAuth.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const $ = (id) => document.getElementById(id);
+    const esc = (value) => String(value ?? "").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    let session = null;
+    let role = "";
+    function allowed(value){return ["owner","admin","executive","manager","notification_admin"].includes(String(value || "").toLowerCase())}
+    function status(id,text,type){$(id).textContent=text;$(id).className=`status ${type||""}`}
+    function notice(id,text,type){const el=$(id);el.textContent=text;el.className=`notice ${type||""}`;el.classList.toggle("hidden",!text)}
+    function showPanels(){["summaryPanel","composerPanel","releasePanel","configPanel","historyPanel"].forEach((id)=>$(id).classList.remove("hidden"));$("loginBox").classList.add("hidden")}
+    async function loadRole(){try{role=await window.LavidaAuth.loadRole(db,session)||""}catch(error){role=""}if(!allowed(role)){status("authStatus","Your LAVIDA account does not have access to this page.","bad");$("loginBox").classList.remove("hidden");return false}status("authStatus",`${role} access`,"ok");showPanels();return true}
+    async function login(){try{session=await window.LavidaAuth.signIn(db,$("email").value.trim(),$("password").value);if(await loadRole())loadAll()}catch(error){status("authStatus",window.LavidaAuth.friendlyError(error,"We could not sign you in."),"bad")}}
+    async function init(){window.LavidaAuth.rememberReturnTo();try{session=await window.LavidaAuth.getSession(db);if(!session){status("authStatus","Sign in with your LAVIDA account to continue.","warn");$("loginBox").classList.remove("hidden");return}if(await loadRole())loadAll()}catch(error){status("authStatus","LAVIDA could not check your session.","bad");$("loginBox").classList.remove("hidden")}}
+    function bool(id){return $(id).value === "true"}
+    function selectedIds(){return $("selectedUserIds").value.split(",").map((v)=>v.trim()).filter(Boolean)}
+    function updatePreview(){$("previewTitle").textContent=$("notificationTitle").value||"Notification title";$("previewBody").textContent=$("notificationBody").value||"Short notification message appears here.";$("previewMeta").textContent=`${$("notificationAudience").value.replaceAll("_"," ")} · ${$("notificationCategory").value.replaceAll("_"," ")}`}
+    async function publishNotification(){
+      const title=$("notificationTitle").value.trim(), body=$("notificationBody").value.trim();
+      if(!title||!body){notice("composerNotice","Add a title and message first.","bad");return}
+      status("composerStatus","Publishing...","warn");
+      const {error}=await db.rpc("publish_notification_campaign",{p_notification_type:$("notificationType").value,p_category:$("notificationCategory").value,p_title:title,p_body:body,p_action_label:$("notificationActionLabel").value.trim()||null,p_action_url:$("notificationActionUrl").value.trim()||null,p_audience:$("notificationAudience").value,p_selected_user_ids:selectedIds(),p_send_phone_push:bool("sendPhonePush"),p_priority:$("notificationPriority").value});
+      if(error){status("composerStatus","Error","bad");notice("composerNotice",error.message||"Notification could not be published.","bad");return}
+      status("composerStatus","Published","ok");notice("composerNotice","Notification published successfully.","");loadAll();
+    }
+    async function publishRelease(){
+      const version=$("releaseVersion").value.trim(), title=$("releaseTitle").value.trim(), notes=$("releaseNotes").value.trim();
+      if(!version||!title||!notes){notice("releaseNotice","Add version, title and release notes first.","bad");return}
+      status("releaseStatus","Publishing...","warn");
+      const {error}=await db.rpc("publish_lavida_app_release",{p_version:version,p_release_title:title,p_release_notes:notes,p_release_type:$("releaseType").value,p_minimum_supported_version:$("minimumVersion").value.trim()||null,p_is_required:bool("releaseRequired"),p_force_update:bool("forceUpdate"),p_notify_users:bool("notifyReleaseUsers"),p_action_url:"marketplace.html#account"});
+      if(error){status("releaseStatus","Error","bad");notice("releaseNotice",error.message||"Release could not be published.","bad");return}
+      status("releaseStatus","Published","ok");notice("releaseNotice","Release saved successfully.","");loadAll();
+    }
+    async function loadSummary(){
+      const [{count:unread},{count:queued},{count:sent},{count:failed}] = await Promise.all([
+        db.from("notifications").select("id",{count:"exact",head:true}).eq("is_read",false),
+        db.from("notification_push_queue").select("id",{count:"exact",head:true}).eq("status","queued"),
+        db.from("notification_push_queue").select("id",{count:"exact",head:true}).eq("status","sent"),
+        db.from("notification_push_queue").select("id",{count:"exact",head:true}).eq("status","failed")
+      ]);
+      $("summaryCards").innerHTML=[["Unread",unread||0],["Push Queued",queued||0],["Push Sent",sent||0],["Push Failed",failed||0]].map(([label,value])=>`<article class="summary-card"><span>${esc(label)}</span><strong>${esc(value)}</strong></article>`).join("");
+    }
+    async function loadHistory(){
+      const {data,error}=await db.from("notifications").select("title,email,category,is_read,push_status,created_at").order("created_at",{ascending:false}).limit(60);
+      if(error){$("historyBody").innerHTML=`<tr><td colspan="6">${esc(error.message)}</td></tr>`;return}
+      $("historyBody").innerHTML=(data||[]).map((n)=>`<tr><td><b>${esc(n.title)}</b></td><td>${esc(n.email||"User")}</td><td>${esc(n.category)}</td><td>${n.is_read?"Read":"Unread"}</td><td>${esc(n.push_status)}</td><td>${esc(new Date(n.created_at).toLocaleString())}</td></tr>`).join("")||`<tr><td colspan="6">No notifications yet.</td></tr>`;
+    }
+    async function loadConfig(){
+      const {data}=await db.from("notification_public_config").select("*").eq("id",1).maybeSingle();
+      $("vapidPublicKey").value=data?.vapid_public_key||"";
+    }
+    async function saveConfig(){
+      const {error}=await db.from("notification_public_config").update({vapid_public_key:$("vapidPublicKey").value.trim()||null}).eq("id",1);
+      if(error){status("configStatus","Error","bad");return}
+      status("configStatus","Saved","ok");
+    }
+    async function loadAll(){try{await Promise.all([loadSummary(),loadHistory(),loadConfig()])}catch(error){status("authStatus","Notification tables are not installed yet.","bad")}}
+    ["notificationType","notificationCategory","notificationPriority","notificationTitle","notificationAudience","notificationBody"].forEach((id)=>$(id).addEventListener("input",updatePreview));
+    $("publishNotificationBtn").addEventListener("click",publishNotification);$("publishReleaseBtn").addEventListener("click",publishRelease);$("refreshBtn").addEventListener("click",loadAll);$("saveConfigBtn").addEventListener("click",saveConfig);$("loginBtn").addEventListener("click",login);$("logoutBtn").addEventListener("click",async()=>{await window.LavidaAuth.signOut(db);location.href="./marketplace.html#home"});
+    updatePreview();init();
+  </script>
+</body>
+</html>

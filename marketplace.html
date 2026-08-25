@@ -44,6 +44,7 @@
     .business-modal{position:fixed;inset:0;z-index:2300;display:grid;place-items:center;padding:24px;background:rgba(3,22,61,.48)}.business-modal[hidden]{display:none}.business-modal-card{width:min(740px,100%);max-height:88vh;background:#fff;border:1px solid var(--border-soft);border-radius:18px;box-shadow:0 24px 70px rgba(3,22,61,.28);display:flex;flex-direction:column;overflow:hidden}.business-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 22px;border-bottom:1px solid var(--border-soft);background:#fbfcff}.business-modal-kicker{display:block;color:#bd7800;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.business-modal-title{margin:3px 0 0;color:var(--navy);font-size:24px;line-height:1.15}.business-modal-subtitle{margin:7px 0 0;color:var(--text-secondary);font-size:14px}.business-modal-close{width:42px;height:42px;border:1px solid var(--border-soft);border-radius:12px;background:#fff;color:var(--navy);font-size:25px;line-height:1;display:grid;place-items:center}.business-modal-body{padding:20px 22px 22px;overflow:auto}.business-form{display:grid;gap:18px}.business-form-section{display:grid;gap:12px}.business-form-section h3{margin:0;color:var(--navy);font-size:16px}.business-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.business-form-grid>.business-error{grid-column:1/-1;margin-top:-8px}.business-field{display:grid;gap:6px;color:var(--navy);font-size:14px;font-weight:700}.business-field.full{grid-column:1/-1}.business-field input,.business-field select,.business-field textarea{width:100%;min-height:46px}.business-field textarea{min-height:116px}.business-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.business-choice{display:flex;align-items:flex-start;gap:9px;border:1px solid var(--border-soft);border-radius:12px;background:#fff;padding:10px;color:#344054;font-size:13px;font-weight:600}.business-choice input{width:18px;height:18px;min-height:18px;margin:1px 0 0;padding:0;accent-color:var(--navy);flex:0 0 auto}.business-error{min-height:16px;color:#b42318;font-size:12px;font-weight:600}.business-consent{display:flex;align-items:flex-start;gap:10px;color:#344054;font-size:13px;line-height:1.4}.business-consent input{width:20px;height:20px;min-height:20px;margin:0;accent-color:var(--navy);flex:0 0 auto}.business-submit{min-height:50px;border:0;border-radius:12px;background:var(--navy);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:9px}.business-submit:disabled{opacity:.72;cursor:wait}.business-spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.42);border-top-color:#fff;animation:spin .8s linear infinite}.business-form-note{margin:0;color:#5b6678;font-size:13px}.business-form-note a{color:var(--navy);font-weight:800}.business-state{display:grid;justify-items:center;text-align:center;gap:12px;padding:20px 8px}.business-state-icon{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#e9f8ef;color:var(--green)}.business-state-icon svg{width:32px;height:32px;stroke:currentColor}.business-state.error .business-state-icon{background:#fff0ed;color:#b42318}.business-state h3{margin:0;color:var(--navy);font-size:24px}.business-state p{max-width:520px;margin:0;color:var(--text-secondary)}.business-state button{min-height:46px;border:0;border-radius:12px;background:var(--navy);color:#fff;padding:0 24px;font-weight:800}.business-modal-open{overflow:hidden}.home-business-button{border:0;cursor:pointer}.home-business-button.secondary{border:1px solid #d89400}@media(max-width:767px){.business-modal{align-items:end;padding:10px;background:rgba(3,22,61,.54)}.business-modal-card{width:100%;max-height:94vh;border-radius:18px 18px 0 0}.business-modal-head{padding:16px}.business-modal-title{font-size:21px}.business-modal-body{padding:16px}.business-form-grid,.business-choice-grid{grid-template-columns:1fr}.business-choice{min-height:44px}.business-field.full{grid-column:auto}}
   </style>
   <link rel="stylesheet" href="./lavida-services.css">
+  <link rel="stylesheet" href="./lavida-notifications.css">
 </head>
 <body>
   <header class="marketplace-header">
@@ -653,7 +654,7 @@
       unreadNotifications = Math.max(0, Number(count || 0));
       const badge = $("notificationBadge");
       if(!badge) return;
-      badge.textContent = unreadNotifications > 9 ? "9+" : String(unreadNotifications);
+      badge.textContent = unreadNotifications > 99 ? "99+" : String(unreadNotifications);
       badge.classList.toggle("hidden", unreadNotifications <= 0);
     }
     async function refreshAuthSession(){
@@ -1543,7 +1544,7 @@ ${diagnosticJson(diagnostic?.exception??null)}
         if(!email) return;
         const {data} = await db.from("user_roles").select("role,active").eq("email", email).eq("active", true).maybeSingle();
         const role = String(data?.role || "").toLowerCase();
-        if(["owner","admin","executive","manager","printing_admin"].includes(role)){
+        if(["owner","admin","executive","manager","printing_admin","service_admin","notification_admin","games_admin"].includes(role)){
           $("adminToolsSection").classList.remove("hidden");
           $("lavidaAdminMenuSection").classList.remove("hidden");
           $("userManagementMenuLink").classList.remove("hidden");
@@ -2041,7 +2042,7 @@ ${diagnosticJson(diagnostic?.exception??null)}
       }
     }
     document.addEventListener("click",event=>{const printService=event.target.closest("[data-print-service]");if(printService){applyPrintServiceSelection(printService.dataset.printService);return}const printSignIn=event.target.closest("[data-print-sign-in]");if(printSignIn){requestSignIn("marketplace.html#print365");return}const startPrintInline=event.target.closest("[data-start-print-inline]");if(startPrintInline){$("printOrderForm").classList.remove("hidden");showPrintStep(0);$("printOrderForm").scrollIntoView({behavior:"smooth",block:"start"});return}const printDetails=event.target.closest("[data-print-order-details]");if(printDetails){viewPrintOrderDetails(printDetails.dataset.printOrderDetails);return}const removePrintFile=event.target.closest("[data-remove-print-file]");if(removePrintFile){printFiles=printFiles.filter((row)=>row.id!==removePrintFile.dataset.removePrintFile);renderPrintUploads();return}const tab=event.target.closest("[data-order-tab]");if(tab){activeOrderTab=tab.dataset.orderTab;renderOrders();return}const trackExisting=event.target.closest("[data-track-existing]");if(trackExisting){viewOrderDetails(trackExisting.dataset.trackExisting);return}const orderDetails=event.target.closest("[data-order-details]");if(orderDetails){viewOrderDetails(orderDetails.dataset.orderDetails);return}const add=event.target.closest("[data-add]");if(add){event.stopPropagation();addToCart(add.dataset.add);return}const details=event.target.closest("[data-details]");if(details){openDetails(details.dataset.details);return}const main=event.target.closest("[data-open-product]");if(main){openDetails(main.dataset.openProduct);return}const inc=event.target.closest("[data-inc]");if(inc){const item=cart.find(row=>String(row.product_id)===String(inc.dataset.inc));const p=products.find(row=>String(row.id)===String(inc.dataset.inc));if(item){item.quantity=Math.min(maxQty(p||{}),Number(item.quantity||0)+1);saveCart()}return}const dec=event.target.closest("[data-dec]");if(dec){const item=cart.find(row=>String(row.product_id)===String(dec.dataset.dec));if(item){item.quantity=Math.max(1,Number(item.quantity||0)-1);saveCart()}return}const rem=event.target.closest("[data-remove]");if(rem){cart=cart.filter(row=>String(row.product_id)!==String(rem.dataset.remove));saveCart()}})
-    const LAVIDA_CACHE_NAME = "lavida-connect-independent-v231";
+    const LAVIDA_CACHE_NAME = "lavida-connect-independent-v232";
     async function refreshLavidaAppShell(){
       try{
         if("caches" in window){
@@ -2393,6 +2394,7 @@ $("marketplaceSearchButton").addEventListener("click",()=>{navigateRoute("market
     refreshLavidaAppShell();loadSettings();loadProducts();renderCart();renderPrintServices();renderPrintUploads();updateAuthControls();refreshAuthSession();refreshPrintSession();checkAdminTools();setupOrdersRealtime();setupNativeBackButton();if(!location.hash)history.replaceState({route:"home"},"","#home");routeFromHash();
   </script>
   <script src="./lavida-services.js"></script>
+  <script src="./lavida-notifications.js"></script>
 </body>
 </html>
 
