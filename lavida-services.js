@@ -264,7 +264,7 @@
     modal.setAttribute("aria-labelledby","serviceRequestTitle");
     modal.hidden = true;
     modal.innerHTML = `<div class="service-request-sheet">
-      <header class="service-request-head"><div><span id="serviceRequestKicker">Service Request</span><h2 id="serviceRequestTitle">Request Service</h2></div><button id="closeServiceRequestButton" class="service-request-close" type="button" aria-label="Close">&times;</button></header>
+      <header class="service-request-head"><div><span id="serviceRequestKicker">Service Request</span><h2 id="serviceRequestTitle">Request Service</h2></div><button id="closeServiceRequestButton" class="service-request-close" type="button" aria-label="Back">&larr;</button></header>
       <nav id="serviceProgress" class="service-progress" aria-label="Request steps"></nav>
       <div id="serviceRequestBody" class="service-request-body"></div>
       <div class="service-request-actions"><button id="serviceBackButton" class="secondary" type="button">Back</button><button id="serviceNextButton" class="primary" type="button">Continue</button></div>
@@ -323,7 +323,9 @@
       if(field.type !== "checkbox" && Object.prototype.hasOwnProperty.call(serviceState.answers,key))field.value = serviceState.answers[key] || "";
     });
     if(serviceState.notice) body.insertAdjacentHTML("beforeend",`<div class="service-notice ${serviceState.noticeType==="bad"?"bad":""}">${escapeHtml(serviceState.notice)}</div>`);
+    const actions = document.querySelector(".service-request-actions");
     const back = byId("serviceBackButton"), next = byId("serviceNextButton");
+    actions.classList.toggle("hidden",!serviceState.submitted && serviceState.step===0);
     back.textContent = serviceState.submitted ? "Done" : serviceState.step===0 ? "Close" : "Back";
     next.classList.toggle("hidden",Boolean(serviceState.submitted));
     next.textContent = serviceState.step===3 ? (serviceState.submitting ? "Submitting..." : "Submit Request") : "Continue";
@@ -432,6 +434,13 @@
     await submitRequest();
   }
   function prevStep(){
+    if(serviceState.submitted){closeServiceRequest();return}
+    if(serviceState.step===0){closeServiceRequest();return}
+    collectCurrentStep();
+    serviceState.step -= 1;
+    renderServiceRequest();
+  }
+  function backFromHeader(){
     if(serviceState.submitted){closeServiceRequest();return}
     if(serviceState.step===0){closeServiceRequest();return}
     collectCurrentStep();
@@ -632,10 +641,10 @@
       const start = event.target.closest("[data-service-start]");
       if(start){event.preventDefault();event.stopPropagation();serviceState=freshState();openServiceRequest(start.dataset.serviceStart,{restore:false});return}
       const option = event.target.closest("[data-service-option]");
-      if(option){serviceState.serviceCode=option.dataset.serviceOption;setNotice("","");renderServiceRequest();return}
+      if(option){serviceState.serviceCode=option.dataset.serviceOption;serviceState.step=1;setNotice("","");saveDraft();renderServiceRequest();return}
       const step = event.target.closest("[data-service-step]");
       if(step){collectCurrentStep();const target=Number(step.dataset.serviceStep);if(target<=serviceState.step || validateStep()){serviceState.step=target;renderServiceRequest();}return}
-      if(event.target.closest("#closeServiceRequestButton")){closeServiceRequest();return}
+      if(event.target.closest("#closeServiceRequestButton")){backFromHeader();return}
       if(event.target.closest("#serviceNextButton")){nextStep();return}
       if(event.target.closest("#serviceBackButton")){prevStep();return}
       const remove = event.target.closest("[data-remove-service-file]");
