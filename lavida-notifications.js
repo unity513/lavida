@@ -366,6 +366,7 @@
       endpoint,
       p256dh:keys.p256dh || "",
       auth:keys.auth || "",
+      auth_key:keys.auth || "",
       platform:"web",
       user_agent:navigator.userAgent,
       active:true,

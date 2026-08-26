@@ -6,7 +6,7 @@ type QueueRow = {
   notification_id: string;
   subscription_id: string | null;
   attempts: number;
-  notifications: {
+  notification: {
     id: string;
     notification_type: string;
     category: string;
@@ -18,11 +18,12 @@ type QueueRow = {
     entity_id: string | null;
     metadata: Record<string, unknown> | null;
   } | null;
-  push_subscriptions: {
+  subscription: {
     id: string;
     endpoint: string;
     p256dh: string;
-    auth: string;
+    auth: string | null;
+    auth_key: string | null;
   } | null;
 };
 
@@ -63,6 +64,12 @@ async function markNotification(id: string, status: "sent" | "failed" | "skipped
   }).eq("id", id);
 }
 
+function permanentPushFailure(error: unknown, message: string) {
+  const detail = error as { statusCode?: number; status?: number; code?: number };
+  const status = Number(detail?.statusCode || detail?.status || detail?.code || 0);
+  return status === 404 || status === 410 || /\b(404|410)\b/.test(message);
+}
+
 Deno.serve(async (req) => {
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
@@ -82,7 +89,7 @@ Deno.serve(async (req) => {
 
   const { data, error } = await admin
     .from("notification_push_queue")
-    .select("id,notification_id,subscription_id,attempts,notifications(id,notification_type,category,title,body,action_url,priority,entity_type,entity_id,metadata),push_subscriptions(id,endpoint,p256dh,auth)")
+    .select("id,notification_id,subscription_id,attempts,notification:notifications!notification_push_queue_notification_id_fkey(id,notification_type,category,title,body,action_url,priority,entity_type,entity_id,metadata),subscription:push_subscriptions!notification_push_queue_subscription_id_fkey(id,endpoint,p256dh,auth,auth_key)")
     .eq("status", "queued")
     .order("queued_at", { ascending: true })
     .limit(limit);
@@ -96,9 +103,10 @@ Deno.serve(async (req) => {
   let skipped = 0;
 
   for (const row of (data || []) as QueueRow[]) {
-    const notification = row.notifications;
-    const subscription = row.push_subscriptions;
-    if (!notification || !subscription?.endpoint || !subscription.p256dh || !subscription.auth) {
+    const notification = row.notification;
+    const subscription = row.subscription;
+    const authSecret = subscription?.auth || subscription?.auth_key || "";
+    if (!notification || !subscription?.endpoint || !subscription.p256dh || !authSecret) {
       skipped += 1;
       await markQueue(row.id, "skipped", "Missing notification or subscription.");
       if (notification?.id) await markNotification(notification.id, "skipped", "Missing notification or subscription.");
@@ -124,7 +132,7 @@ Deno.serve(async (req) => {
     try {
       await webpush.sendNotification({
         endpoint: subscription.endpoint,
-        keys: { p256dh: subscription.p256dh, auth: subscription.auth }
+        keys: { p256dh: subscription.p256dh, auth: authSecret }
       }, payload);
       sent += 1;
       await markQueue(row.id, "sent");
@@ -133,14 +141,15 @@ Deno.serve(async (req) => {
     } catch (sendError) {
       failed += 1;
       const message = sendError instanceof Error ? sendError.message : String(sendError);
+      const isPermanent = permanentPushFailure(sendError, message);
       await admin.from("notification_push_queue").update({
-        status: row.attempts >= 2 ? "failed" : "queued",
+        status: isPermanent || row.attempts >= 2 ? "failed" : "queued",
         attempts: Number(row.attempts || 0) + 1,
         last_error: message
       }).eq("id", row.id);
       await markNotification(notification.id, "failed", message);
-      if (/410|404/.test(message)) {
-        await admin.from("push_subscriptions").update({ active: false }).eq("id", subscription.id);
+      if (isPermanent) {
+        await admin.from("push_subscriptions").delete().eq("id", subscription.id);
       }
     }
   }

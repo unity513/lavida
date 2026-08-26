@@ -111,6 +111,7 @@ create table if not exists public.push_subscriptions (
   endpoint text not null unique,
   p256dh text not null,
   auth text not null,
+  auth_key text,
   platform text not null default 'web',
   user_agent text,
   device_label text,
@@ -121,6 +122,9 @@ create table if not exists public.push_subscriptions (
 );
 
 create index if not exists push_subscriptions_user_active_idx on public.push_subscriptions(user_id, active);
+create unique index if not exists push_subscriptions_user_endpoint_idx on public.push_subscriptions(user_id, endpoint);
+alter table public.push_subscriptions add column if not exists auth_key text;
+update public.push_subscriptions set auth_key = auth where auth_key is null;
 
 create table if not exists public.notification_push_queue (
   id uuid primary key default gen_random_uuid(),
