@@ -49,7 +49,7 @@
       shortTitle:"Documents",
       description:"CVs, reports, proposals, portfolios and professional documents.",
       longDescription:"Turn your experience, information and ideas into professionally structured digital documents.",
-      cta:"Start a Document Request",
+      cta:"Start Document Request",
       services:[
         ["cv_design","CV Design & Development","Create a modern CV from your real experience."],
         ["cv_update","Update Existing CV","Improve, update or modernise an existing CV."],
@@ -199,7 +199,7 @@
       <div class="professional-service-grid">
         ${serviceCardMarkup("digital","digital")}
         ${serviceCardMarkup("documents","documents")}
-        <a class="professional-service-card printing" href="#print365" data-service-page="print365"><span class="professional-service-icon">${icon("printing")}</span><span class="professional-service-copy"><strong>Printing Services</strong><span>Professional physical printing and finishing.</span><span class="professional-service-action">Start Printing</span></span></a>
+        <a class="professional-service-card printing" href="#print365" data-service-page="print365"><span class="professional-service-icon">${icon("printing")}</span><span class="professional-service-copy"><strong>Printing Services</strong><span>Professional physical printing and finishing.</span><span class="professional-service-action">Start Printing <span aria-hidden="true">&rarr;</span></span></span><span class="professional-service-chevron" aria-hidden="true">&rsaquo;</span></a>
       </div>`;
     hero.insertAdjacentElement("afterend",section);
     const mainListTitle = [...home.querySelectorAll(".home-section-title")].find((node)=>node.textContent.trim()==="More Services");
@@ -208,7 +208,7 @@
   }
   function serviceCardMarkup(key,iconName){
     const area = SERVICE_AREAS[key];
-    return `<button class="professional-service-card ${key}" type="button" data-service-start="${key}"><span class="professional-service-icon">${icon(iconName)}</span><span class="professional-service-copy"><strong>${escapeHtml(area.title)}</strong><span>${escapeHtml(area.description)}</span><span class="professional-service-action">${escapeHtml(area.cta)}</span></span></button>`;
+    return `<button class="professional-service-card ${key}" type="button" data-service-start="${key}"><span class="professional-service-icon">${icon(iconName)}</span><span class="professional-service-copy"><strong>${escapeHtml(area.title)}</strong><span>${escapeHtml(area.description)}</span><span class="professional-service-action">${escapeHtml(area.cta)} <span aria-hidden="true">&rarr;</span></span></span><span class="professional-service-chevron" aria-hidden="true">&rsaquo;</span></button>`;
   }
   function retargetPopularCards(){
     document.querySelectorAll(".popular-service-card").forEach((card)=>{
