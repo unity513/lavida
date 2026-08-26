@@ -53,8 +53,11 @@ Use these channel IDs to match the backend router:
 - `games_events`
 - `lavida_updates`
 
-Use the native small notification icon resource name `ic_stat_lavida`, with a
-valid monochrome LAVIDA mark.
+Use the native small notification icon resource name `ic_stat_lavida`. This
+repository includes the Android-compatible vector at
+`assets/android/drawable/ic_stat_lavida.xml`: a transparent monochrome white
+`L` mark for Android status-bar notifications. Copy that file into the native
+app's `res/drawable` folder.
 
 ## Backend Secrets
 

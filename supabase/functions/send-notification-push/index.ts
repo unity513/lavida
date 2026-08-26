@@ -276,10 +276,10 @@ async function processWebPush(limit: number) {
 
     const payload = JSON.stringify({
       notification_id: notification.id,
-      title: notification.title || "LAVIDA Connect",
+      title: notification.title || "LAVIDA Update",
       body: notification.body,
-      icon: "/assets/lavida-notification-v2.svg",
-      badge: "/assets/lavida-notification-badge-v2.svg",
+      icon: "/assets/lavida-notification-l-v2.png",
+      badge: "/assets/lavida-notification-l-badge-v2.png",
       url: notificationUrl(notification.action_url),
       type: notification.notification_type,
       category: notification.category,
@@ -395,7 +395,7 @@ async function processAndroidPush(limit: number) {
       message: {
         token: token.fcm_token,
         notification: {
-          title: notification.title || "LAVIDA Connect",
+          title: notification.title || "LAVIDA Update",
           body: notification.body || "You have a new LAVIDA notification."
         },
         data: {

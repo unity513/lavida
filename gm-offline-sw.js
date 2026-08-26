@@ -1,4 +1,4 @@
-const CACHE_NAME = "lavida-connect-independent-v235";
+const CACHE_NAME = "lavida-connect-independent-v236";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -11,8 +11,8 @@ const APP_SHELL = [
   "./lavida-services.js",
   "./lavida-notifications.css",
   "./lavida-notifications.js",
-  "./assets/lavida-notification-v2.svg",
-  "./assets/lavida-notification-badge-v2.svg",
+  "./assets/lavida-notification-l-v2.png",
+  "./assets/lavida-notification-l-badge-v2.png",
   "./games365.html",
   "./chess365.html",
   "./bawo365.html",
@@ -72,13 +72,13 @@ self.addEventListener("push", (event) => {
   try {
     payload = event.data ? event.data.json() : {};
   } catch (error) {
-    payload = { title: "LAVIDA", body: event.data ? event.data.text() : "You have a new update." };
+    payload = { title: "LAVIDA Update", body: event.data ? event.data.text() : "There's a new update from LAVIDA." };
   }
-  const title = payload.title || "LAVIDA";
+  const title = payload.title || "LAVIDA Update";
   const options = {
-    body: payload.body || "You have a new LAVIDA notification.",
-    icon: payload.icon || "./assets/lavida-notification-v2.svg",
-    badge: payload.badge || "./assets/lavida-notification-badge-v2.svg",
+    body: payload.body || "There's a new update from LAVIDA.",
+    icon: payload.icon || "./assets/lavida-notification-l-v2.png",
+    badge: payload.badge || "./assets/lavida-notification-l-badge-v2.png",
     tag: payload.tag || payload.notification_id || "lavida-notification",
     data: {
       url: payload.url || payload.action_url || "./marketplace.html#notifications",

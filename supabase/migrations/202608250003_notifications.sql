@@ -558,21 +558,15 @@ begin
   if text_key ~ '(payment.*confirm|paid)' then
     out_title := 'Payment Confirmed';
     out_body := case when order_label is not null
-      then 'Your payment for ' || order_label || ' has been confirmed. Your order can now proceed.'
+      then 'Your payment for ' || order_label || ' has been confirmed.'
       else 'Your payment has been confirmed. Your order can now proceed.'
     end;
   elsif text_key ~ '(payment.*received|payment.*submitted|proof_submitted|proof submitted)' then
     out_title := 'Payment Received';
-    out_body := case when order_label is not null
-      then 'We''ve received your payment for ' || order_label || ' and are verifying it.'
-      else 'We''ve received your payment and are verifying it.'
-    end;
+    out_body := 'We''ve received your payment and are verifying it.';
   elsif text_key ~ '(invoice.*ready|invoice.*issued|awaiting_payment)' then
     out_title := 'Invoice Ready';
-    out_body := case when invoice_label is not null
-      then invoice_label || ' is ready to view.'
-      else 'Your invoice is ready to view.'
-    end;
+    out_body := 'Your invoice is ready to view.';
   elsif text_key ~ '(ready_for_pickup|ready_for_collection|ready for collection|ready for pickup)' then
     out_title := 'Ready for Pickup';
     out_body := case when order_label is not null
