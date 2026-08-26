@@ -7,7 +7,7 @@
   "theme_color": "#061433",
   "icons": [
     {
-      "src": "./assets/lavida-icon.svg",
+      "src": "./assets/lavida-notification-v2.svg",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any maskable"

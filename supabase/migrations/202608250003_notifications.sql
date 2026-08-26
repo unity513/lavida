@@ -150,7 +150,7 @@ create table if not exists public.notification_push_queue (
   id uuid primary key default gen_random_uuid(),
   notification_id uuid not null references public.notifications(id) on delete cascade,
   subscription_id uuid references public.push_subscriptions(id) on delete set null,
-  status text not null default 'queued' check (status in ('queued','sent','failed','skipped')),
+  status text not null default 'queued' check (status in ('queued','processing','sent','failed','skipped')),
   attempts integer not null default 0,
   last_error text,
   queued_at timestamptz not null default now(),
@@ -158,6 +158,11 @@ create table if not exists public.notification_push_queue (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.notification_push_queue drop constraint if exists notification_push_queue_status_check;
+alter table public.notification_push_queue
+  add constraint notification_push_queue_status_check
+  check (status in ('queued','processing','sent','failed','skipped'));
 
 create index if not exists notification_push_queue_status_idx on public.notification_push_queue(status, queued_at);
 
@@ -165,7 +170,7 @@ create table if not exists public.notification_mobile_push_queue (
   id uuid primary key default gen_random_uuid(),
   notification_id uuid not null references public.notifications(id) on delete cascade,
   mobile_push_token_id uuid references public.mobile_push_tokens(id) on delete set null,
-  status text not null default 'queued' check (status in ('queued','sent','failed','skipped')),
+  status text not null default 'queued' check (status in ('queued','processing','sent','failed','skipped')),
   attempts integer not null default 0,
   last_error text,
   queued_at timestamptz not null default now(),
@@ -173,6 +178,11 @@ create table if not exists public.notification_mobile_push_queue (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.notification_mobile_push_queue drop constraint if exists notification_mobile_push_queue_status_check;
+alter table public.notification_mobile_push_queue
+  add constraint notification_mobile_push_queue_status_check
+  check (status in ('queued','processing','sent','failed','skipped'));
 
 create index if not exists notification_mobile_push_queue_status_idx on public.notification_mobile_push_queue(status, queued_at);
 
@@ -514,6 +524,118 @@ $$;
 
 grant execute on function public.deactivate_lavida_mobile_push_token(text,text) to authenticated;
 
+create or replace function public.lavida_standard_notification_payload(
+  p_notification_type text,
+  p_category text,
+  p_title text,
+  p_body text,
+  p_metadata jsonb default '{}'::jsonb
+)
+returns jsonb
+language plpgsql
+immutable
+as $$
+declare
+  text_key text := lower(trim(coalesce(p_notification_type, '') || ' ' || coalesce(p_title, '')));
+  meta jsonb := coalesce(p_metadata, '{}'::jsonb);
+  reference text := nullif(trim(coalesce(
+    meta ->> 'order_reference',
+    meta ->> 'order_number',
+    meta ->> 'request_number',
+    meta ->> 'invoice_number',
+    ''
+  )), '');
+  order_label text := null;
+  invoice_label text := null;
+  out_title text := nullif(trim(coalesce(p_title, '')), '');
+  out_body text := nullif(trim(coalesce(p_body, '')), '');
+begin
+  if reference is not null and reference !~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' then
+    order_label := 'Order #' || regexp_replace(reference, '^(order|#|order #)\s*', '', 'i');
+    invoice_label := 'Invoice ' || regexp_replace(reference, '^(invoice|#|invoice #)\s*', '', 'i');
+  end if;
+
+  if text_key ~ '(payment.*confirm|paid)' then
+    out_title := 'Payment Confirmed';
+    out_body := case when order_label is not null
+      then 'Your payment for ' || order_label || ' has been confirmed. Your order can now proceed.'
+      else 'Your payment has been confirmed. Your order can now proceed.'
+    end;
+  elsif text_key ~ '(payment.*received|payment.*submitted|proof_submitted|proof submitted)' then
+    out_title := 'Payment Received';
+    out_body := case when order_label is not null
+      then 'We''ve received your payment for ' || order_label || ' and are verifying it.'
+      else 'We''ve received your payment and are verifying it.'
+    end;
+  elsif text_key ~ '(invoice.*ready|invoice.*issued|awaiting_payment)' then
+    out_title := 'Invoice Ready';
+    out_body := case when invoice_label is not null
+      then invoice_label || ' is ready to view.'
+      else 'Your invoice is ready to view.'
+    end;
+  elsif text_key ~ '(ready_for_pickup|ready_for_collection|ready for collection|ready for pickup)' then
+    out_title := 'Ready for Pickup';
+    out_body := case when order_label is not null
+      then order_label || ' is ready for collection.'
+      else 'Your order is ready for collection.'
+    end;
+  elsif text_key ~ '(out_for_delivery|on the way|delivery)' then
+    out_title := 'Out for Delivery';
+    out_body := case when order_label is not null
+      then order_label || ' is on its way.'
+      else 'Your order is on its way.'
+    end;
+  elsif text_key ~ '(delivered)' then
+    out_title := 'Order Delivered';
+    out_body := case when order_label is not null
+      then order_label || ' has been delivered successfully.'
+      else 'Your order has been delivered successfully.'
+    end;
+  elsif text_key ~ '(completed)' and text_key !~ '(project)' then
+    out_title := 'Order Completed';
+    out_body := case when order_label is not null
+      then order_label || ' has been completed successfully.'
+      else 'Your order has been completed successfully.'
+    end;
+  elsif text_key ~ '(processing|printing started|printing)' then
+    out_title := 'Order Processing';
+    out_body := case when order_label is not null
+      then order_label || ' is now being processed.'
+      else 'Your order is now being processed.'
+    end;
+  elsif text_key ~ '(order.*received|request.*received|submitted)' then
+    out_title := case when p_notification_type = 'service_request_received' then 'Request Received' else 'Order Received' end;
+    out_body := case
+      when p_notification_type = 'service_request_received' then 'We''ve received your request and will review it shortly.'
+      when order_label is not null then 'We''ve received ' || order_label || ' and will review it shortly.'
+      else 'We''ve received your order and will review it shortly.'
+    end;
+  elsif text_key ~ '(project.*complete)' then
+    out_title := 'Project Completed';
+    out_body := 'Your project has been completed.';
+  elsif text_key ~ '(project|service_update)' then
+    out_title := 'Project Updated';
+    out_body := 'There''s a new update on your project.';
+  elsif text_key ~ '(games|game|tournament|chess|bawo)' or p_category = 'games' then
+    out_title := 'Games 365 Update';
+    out_body := 'Something new is waiting for you in Games 365.';
+  elsif text_key ~ '(marketplace)' or p_category = 'marketplace' then
+    out_title := coalesce(out_title, 'Marketplace Update');
+    if out_body is null or out_body ~* 'status has been updated|has been updated' then
+      out_body := 'There''s an update on your marketplace order.';
+    end if;
+  elsif out_title is null or out_body is null then
+    out_title := coalesce(out_title, 'LAVIDA Update');
+    out_body := coalesce(out_body, 'There''s a new update from LAVIDA.');
+  end if;
+
+  return jsonb_build_object(
+    'title', left(out_title, 120),
+    'body', left(out_body, 220)
+  );
+end;
+$$;
+
 create or replace function public.lavida_dispatch_push_queue(p_limit integer default 50)
 returns void
 language plpgsql
@@ -621,6 +743,7 @@ declare
   existing public.notifications%rowtype;
   created public.notifications%rowtype;
   push_allowed boolean := false;
+  standard_payload jsonb;
   sub record;
   token record;
 begin
@@ -651,6 +774,15 @@ begin
     select u.email into target_email from auth.users u where u.id = target_user_id;
   end if;
   target_email := nullif(trim(coalesce(target_email, p_email)), '');
+  standard_payload := public.lavida_standard_notification_payload(
+    p_notification_type,
+    p_category,
+    p_title,
+    p_body,
+    p_metadata
+  );
+  p_title := standard_payload ->> 'title';
+  p_body := standard_payload ->> 'body';
 
   if p_idempotency_key is not null then
     select * into existing
@@ -955,8 +1087,8 @@ begin
   if req.id is null then return new; end if;
   perform public.create_lavida_notification(
     req.user_id, req.contact_email, 'service_quote_ready', 'service',
-    'Your Quotation Is Ready',
-    'We completed the review of your request and your quotation is ready.',
+    'Quote Ready',
+    'Your quote is ready to view.',
     'View Quote', 'marketplace.html#account', 'service_quote', new.id::text,
     'transactional', req.service_area_name,
     'service_quote:' || new.id::text || ':' || new.status,
@@ -988,7 +1120,7 @@ begin
   perform public.create_lavida_notification(
     req.user_id, req.contact_email, 'invoice_issued', 'invoice_payment',
     'Invoice Ready',
-    'Your invoice for ' || coalesce(req.service_area_name, 'LAVIDA') || ' has been issued.',
+    'Your invoice is ready to view.',
     'View Invoice', 'marketplace.html#account', 'service_invoice', new.id::text,
     'transactional', req.service_area_name,
     'service_invoice:' || new.id::text || ':issued',
@@ -1013,12 +1145,12 @@ begin
   if req.id is null then return new; end if;
   perform public.create_lavida_notification(
     req.user_id, req.contact_email, 'project_update', 'service',
-    'Project Update',
-    left(new.message, 160),
+    'Project Updated',
+    'There''s a new update on your project.',
     'View Update', 'marketplace.html#account', 'service_project_update', new.id::text,
     'transactional', req.service_area_name,
     'service_update:' || new.id::text,
-    jsonb_build_object('request_id', req.id), true
+    jsonb_build_object('request_id', req.id, 'request_number', req.request_number), true
   );
   return new;
 end;
@@ -1038,26 +1170,26 @@ begin
   if tg_op = 'INSERT' then
     ntype := 'printing_order_received';
     title := 'Order Received';
-    body := 'We received your printing request.';
+    body := 'We''ve received your order and will review it shortly.';
   elsif coalesce(old.production_status, '') <> coalesce(new.production_status, '') then
     ntype := 'printing_' || coalesce(new.production_status, 'update');
     title := case new.production_status
       when 'payment_confirmed' then 'Payment Confirmed'
-      when 'printing' then 'Printing Started'
-      when 'ready_for_pickup' then 'Ready for Collection'
-      when 'out_for_delivery' then 'Your Order Is On The Way'
-      when 'completed' then 'Delivered'
+      when 'printing' then 'Order Processing'
+      when 'ready_for_pickup' then 'Ready for Pickup'
+      when 'out_for_delivery' then 'Out for Delivery'
+      when 'completed' then 'Order Completed'
       when 'cancelled' then 'Printing Order Cancelled'
       when 'rejected' then 'Printing Order Needs Attention'
       else 'Printing Update'
     end;
     body := case new.production_status
-      when 'payment_confirmed' then 'Your printing payment has been confirmed.'
-      when 'printing' then 'We are now preparing your printing order.'
-      when 'ready_for_pickup' then 'Your printing order is ready for collection.'
-      when 'out_for_delivery' then 'Your order is now out for delivery.'
-      when 'completed' then 'Your printing order has been completed.'
-      else 'Your printing order status has been updated.'
+      when 'payment_confirmed' then 'Your payment has been confirmed. Your order can now proceed.'
+      when 'printing' then 'Your order is now being processed.'
+      when 'ready_for_pickup' then 'Your order is ready for collection.'
+      when 'out_for_delivery' then 'Your order is on its way.'
+      when 'completed' then 'Your order has been completed successfully.'
+      else 'There''s an update on your order.'
     end;
   else
     return new;
@@ -1086,14 +1218,14 @@ declare
 begin
   if tg_op = 'INSERT' then
     title := 'Order Received';
-    body := 'We received your marketplace order.';
+    body := 'We''ve received your order and will review it shortly.';
   elsif coalesce(old.order_status, '') <> coalesce(new.order_status, '') then
     title := case new.order_status
       when 'approved' then 'Order Approved'
       when 'processing' then 'Order Processing'
       when 'crypto_sent' then 'Crypto Sent'
-      when 'ready_for_collection' then 'Ready for Collection'
-      when 'out_for_delivery' then 'Your Order Is On The Way'
+      when 'ready_for_collection' then 'Ready for Pickup'
+      when 'out_for_delivery' then 'Out for Delivery'
       when 'completed' then 'Order Completed'
       when 'cancelled' then 'Order Cancelled'
       when 'rejected' then 'Order Needs Attention'
@@ -1101,14 +1233,14 @@ begin
     end;
     body := case new.order_status
       when 'crypto_sent' then 'Your crypto order has been sent.'
-      when 'ready_for_collection' then 'Your marketplace order is ready for collection.'
-      when 'out_for_delivery' then 'Your order is now out for delivery.'
-      when 'completed' then 'Your marketplace order has been completed.'
-      else 'Your marketplace order status has been updated.'
+      when 'ready_for_collection' then 'Your order is ready for collection.'
+      when 'out_for_delivery' then 'Your order is on its way.'
+      when 'completed' then 'Your order has been completed successfully.'
+      else 'There''s an update on your marketplace order.'
     end;
   elsif coalesce(old.payment_status, '') <> coalesce(new.payment_status, '') and new.payment_status in ('paid','proof_submitted','rejected') then
-    title := case new.payment_status when 'paid' then 'Payment Confirmed' when 'rejected' then 'Payment Problem' else 'Payment Submitted' end;
-    body := case new.payment_status when 'paid' then 'Your payment has been confirmed.' when 'rejected' then 'There is a problem with your payment.' else 'Your payment proof was received.' end;
+    title := case new.payment_status when 'paid' then 'Payment Confirmed' when 'rejected' then 'Payment Problem' else 'Payment Received' end;
+    body := case new.payment_status when 'paid' then 'Your payment has been confirmed. Your order can now proceed.' when 'rejected' then 'There is a problem with your payment.' else 'We''ve received your payment and are verifying it.' end;
   else
     return new;
   end if;

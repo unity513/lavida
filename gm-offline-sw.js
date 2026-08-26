@@ -1,4 +1,4 @@
-const CACHE_NAME = "lavida-connect-independent-v234";
+const CACHE_NAME = "lavida-connect-independent-v235";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -11,7 +11,8 @@ const APP_SHELL = [
   "./lavida-services.js",
   "./lavida-notifications.css",
   "./lavida-notifications.js",
-  "./assets/lavida-icon.svg",
+  "./assets/lavida-notification-v2.svg",
+  "./assets/lavida-notification-badge-v2.svg",
   "./games365.html",
   "./chess365.html",
   "./bawo365.html",
@@ -76,8 +77,8 @@ self.addEventListener("push", (event) => {
   const title = payload.title || "LAVIDA";
   const options = {
     body: payload.body || "You have a new LAVIDA notification.",
-    icon: payload.icon || "./assets/lavida-icon.svg",
-    badge: payload.badge || "./assets/lavida-icon.svg",
+    icon: payload.icon || "./assets/lavida-notification-v2.svg",
+    badge: payload.badge || "./assets/lavida-notification-badge-v2.svg",
     tag: payload.tag || payload.notification_id || "lavida-notification",
     data: {
       url: payload.url || payload.action_url || "./marketplace.html#notifications",

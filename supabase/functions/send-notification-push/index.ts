@@ -87,6 +87,28 @@ async function markQueue(id: string, status: "sent" | "failed" | "skipped", erro
   }).eq("id", id);
 }
 
+async function claimQueue(id: string) {
+  const { data, error } = await admin
+    .from("notification_push_queue")
+    .update({ status: "processing", last_error: null })
+    .eq("id", id)
+    .eq("status", "queued")
+    .select("id")
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  return Boolean(data?.id);
+}
+
+async function releaseStaleQueueClaims(table: "notification_push_queue" | "notification_mobile_push_queue") {
+  const cutoff = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+  await admin
+    .from(table)
+    .update({ status: "queued", last_error: "Previous delivery attempt timed out." })
+    .eq("status", "processing")
+    .lt("updated_at", cutoff);
+}
+
 async function markNotification(id: string, status: "sent" | "failed" | "skipped", error?: string) {
   await admin.from("notifications").update({
     push_status: status,
@@ -221,6 +243,8 @@ async function processWebPush(limit: number) {
     return { web_sent: 0, web_failed: 0, web_skipped: 0, web_checked: 0, web_configured: false };
   }
 
+  await releaseStaleQueueClaims("notification_push_queue");
+
   const { data, error } = await admin
     .from("notification_push_queue")
     .select("id,notification_id,subscription_id,attempts,notification:notifications!notification_push_queue_notification_id_fkey(id,user_id,notification_type,category,title,body,action_url,priority,entity_type,entity_id,metadata),subscription:push_subscriptions!notification_push_queue_subscription_id_fkey(id,endpoint,p256dh,auth,auth_key)")
@@ -237,6 +261,8 @@ async function processWebPush(limit: number) {
   let skipped = 0;
 
   for (const row of (data || []) as QueueRow[]) {
+    if (!(await claimQueue(row.id))) continue;
+
     const notification = row.notification;
     const subscription = row.subscription;
     const authSecret = subscription?.auth || subscription?.auth_key || "";
@@ -252,8 +278,8 @@ async function processWebPush(limit: number) {
       notification_id: notification.id,
       title: notification.title || "LAVIDA Connect",
       body: notification.body,
-      icon: "/assets/lavida-icon.svg",
-      badge: "/assets/lavida-icon.svg",
+      icon: "/assets/lavida-notification-v2.svg",
+      badge: "/assets/lavida-notification-badge-v2.svg",
       url: notificationUrl(notification.action_url),
       type: notification.notification_type,
       category: notification.category,
@@ -309,6 +335,19 @@ async function markMobileQueue(id: string, status: "sent" | "failed" | "skipped"
   }).eq("id", id);
 }
 
+async function claimMobileQueue(id: string) {
+  const { data, error } = await admin
+    .from("notification_mobile_push_queue")
+    .update({ status: "processing", last_error: null })
+    .eq("id", id)
+    .eq("status", "queued")
+    .select("id")
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  return Boolean(data?.id);
+}
+
 async function processAndroidPush(limit: number) {
   const projectId = firebaseProjectId();
   if (!firebaseServiceAccountJson || !projectId) {
@@ -319,6 +358,8 @@ async function processAndroidPush(limit: number) {
   if (!accessToken) {
     return { android_sent: 0, android_failed: 0, android_skipped: 0, android_checked: 0, android_configured: false };
   }
+
+  await releaseStaleQueueClaims("notification_mobile_push_queue");
 
   const { data, error } = await admin
     .from("notification_mobile_push_queue")
@@ -337,6 +378,8 @@ async function processAndroidPush(limit: number) {
   const endpoint = `https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`;
 
   for (const row of (data || []) as MobileQueueRow[]) {
+    if (!(await claimMobileQueue(row.id))) continue;
+
     const notification = row.notification;
     const token = row.token;
     if (!notification || !token?.fcm_token) {
