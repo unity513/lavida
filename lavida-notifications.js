@@ -19,6 +19,8 @@
     push_enabled:false
   };
   const AUTH_RETURN_KEY = "lavida_auth_return_to";
+  const DEVICE_ID_KEY = "lavida_device_installation_id";
+  const NATIVE_TOKEN_KEY = "lavida_native_push_token";
   const DEFAULT_DESTINATION = "marketplace.html#notifications";
   let activeFilter = "all";
   let realtimeChannel = null;
@@ -28,6 +30,31 @@
   function html(value){return typeof esc === "function" ? esc(value) : String(value ?? "").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
   function client(){return typeof db !== "undefined" ? db : null}
   function session(){return typeof authSession !== "undefined" ? authSession : null}
+  function deviceInstallationId(){
+    try{
+      let value = localStorage.getItem(DEVICE_ID_KEY);
+      if(!value){
+        value = crypto?.randomUUID?.() || `device-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        localStorage.setItem(DEVICE_ID_KEY, value);
+      }
+      return value;
+    }catch(error){
+      return "";
+    }
+  }
+  function isNativeAndroidApp(){
+    try{
+      const capacitor = window.Capacitor;
+      if(capacitor?.isNativePlatform?.() && capacitor?.getPlatform?.() === "android")return true;
+      if(capacitor?.getPlatform?.() === "android" && !/^https?:/i.test(location.protocol))return true;
+    }catch(error){}
+    return Boolean(window.LavidaAndroidPush || window.AndroidPush || window.LavidaNativePushToken);
+  }
+  function nativeTokenFrom(value){
+    if(!value)return "";
+    if(typeof value === "string")return value.trim();
+    return String(value.token || value.fcm_token || value.fcmToken || "").trim();
+  }
   async function currentSession(){
     if(session()?.user)return session();
     if(typeof refreshAuthSession === "function")return await refreshAuthSession();
@@ -206,6 +233,10 @@
     const prefs = await ensurePreferences();
     const config = await loadConfig();
     const permission = typeof Notification === "undefined" ? "unsupported" : Notification.permission;
+    if(isNativeAndroidApp()){
+      card.classList.add("hidden");
+      return;
+    }
     if(!prefs || prefs.push_enabled || permission === "granted"){
       card.classList.add("hidden");
       return;
@@ -278,6 +309,12 @@
     const prefs = await ensurePreferences();
     const config = await loadConfig();
     const permission = typeof Notification === "undefined" ? "unsupported" : Notification.permission;
+    if(isNativeAndroidApp()){
+      const nativeActive = await currentNativePushStatus();
+      phone.innerHTML = `<div><strong>Android App Notifications</strong><span>${nativeActive ? "Enabled" : "Not Enabled"}</span></div><button class="notification-secondary" type="button" disabled>${nativeActive ? "Active" : "Use app prompt"}</button>`;
+      container.innerHTML = SETTINGS.map(([key,title,copy])=>`<label class="notification-setting-row"><span><b>${html(title)}</b><small>${html(copy)}</small></span><span class="notification-switch"><input type="checkbox" data-notification-pref="${html(key)}" ${prefs?.[key] !== false ? "checked" : ""}><span></span></span></label>`).join("");
+      return;
+    }
     const phoneEnabled = Boolean(prefs?.push_enabled) && permission === "granted";
     phone.innerHTML = `<div><strong>Phone Notifications</strong><span>${phoneEnabled ? "Enabled" : permission === "denied" ? "Blocked in device settings" : "Not Enabled"}</span></div><button class="notification-secondary" type="button" data-enable-phone-notifications ${config.vapid_public_key ? "" : "disabled"}>${phoneEnabled ? "Refresh" : "Enable Phone Notifications"}</button>`;
     if(!config.vapid_public_key){
@@ -368,6 +405,7 @@
       auth:keys.auth || "",
       auth_key:keys.auth || "",
       platform:"web",
+      installation_id:deviceInstallationId(),
       user_agent:navigator.userAgent,
       active:true,
       last_used_at:new Date().toISOString()
@@ -376,10 +414,65 @@
     await renderPermissionCard();
     await renderSettings();
   }
+  async function currentNativePushStatus(){
+    if(!isNativeAndroidApp())return false;
+    const database = client();
+    const current = await currentSession();
+    if(!database || !current?.user)return false;
+    const token = localStorage.getItem(NATIVE_TOKEN_KEY) || nativeTokenFrom(window.LavidaNativePushToken);
+    const installationId = deviceInstallationId();
+    try{
+      let query = database.from("mobile_push_tokens").select("id",{count:"exact",head:true}).eq("user_id",current.user.id).eq("active",true);
+      if(token)query = query.eq("fcm_token", token);
+      else if(installationId)query = query.eq("installation_id", installationId);
+      const {count,error} = await query;
+      if(error)throw error;
+      return Number(count || 0) > 0;
+    }catch(error){
+      return false;
+    }
+  }
+  async function registerAndroidPushToken(tokenOrPayload, extra = {}){
+    const database = client();
+    const current = await currentSession();
+    const details = typeof tokenOrPayload === "string" ? {token:tokenOrPayload, ...extra} : {...(tokenOrPayload || {}), ...extra};
+    const token = nativeTokenFrom(details);
+    if(!database || !current?.user || !token)return null;
+    const installationId = details.installation_id || details.installationId || deviceInstallationId();
+    const {data,error} = await database.rpc("register_lavida_mobile_push_token",{
+      p_fcm_token:token,
+      p_platform:details.platform || "android",
+      p_installation_id:installationId,
+      p_device_label:details.device_label || details.deviceLabel || "Android app",
+      p_app_version:details.app_version || details.appVersion || null
+    });
+    if(error)throw error;
+    try{localStorage.setItem(NATIVE_TOKEN_KEY, token)}catch(error){}
+    await renderSettings();
+    return data;
+  }
+  async function deactivateAndroidPushToken(tokenOrPayload){
+    const database = client();
+    const current = await currentSession();
+    if(!database || !current?.user)return 0;
+    const token = nativeTokenFrom(tokenOrPayload) || localStorage.getItem(NATIVE_TOKEN_KEY) || "";
+    const installationId = (typeof tokenOrPayload === "object" && (tokenOrPayload.installation_id || tokenOrPayload.installationId)) || deviceInstallationId();
+    try{
+      const {data} = await database.rpc("deactivate_lavida_mobile_push_token",{
+        p_fcm_token:token || null,
+        p_installation_id:installationId || null
+      });
+      return Number(data || 0);
+    }finally{
+      try{localStorage.removeItem(NATIVE_TOKEN_KEY)}catch(error){}
+    }
+  }
   async function prepareLogout(){
     const database = client();
     const current = await currentSession();
-    if(!database || !current?.user || !("serviceWorker" in navigator))return;
+    if(!database || !current?.user)return;
+    await deactivateAndroidPushToken().catch(()=>0);
+    if(!("serviceWorker" in navigator))return;
     try{
       const registration = await navigator.serviceWorker.ready;
       const subscription = await registration.pushManager?.getSubscription?.();
@@ -467,6 +560,7 @@
   }
   async function init(){
     renderShell();
+    if(window.LavidaNativePushToken)registerAndroidPushToken(window.LavidaNativePushToken).catch(()=>{});
     await renderSettings();
     await refreshBadge();
     if(location.hash === "#notifications")await loadNotifications();
@@ -501,6 +595,8 @@
   });
   window.addEventListener("hashchange",()=>{if(location.hash === "#notifications")loadNotifications(); if(location.hash === "#account")renderSettings();});
   window.addEventListener("focus",()=>{refreshBadge(); if(location.hash === "#notifications")loadNotifications();});
+  window.addEventListener("lavida-native-push-token",(event)=>{registerAndroidPushToken(event.detail || {}).catch(()=>{});});
+  window.addEventListener("lavida-native-push-disabled",(event)=>{deactivateAndroidPushToken(event.detail || {}).catch(()=>{});});
 
   window.LavidaNotifications = {
     init,
@@ -508,6 +604,8 @@
     refreshBadge,
     create:createNotification,
     enablePhoneNotifications,
+    registerAndroidPushToken,
+    deactivateAndroidPushToken,
     prepareLogout
   };
 

@@ -113,6 +113,7 @@ create table if not exists public.push_subscriptions (
   auth text not null,
   auth_key text,
   platform text not null default 'web',
+  installation_id text,
   user_agent text,
   device_label text,
   active boolean not null default true,
@@ -124,7 +125,26 @@ create table if not exists public.push_subscriptions (
 create index if not exists push_subscriptions_user_active_idx on public.push_subscriptions(user_id, active);
 create unique index if not exists push_subscriptions_user_endpoint_idx on public.push_subscriptions(user_id, endpoint);
 alter table public.push_subscriptions add column if not exists auth_key text;
+alter table public.push_subscriptions add column if not exists installation_id text;
 update public.push_subscriptions set auth_key = auth where auth_key is null;
+
+create table if not exists public.mobile_push_tokens (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  fcm_token text not null,
+  platform text not null default 'android',
+  installation_id text,
+  device_label text,
+  app_version text,
+  active boolean not null default true,
+  last_seen_at timestamptz not null default now(),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create unique index if not exists mobile_push_tokens_token_idx on public.mobile_push_tokens(fcm_token);
+create index if not exists mobile_push_tokens_user_active_idx on public.mobile_push_tokens(user_id, active);
+create index if not exists mobile_push_tokens_installation_idx on public.mobile_push_tokens(user_id, installation_id) where installation_id is not null;
 
 create table if not exists public.notification_push_queue (
   id uuid primary key default gen_random_uuid(),
@@ -140,6 +160,38 @@ create table if not exists public.notification_push_queue (
 );
 
 create index if not exists notification_push_queue_status_idx on public.notification_push_queue(status, queued_at);
+
+create table if not exists public.notification_mobile_push_queue (
+  id uuid primary key default gen_random_uuid(),
+  notification_id uuid not null references public.notifications(id) on delete cascade,
+  mobile_push_token_id uuid references public.mobile_push_tokens(id) on delete set null,
+  status text not null default 'queued' check (status in ('queued','sent','failed','skipped')),
+  attempts integer not null default 0,
+  last_error text,
+  queued_at timestamptz not null default now(),
+  sent_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists notification_mobile_push_queue_status_idx on public.notification_mobile_push_queue(status, queued_at);
+
+create table if not exists public.notification_delivery_log (
+  id uuid primary key default gen_random_uuid(),
+  notification_id uuid not null references public.notifications(id) on delete cascade,
+  user_id uuid references auth.users(id) on delete set null,
+  channel text not null check (channel in ('web_push','android_fcm')),
+  destination_ref uuid,
+  status text not null check (status in ('queued','sent','failed','skipped')),
+  provider_response jsonb,
+  error_message text,
+  attempted_at timestamptz not null default now(),
+  delivered_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists notification_delivery_log_notification_idx on public.notification_delivery_log(notification_id, channel, attempted_at desc);
+create index if not exists notification_delivery_log_user_idx on public.notification_delivery_log(user_id, attempted_at desc);
 
 create table if not exists public.notification_campaigns (
   id uuid primary key default gen_random_uuid(),
@@ -194,7 +246,10 @@ alter table public.notification_preferences enable row level security;
 alter table public.notifications enable row level security;
 alter table public.notification_recipients enable row level security;
 alter table public.push_subscriptions enable row level security;
+alter table public.mobile_push_tokens enable row level security;
 alter table public.notification_push_queue enable row level security;
+alter table public.notification_mobile_push_queue enable row level security;
+alter table public.notification_delivery_log enable row level security;
 alter table public.notification_campaigns enable row level security;
 alter table public.app_releases enable row level security;
 alter table public.notification_public_config enable row level security;
@@ -203,7 +258,10 @@ grant select, insert, update on public.notification_preferences to authenticated
 grant select, update on public.notifications to authenticated;
 grant select, update on public.notification_recipients to authenticated;
 grant select, insert, update, delete on public.push_subscriptions to authenticated;
+grant select, insert, update, delete on public.mobile_push_tokens to authenticated;
 grant select on public.notification_push_queue to authenticated;
+grant select on public.notification_mobile_push_queue to authenticated;
+grant select on public.notification_delivery_log to authenticated;
 grant select, insert, update on public.notification_campaigns to authenticated;
 grant select, insert, update on public.app_releases to authenticated;
 grant select, update on public.notification_public_config to authenticated;
@@ -229,9 +287,19 @@ create trigger lavida_touch_push_subscriptions
 before update on public.push_subscriptions
 for each row execute function public.lavida_touch_updated_at();
 
+drop trigger if exists lavida_touch_mobile_push_tokens on public.mobile_push_tokens;
+create trigger lavida_touch_mobile_push_tokens
+before update on public.mobile_push_tokens
+for each row execute function public.lavida_touch_updated_at();
+
 drop trigger if exists lavida_touch_notification_push_queue on public.notification_push_queue;
 create trigger lavida_touch_notification_push_queue
 before update on public.notification_push_queue
+for each row execute function public.lavida_touch_updated_at();
+
+drop trigger if exists lavida_touch_notification_mobile_push_queue on public.notification_mobile_push_queue;
+create trigger lavida_touch_notification_mobile_push_queue
+before update on public.notification_mobile_push_queue
 for each row execute function public.lavida_touch_updated_at();
 
 drop trigger if exists lavida_touch_notification_public_config on public.notification_public_config;
@@ -277,10 +345,26 @@ create policy "Users manage own push subscriptions"
   using (user_id = auth.uid())
   with check (user_id = auth.uid());
 
+drop policy if exists "Users manage own mobile push tokens" on public.mobile_push_tokens;
+create policy "Users manage own mobile push tokens"
+  on public.mobile_push_tokens for all to authenticated
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid());
+
 drop policy if exists "Admins view push delivery queue" on public.notification_push_queue;
 create policy "Admins view push delivery queue"
   on public.notification_push_queue for select to authenticated
   using (public.lavida_is_notification_admin());
+
+drop policy if exists "Admins view mobile push delivery queue" on public.notification_mobile_push_queue;
+create policy "Admins view mobile push delivery queue"
+  on public.notification_mobile_push_queue for select to authenticated
+  using (public.lavida_is_notification_admin());
+
+drop policy if exists "Users view own notification delivery log" on public.notification_delivery_log;
+create policy "Users view own notification delivery log"
+  on public.notification_delivery_log for select to authenticated
+  using (user_id = auth.uid() or public.lavida_is_notification_admin());
 
 drop policy if exists "Admins manage notification campaigns" on public.notification_campaigns;
 create policy "Admins manage notification campaigns"
@@ -345,6 +429,91 @@ begin
 end;
 $$;
 
+create or replace function public.register_lavida_mobile_push_token(
+  p_fcm_token text,
+  p_platform text default 'android',
+  p_installation_id text default null,
+  p_device_label text default null,
+  p_app_version text default null
+)
+returns public.mobile_push_tokens
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  registered public.mobile_push_tokens%rowtype;
+begin
+  if auth.uid() is null then
+    raise exception 'Sign in is required.';
+  end if;
+
+  if nullif(trim(coalesce(p_fcm_token, '')), '') is null then
+    raise exception 'A device token is required.';
+  end if;
+
+  insert into public.mobile_push_tokens (
+    user_id, fcm_token, platform, installation_id, device_label, app_version,
+    active, last_seen_at
+  )
+  values (
+    auth.uid(), trim(p_fcm_token), coalesce(nullif(trim(p_platform), ''), 'android'),
+    nullif(trim(coalesce(p_installation_id, '')), ''),
+    nullif(trim(coalesce(p_device_label, '')), ''),
+    nullif(trim(coalesce(p_app_version, '')), ''),
+    true, now()
+  )
+  on conflict (fcm_token) do update
+  set user_id = excluded.user_id,
+      platform = excluded.platform,
+      installation_id = excluded.installation_id,
+      device_label = excluded.device_label,
+      app_version = excluded.app_version,
+      active = true,
+      last_seen_at = now(),
+      updated_at = now()
+  returning * into registered;
+
+  insert into public.notification_preferences (user_id, push_enabled)
+  values (auth.uid(), true)
+  on conflict (user_id) do update set push_enabled = true, updated_at = now();
+
+  return registered;
+end;
+$$;
+
+grant execute on function public.register_lavida_mobile_push_token(text,text,text,text,text) to authenticated;
+
+create or replace function public.deactivate_lavida_mobile_push_token(
+  p_fcm_token text default null,
+  p_installation_id text default null
+)
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  affected integer := 0;
+begin
+  if auth.uid() is null then
+    return 0;
+  end if;
+
+  update public.mobile_push_tokens
+  set active = false, updated_at = now()
+  where user_id = auth.uid()
+    and (
+      (nullif(trim(coalesce(p_fcm_token, '')), '') is not null and fcm_token = trim(p_fcm_token))
+      or (nullif(trim(coalesce(p_installation_id, '')), '') is not null and installation_id = trim(p_installation_id))
+    );
+  get diagnostics affected = row_count;
+  return affected;
+end;
+$$;
+
+grant execute on function public.deactivate_lavida_mobile_push_token(text,text) to authenticated;
+
 create or replace function public.lavida_dispatch_push_queue(p_limit integer default 50)
 returns void
 language plpgsql
@@ -406,6 +575,11 @@ create trigger lavida_dispatch_push_queue_insert
 after insert on public.notification_push_queue
 for each row execute function public.lavida_dispatch_push_queue_after_insert();
 
+drop trigger if exists lavida_dispatch_mobile_push_queue_insert on public.notification_mobile_push_queue;
+create trigger lavida_dispatch_mobile_push_queue_insert
+after insert on public.notification_mobile_push_queue
+for each row execute function public.lavida_dispatch_push_queue_after_insert();
+
 do $$
 begin
   perform cron.unschedule('lavida-push-queue-worker');
@@ -448,6 +622,7 @@ declare
   created public.notifications%rowtype;
   push_allowed boolean := false;
   sub record;
+  token record;
 begin
   target_user_id := p_user_id;
 
@@ -517,13 +692,47 @@ begin
     );
 
   if push_allowed then
-    for sub in select id from public.push_subscriptions where user_id = target_user_id and active = true loop
+    for sub in
+      select ps.id
+      from public.push_subscriptions ps
+      where ps.user_id = target_user_id
+        and ps.active = true
+        and not exists (
+          select 1
+          from public.mobile_push_tokens mt
+          where mt.user_id = ps.user_id
+            and mt.active = true
+            and mt.installation_id is not null
+            and ps.installation_id is not null
+            and mt.installation_id = ps.installation_id
+        )
+    loop
       insert into public.notification_push_queue (notification_id, subscription_id, status)
       values (created.id, sub.id, 'queued');
+
+      insert into public.notification_delivery_log (
+        notification_id, user_id, channel, destination_ref, status
+      )
+      values (created.id, target_user_id, 'web_push', sub.id, 'queued');
+    end loop;
+
+    for token in select id from public.mobile_push_tokens where user_id = target_user_id and active = true loop
+      insert into public.notification_mobile_push_queue (notification_id, mobile_push_token_id, status)
+      values (created.id, token.id, 'queued');
+
+      insert into public.notification_delivery_log (
+        notification_id, user_id, channel, destination_ref, status
+      )
+      values (created.id, target_user_id, 'android_fcm', token.id, 'queued');
     end loop;
 
     update public.notifications
-    set push_status = case when exists (select 1 from public.notification_push_queue q where q.notification_id = created.id) then 'queued' else 'skipped' end
+    set push_status = case
+      when exists (select 1 from public.notification_push_queue q where q.notification_id = created.id)
+        or exists (select 1 from public.notification_mobile_push_queue q where q.notification_id = created.id)
+      then 'queued'
+      else 'skipped'
+    end
     where id = created.id
     returning * into created;
   end if;

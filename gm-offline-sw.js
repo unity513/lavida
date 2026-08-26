@@ -1,4 +1,4 @@
-const CACHE_NAME = "lavida-connect-independent-v233";
+const CACHE_NAME = "lavida-connect-independent-v234";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -80,8 +80,13 @@ self.addEventListener("push", (event) => {
     badge: payload.badge || "./assets/lavida-icon.svg",
     tag: payload.tag || payload.notification_id || "lavida-notification",
     data: {
-      url: payload.action_url || payload.url || "./marketplace.html#notifications",
-      notification_id: payload.notification_id || null
+      url: payload.url || payload.action_url || "./marketplace.html#notifications",
+      notification_id: payload.notification_id || payload.notificationId || null,
+      notificationId: payload.notificationId || payload.notification_id || null,
+      type: payload.type || "",
+      orderId: payload.orderId || payload.order_id || "",
+      invoiceId: payload.invoiceId || payload.invoice_id || "",
+      projectId: payload.projectId || payload.project_id || ""
     },
     requireInteraction: Boolean(payload.requireInteraction)
   };
