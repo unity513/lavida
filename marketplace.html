@@ -48,6 +48,102 @@
   </style>
   <link rel="stylesheet" href="./lavida-services.css">
   <link rel="stylesheet" href="./lavida-notifications.css">
+  <style id="print-polish-overrides">
+    html,body{max-width:100%;overflow-x:hidden}
+    .marketplace-main,.page-panel,.print-page,.print-panel,.print-form-step,.print-doc-card,.print-order-card{min-width:0;max-width:100%}
+    .print-step-status{display:grid;gap:3px;margin-bottom:10px;color:var(--navy)}
+    .print-step-status span{font-size:15px;color:#58657b;font-weight:600}
+    .print-step-status strong{font-size:25px;line-height:1.08}
+    .print-step-progress{height:7px;border-radius:999px;background:#d9dce2;overflow:hidden;margin-bottom:14px}
+    .print-step-progress span{display:block;height:100%;width:0;background:var(--gold);transition:width .18s ease}
+    .print-step.done{border-color:#c9d8cd;background:#f3fbf6;color:#08783e}
+    .print-field{display:grid;gap:7px;min-width:0}
+    .print-field small,.field-help{display:block;color:#667085;font-size:12px;line-height:1.35}
+    .print-doc-card input,.print-doc-card select,.print-doc-card textarea,#printOrderForm input,#printOrderForm select{min-height:54px;border-radius:11px}
+    .print-doc-card textarea{min-height:88px}
+    .print-service-options{display:grid;gap:8px}
+    .print-service-option{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:11px;background:#fff;padding:10px 12px;color:var(--ink)}
+    .print-service-option input{width:20px;height:20px;min-height:20px;padding:0;accent-color:var(--navy)}
+    .print-service-option b{display:block;margin:0 0 2px;color:var(--navy);font-size:14px}
+    .print-service-option small{display:block;color:#667085;font-size:12px;line-height:1.25}
+    .print-service-option strong{color:var(--navy);font-size:13px;text-align:right;white-space:nowrap}
+    .print-service-option.selected{border-color:var(--gold);background:#fffaf0;box-shadow:0 0 0 2px rgba(245,184,33,.14)}
+    .print-instructions-shell{display:grid;gap:8px}
+    .print-instructions-mode{display:inline-grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:11px;background:#f7f9fc;padding:3px;max-width:240px}
+    .print-instructions-mode button{min-height:34px;border:0;border-radius:8px;background:transparent;color:#5d667a;font-size:13px;font-weight:900}
+    .print-instructions-mode button.active{background:#fff;color:var(--navy);box-shadow:0 2px 7px rgba(3,22,61,.08)}
+    .file-picker-label input[type=file]{position:absolute;inline-size:1px;block-size:1px;opacity:0;pointer-events:none}
+    .branded-file-button{min-height:54px;border:1px solid var(--navy);border-radius:11px;background:#fff;color:var(--navy);display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:950}
+    .branded-file-button:before{content:"";width:22px;height:22px;border:3px solid currentColor;border-radius:6px;box-shadow:0 -5px 0 -2px currentColor inset}
+    .print-payment-card{border:1px solid #f0cf65;border-radius:12px;background:#fff9df;padding:14px;display:grid;gap:12px}
+    .print-payment-card.unavailable{border-color:#f5aaa2;background:#fff0ed;color:var(--bad)}
+    .print-payment-head{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--navy)}
+    .print-payment-brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:950}
+    .print-payment-logo{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;background:#fff;color:#d61f26;border:1px solid rgba(3,22,61,.08);font-size:12px;font-weight:950;text-transform:uppercase}
+    .print-payable-total{border:1px solid rgba(3,22,61,.12);border-radius:10px;background:#fff;padding:10px 12px;display:flex;justify-content:space-between;gap:12px}
+    .print-payable-total span,.print-payment-detail span{color:#667085;font-size:13px}
+    .print-payable-total strong{color:var(--green);font-size:19px;text-align:right}
+    .print-payment-detail{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+    .print-payment-detail b{display:block;color:var(--navy);font-size:17px;margin-top:2px;overflow-wrap:anywhere}
+    .print-copy-button{min-height:42px;border:1px solid var(--navy);border-radius:9px;background:#fff;color:var(--navy);font-weight:950;padding:0 12px;white-space:nowrap}
+    .print-payment-instruction{margin:0;color:#071f4d;line-height:1.4}
+    .print-payment-note{background:#eef5ff;border-color:#d8e6ff;color:#24436e}
+    .print-proof-preview{border:1px solid var(--line);border-radius:11px;background:#f8fafc;padding:10px;display:grid;grid-template-columns:56px minmax(0,1fr);gap:10px;align-items:center}
+    .print-proof-preview img{width:56px;height:56px;border-radius:8px;object-fit:cover;background:#fff}
+    .print-proof-preview b{display:block;color:var(--navy);overflow-wrap:anywhere}
+    .print-proof-preview small{color:#667085}
+    .print-confirmation-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+    .print-confirmation-grid div{border:1px solid var(--line);border-radius:10px;background:#fff;padding:10px;min-width:0}
+    .print-confirmation-grid span{display:block;color:#667085;font-size:12px;font-weight:800}
+    .print-confirmation-grid b{display:block;color:var(--navy);margin-top:3px;overflow-wrap:anywhere}
+    .print-success-card{display:grid;gap:10px}
+    .print-success-card h2{margin:0;color:var(--navy)}
+    .print-order-card header{min-width:0}
+    .print-order-card header>div{min-width:0}
+    .print-order-card .order-number{white-space:normal;overflow-wrap:anywhere}
+    .print-timeline .progress-dot{font-size:13px}
+    @media(max-width:767px){
+      body{padding-bottom:calc(124px + env(safe-area-inset-bottom,0px))}
+      .marketplace-header{padding-left:max(16px,calc(16px + env(safe-area-inset-left,0px)));padding-right:max(16px,calc(16px + env(safe-area-inset-right,0px)))}
+      .marketplace-brand strong{font-size:24px}.marketplace-brand span{font-size:13px}
+      .marketplace-main{width:100%;padding:16px max(16px,calc(16px + env(safe-area-inset-right,0px))) calc(136px + env(safe-area-inset-bottom,0px)) max(16px,calc(16px + env(safe-area-inset-left,0px)))}
+      .print-page{gap:12px}
+      .print-panel{padding:14px;border-radius:12px;box-shadow:0 8px 18px rgba(3,22,61,.05)}
+      .print-stepper{display:flex;gap:6px;overflow:hidden;margin-bottom:14px}
+      .print-step{width:30px;height:30px;min-height:30px;flex:0 0 30px;border-radius:999px;padding:0;font-size:0;display:grid;place-items:center}
+      .print-step:before{content:attr(data-step-label);font-size:12px;font-weight:950}
+      .print-step.done:before{content:"\2713"}
+      .print-step.active{width:auto;min-width:42px;padding:0 10px;font-size:0}
+      .print-step.active:before{content:attr(data-step-label);font-size:13px}
+      .print-step-status strong{font-size:24px}
+      .print-grid,.print-grid.three,.print-confirmation-grid{grid-template-columns:1fr;gap:9px}
+      .print-form-step{gap:10px}
+      .print-form-step h2{font-size:19px}
+      .print-doc-card{padding:11px;gap:9px}
+      .print-doc-card h3{font-size:16px;line-height:1.25;overflow-wrap:anywhere}
+      .print-service-option{grid-template-columns:22px minmax(0,1fr);align-items:start}
+      .print-service-option strong{grid-column:2;text-align:left}
+      .print-payment-detail{grid-template-columns:1fr}
+      .print-copy-button{justify-self:start}
+      .print-nav{grid-template-columns:1fr 1fr;position:sticky;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:10;background:rgba(255,255,255,.96);padding-top:10px}
+      .print-button{min-height:48px;padding:0 12px}
+      .print-orders-list{gap:10px}
+      .print-order-card{padding:12px;border-radius:12px}
+      .print-order-card header{display:grid;grid-template-columns:1fr;gap:6px}
+      .print-order-card header strong{font-size:18px}
+      .print-order-meta{grid-template-columns:1fr;gap:8px}
+      .print-timeline{grid-template-columns:repeat(5,minmax(54px,1fr));overflow:visible}
+      .print-timeline .progress-step{min-width:0;font-size:10px;line-height:1.2}
+      #printingOrders.tracking{padding:14px}
+      #printingOrders .orders-head{align-items:flex-start}
+      #printingOrders .orders-title h2{font-size:24px;line-height:1.1}
+    }
+    @media(max-width:359px){
+      .marketplace-main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+      .print-nav{grid-template-columns:1fr}
+      .print-copy-button{width:100%}
+    }
+  </style>
 </head>
 <body>
   <header class="marketplace-header">
@@ -83,11 +179,12 @@
     <div id="lavidaAdminMenuSection" class="menu-admin-section hidden">
       <span class="menu-section-label">LAVIDA ADMIN</span>
       <a id="userManagementMenuLink" class="hidden" href="user-management.html" data-menu-destination="user-management.html">User Management</a>
-      <a id="marketplaceAdminMenuLink" href="marketplace-admin.html" data-menu-destination="marketplace-admin.html">Market 365 Admin</a>
-      <a id="printingAdminMenuLink" href="printing-admin.html" data-menu-destination="printing-admin.html">Print 365 Admin</a>
-      <a id="hrmAdminMenuLink" href="hrm365.html#admin" data-menu-destination="hrm365.html#admin">HRM 365 Admin</a>
-      <a id="communityAdminMenuLink" href="community.html#admin" data-menu-destination="community.html#admin">Community Admin</a>
-      <a id="gamesAdminMenuLink" href="chess365.html#admin" data-menu-destination="chess365.html#admin">Games 365 Admin</a>
+      <a id="marketplaceAdminMenuLink" class="full-admin-link hidden" href="marketplace-admin.html" data-menu-destination="marketplace-admin.html">Market 365 Admin</a>
+      <a id="paymentSettingsMenuLink" class="payment-admin-link hidden" href="marketplace-admin.html#payment-settings" data-menu-destination="marketplace-admin.html#payment-settings">Payment Settings</a>
+      <a id="printingAdminMenuLink" class="print-admin-link hidden" href="printing-admin.html" data-menu-destination="printing-admin.html">Print 365 Admin</a>
+      <a id="hrmAdminMenuLink" class="full-admin-link hidden" href="hrm365.html#admin" data-menu-destination="hrm365.html#admin">HRM 365 Admin</a>
+      <a id="communityAdminMenuLink" class="full-admin-link hidden" href="community.html#admin" data-menu-destination="community.html#admin">Community Admin</a>
+      <a id="gamesAdminMenuLink" class="full-admin-link hidden" href="chess365.html#admin" data-menu-destination="chess365.html#admin">Games 365 Admin</a>
     </div>
   </div>
   <main class="marketplace-main">
@@ -360,6 +457,11 @@
         </div>
       </div>
       <form id="printOrderForm" class="print-panel hidden">
+        <div class="print-step-status" aria-live="polite">
+          <span id="printStepKicker">Step 1 of 7</span>
+          <strong id="printStepTitle">Upload Document</strong>
+        </div>
+        <div class="print-step-progress" aria-hidden="true"><span id="printStepProgressFill"></span></div>
         <div class="print-stepper" aria-label="Printing order steps">
           <button class="print-step active" type="button" data-print-step-jump="0">1 Upload</button>
           <button class="print-step" type="button" data-print-step-jump="1">2 Options</button>
@@ -371,7 +473,7 @@
         </div>
         <section class="print-form-step active" data-print-step="0">
           <h2>Upload document</h2>
-          <label class="field-label" for="printFiles">PDF, DOC, DOCX, JPG and PNG files<input id="printFiles" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/jpeg,image/png" multiple></label>
+          <label class="field-label file-picker-label" for="printFiles"><span>PDF, DOC, DOCX, JPG and PNG files</span><span class="branded-file-button">Upload document</span><input id="printFiles" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/jpeg,image/png" multiple></label>
           <div id="printUploadList" class="print-upload-list"></div>
         </section>
         <section class="print-form-step" data-print-step="1">
@@ -401,19 +503,19 @@
         </section>
         <section class="print-form-step" data-print-step="5">
           <h2>Payment</h2>
-          <div class="print-grid">
-            <select id="printPaymentMethod"><option value="airtel_money">Airtel Money</option><option value="tnm_mpamba">TNM Mpamba</option><option value="cash_on_pickup">Cash on pickup</option><option value="bank_transfer">Bank transfer</option></select>
-            <input id="printPaymentReference" placeholder="Transaction reference">
-          </div>
-          <label class="field-label" for="printPaymentProof">Upload or capture proof of payment<input id="printPaymentProof" type="file" accept="image/*,.pdf" capture="environment"></label>
-          <div class="notice">Electronic payment proof starts as Pending Verification. Staff must verify it before printing proceeds.</div>
+          <label class="field-label" for="printPaymentMethod">Payment method<select id="printPaymentMethod"><option value="airtel_money">Airtel Money</option><option value="tnm_mpamba">TNM Mpamba</option><option value="cash_on_pickup">Cash on pickup</option><option value="bank_transfer">Bank transfer</option></select></label>
+          <div id="printPaymentInstructionCard" class="print-payment-card"></div>
+          <label class="field-label" for="printPaymentReference">Transaction reference<input id="printPaymentReference" placeholder="Enter reference (e.g. 123456789)"></label>
+          <label class="field-label file-picker-label" for="printPaymentProof"><span>Upload payment proof</span><span class="branded-file-button">Upload payment proof</span><input id="printPaymentProof" type="file" accept="image/*,.pdf" capture="environment"></label>
+          <div id="printPaymentProofPreview" class="print-proof-preview hidden"></div>
+          <div class="notice print-payment-note">Your payment will remain <b>Pending Verification</b> until it is confirmed by LAVIDA. Printing begins only after confirmation.</div>
         </section>
         <section class="print-form-step" data-print-step="6">
           <h2>Confirmation</h2>
           <div id="printConfirmationSummary" class="order-detail"></div>
           <div class="print-grid">
-            <button id="confirmPrintOrderButton" class="print-button" type="button">Confirm Order</button>
             <button id="editPrintOrderButton" class="print-button secondary" type="button">Edit Order</button>
+            <button id="confirmPrintOrderButton" class="hidden" type="button" tabindex="-1" aria-hidden="true">Submit printing order</button>
           </div>
         </section>
         <div id="printOrderNotice" class="notice hidden"></div>
@@ -471,12 +573,13 @@
       <div id="adminToolsSection" class="admin-tools hidden">
         <h3>Admin Tools</h3>
         <a id="userManagementAccountLink" class="hidden" href="user-management.html">User Management <span>Open</span></a>
-        <a href="marketplace-admin.html">Market 365 Products <span>Open</span></a>
-        <a href="marketplace-orders-admin.html">Orders Management <span>Open</span></a>
-        <a href="printing-admin.html">Print 365 Admin <span>Open</span></a>
-        <a href="hrm365.html#admin">HRM 365 Admin <span>Open</span></a>
-        <a href="community.html#admin">Community Admin <span>Open</span></a>
-        <a href="chess365.html#admin">Games 365 Admin <span>Open</span></a>
+        <a class="full-admin-link hidden" href="marketplace-admin.html">Market 365 Products <span>Open</span></a>
+        <a class="payment-admin-link hidden" href="marketplace-admin.html#payment-settings">Payment Settings <span>Open</span></a>
+        <a class="full-admin-link hidden" href="marketplace-orders-admin.html">Orders Management <span>Open</span></a>
+        <a class="print-admin-link hidden" href="printing-admin.html">Print 365 Admin <span>Open</span></a>
+        <a class="full-admin-link hidden" href="hrm365.html#admin">HRM 365 Admin <span>Open</span></a>
+        <a class="full-admin-link hidden" href="community.html#admin">Community Admin <span>Open</span></a>
+        <a class="full-admin-link hidden" href="chess365.html#admin">Games 365 Admin <span>Open</span></a>
       </div>
     </section>
   </main>
@@ -615,6 +718,10 @@
       {code:"photocopying",name:"Photocopying",description:"Clear copies for documents and handouts.",fallbackLabel:"Request a quotation",icon:"document"},
       {code:"lamination",name:"Lamination",description:"Protect frequently handled documents.",fallbackLabel:"Request a quotation",icon:"document"}
     ];
+    const PRINT_STEP_TITLES = ["Upload Document","Printing Options","Collection Or Delivery","Customer Information","Price Summary","Payment","Confirmation"];
+    const PRINT_ELECTRONIC_METHODS = ["airtel_money","tnm_mpamba","bank_transfer"];
+    let printPaymentMethods = {};
+    let printPaymentMethodOrder = [];
     function productName(p){return p.marketplace_name || p.name || "Product"} function productPrice(p){return Number(p.marketplace_price ?? p.selling_price ?? 0)} function productCategory(p){return p.marketplace_category || p.category || "Product"} function categoryLooksCrypto(value){return /crypto|cryptocurrency|digital assets?|usdt|usdc|btc|bitcoin|ethereum|eth/i.test(String(value || ""))} function categoryLabel(value){return value && categoryLooksCrypto(value) ? "Crypto" : value || "All"} function productDescription(p){return p.marketplace_description || p.description || "Available from Connect."} function productCardDescription(p){return productDescription(p).replace(/\bLAVIDA Connect\b/g,"Connect")} function availableQty(p){return Number(p.available_for_new_orders ?? p.available_quantity ?? p.stock_qty ?? 0)} function minQty(p){return Math.max(1,Number(p.minimum_order_quantity || 1))} function maxQty(p){const max=Number(p.maximum_order_quantity || 0); const available=availableQty(p); return Math.max(minQty(p), Math.min(max > 0 ? max : available, available || max || 999999))}
     function placeholder(p){return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640"><rect width="100%" height="100%" fill="#03163d"/><text x="50%" y="46%" fill="#fff" font-family="Arial" font-size="54" font-weight="800" text-anchor="middle">LAVIDA</text><text x="50%" y="58%" fill="#f5b821" font-family="Arial" font-size="27" text-anchor="middle">Connect</text><text x="50%" y="70%" fill="#fff" font-family="Arial" font-size="22" text-anchor="middle">${esc(productName(p))}</text></svg>`)}`}
     function imageUrl(p){return p.marketplace_image_url || p.image_url || placeholder(p)} function isDigital(p){return /digital|usdt|crypto|asset|wallet/i.test(`${productCategory(p)} ${p.unit || ""} ${productName(p)}`)} function isCryptoProduct(p){return categoryLooksCrypto(`${productCategory(p)} ${p.unit || ""} ${productName(p)}`)} function cryptoSymbolForProduct(p){const text=`${p?.asset_symbol || ""} ${p?.marketplace_asset_symbol || ""} ${p?.unit || ""} ${productName(p)}`.toUpperCase();const known=text.match(/\b(USDT|USDC|BTC|ETH|BNB|SOL|TRX|POL|KERNEL)\b/);if(known)return known[1];return String(p?.unit || productName(p) || "").toUpperCase().replace(/[^A-Z0-9]+/g,"").slice(0,12)}
@@ -766,12 +873,239 @@
       }
       if($("printMapsLink")) $("printMapsLink").href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`;
     }
+    function firstConfigured(keys, source=settings){
+      for(const key of keys){
+        const value = source?.[key];
+        if(value !== undefined && value !== null && String(value).trim()) return String(value).trim();
+      }
+      return "";
+    }
+    function normalizePaymentMethodCode(value){
+      const text = String(value || "").trim().toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"");
+      if(/airtel/.test(text)) return "airtel_money";
+      if(/tnm|mpamba/.test(text)) return "tnm_mpamba";
+      if(/bank/.test(text)) return "bank_transfer";
+      if(/cash/.test(text)) return "cash_on_pickup";
+      return text;
+    }
+    function normalizePaymentMethod(row){
+      const code = normalizePaymentMethodCode(row?.code || row?.method_code || row?.payment_method || row?.slug || row?.name || row?.id);
+      if(!code) return null;
+      const label = row?.display_name || row?.method_name || row?.label || row?.name || paymentMethodLabel(code);
+      const recipient = firstConfigured(["recipient_name","account_name","receiving_name","business_name","payee_name","name"], row);
+      const number = firstConfigured(["payment_number","receiving_number","account_number","phone_number","wallet_number","mobile_number","number"], row);
+      const instructions = firstConfigured(["customer_instructions","instructions","payment_instructions","description","notes"], row);
+      return {
+        id: row?.id || null,
+        code,
+        label,
+        methodType: row?.method_type || row?.type || (/bank/.test(code) ? "bank_transfer" : /cash/.test(code) ? "cash" : "mobile_money"),
+        recipient,
+        number,
+        instructions,
+        bankName:firstConfigured(["bank_name","bank","institution"], row),
+        branchName:firstConfigured(["branch_name","branch"], row),
+        accountType:firstConfigured(["account_type"], row),
+        currency: firstConfigured(["currency"], row) || "MWK",
+        isActive: row?.is_active !== false && row?.active !== false && String(row?.status || "active").toLowerCase() !== "inactive",
+        displayOrder: Number(row?.display_order || row?.sort_order || 0),
+        archivedAt: row?.archived_at || ""
+      };
+    }
+    function paymentConfigFromSettings(method){
+      const code = normalizePaymentMethodCode(method);
+      const commonRecipient = ["printing_payment_recipient_name","payment_recipient_name","recipient_name","business_name","marketplace_name"];
+      if(code === "airtel_money"){
+        return {
+          code,
+          label:"Airtel Money",
+          logo:"airtel",
+          methodType:"mobile_money",
+          recipient:firstConfigured(["printing_airtel_money_recipient_name","printing_airtel_recipient_name","airtel_money_recipient_name","airtel_money_account_name","airtel_recipient_name","airtel_money_name","payment_airtel_name",...commonRecipient]),
+          number:firstConfigured(["printing_airtel_money_number","printing_airtel_number","airtel_money_number","airtel_number","payment_airtel_number","mobile_money_airtel_number"]),
+          instructions:firstConfigured(["printing_airtel_money_instructions","airtel_money_instructions","airtel_payment_instructions","payment_instructions"]),
+          currency:"MWK",
+          isActive:Boolean(firstConfigured(["printing_airtel_money_number","printing_airtel_number","airtel_money_number","airtel_number","payment_airtel_number","mobile_money_airtel_number"]))
+        };
+      }
+      if(code === "tnm_mpamba"){
+        return {
+          code,
+          label:"TNM Mpamba",
+          logo:"tnm",
+          methodType:"mobile_money",
+          recipient:firstConfigured(["printing_tnm_mpamba_recipient_name","printing_mpamba_recipient_name","tnm_mpamba_recipient_name","mpamba_account_name","tnm_recipient_name","payment_tnm_name",...commonRecipient]),
+          number:firstConfigured(["printing_tnm_mpamba_number","printing_mpamba_number","tnm_mpamba_number","mpamba_number","tnm_number","payment_tnm_number"]),
+          instructions:firstConfigured(["printing_tnm_mpamba_instructions","tnm_mpamba_instructions","mpamba_payment_instructions","payment_instructions"]),
+          currency:"MWK",
+          isActive:Boolean(firstConfigured(["printing_tnm_mpamba_number","printing_mpamba_number","tnm_mpamba_number","mpamba_number","tnm_number","payment_tnm_number"]))
+        };
+      }
+      if(code === "bank_transfer"){
+        return {
+          code,
+          label:"Bank Transfer",
+          logo:"bank",
+          methodType:"bank_transfer",
+          recipient:firstConfigured(["printing_bank_account_name","bank_account_name","bank_recipient_name",...commonRecipient]),
+          number:firstConfigured(["printing_bank_account_number","bank_account_number","bank_number","payment_bank_account_number"]),
+          instructions:firstConfigured(["printing_bank_instructions","bank_transfer_instructions","bank_payment_instructions","payment_instructions"]),
+          bankName:firstConfigured(["printing_bank_name","bank_name","payment_bank_name"]),
+          branchName:firstConfigured(["printing_bank_branch_name","bank_branch_name","branch_name"]),
+          accountType:firstConfigured(["printing_bank_account_type","bank_account_type","account_type"]),
+          currency:"MWK",
+          isActive:Boolean(firstConfigured(["printing_bank_account_number","bank_account_number","bank_number","payment_bank_account_number"]))
+        };
+      }
+      return {
+        code:"cash_on_pickup",
+        label:"Cash on Pickup",
+        logo:"cash",
+        methodType:"cash",
+        recipient:firstConfigured(commonRecipient) || "LAVIDA",
+        number:"",
+        instructions:"Pay at the pickup point when LAVIDA confirms your order is ready.",
+        currency:"MWK",
+        isActive:true,
+        displayOrder:40
+      };
+    }
+    async function loadPrintPaymentMethods(){
+      const found = {};
+      let primaryLoaded = false;
+      try{
+        const {data,error} = await db.from("payment_methods").select("id,method_code,display_name,method_type,recipient_name,payment_number,bank_name,branch_name,account_type,currency,customer_instructions,is_active,display_order,archived_at").order("display_order").order("display_name").limit(100);
+        if(error) throw error;
+        primaryLoaded = true;
+        (data || []).forEach((row)=>{
+          const method = normalizePaymentMethod(row);
+          if(method && method.isActive && !method.archivedAt) found[method.code] = {...paymentConfigFromSettings(method.code),...method,number:method.number || ""};
+        });
+      }catch(error){}
+      if(!primaryLoaded){
+        for(const table of ["printing_payment_methods","marketplace_payment_methods"]){
+          try{
+            const {data,error} = await db.from(table).select("*").limit(100);
+            if(error) throw error;
+            (data || []).forEach((row)=>{
+              const inactive = row?.active === false || row?.is_active === false || String(row?.status || "").toLowerCase() === "inactive";
+              const scope = String(row?.scope || row?.context || row?.category || row?.module || "").toLowerCase();
+              if(inactive || (scope && !/print|market|payment/.test(scope))) return;
+              const method = normalizePaymentMethod(row);
+              if(method) found[method.code] = {...paymentConfigFromSettings(method.code),...method};
+            });
+          }catch(error){}
+        }
+        ["airtel_money","tnm_mpamba","bank_transfer","cash_on_pickup"].forEach((code)=>{
+          const fallback = paymentConfigFromSettings(code);
+          if(found[code] || fallback.isActive) found[code] = found[code] || fallback;
+        });
+      }
+      printPaymentMethods = found;
+      printPaymentMethodOrder = Object.values(found).sort((a,b)=>Number(a.displayOrder||0)-Number(b.displayOrder||0) || String(a.label).localeCompare(String(b.label))).map((method)=>method.code);
+      renderPrintPaymentMethodOptions();
+      renderPrintPaymentInstructions();
+    }
+    function renderPrintPaymentMethodOptions(){
+      const methods = printPaymentMethodOrder.map((code)=>printPaymentMethods[code]).filter(Boolean);
+      ["printPaymentMethod","paymentMethod","cryptoPaymentMethod"].forEach((id)=>{
+        const select = $(id);
+        if(!select) return;
+        const selected = select.value;
+        select.innerHTML = methods.length
+          ? methods.map((method)=>`<option value="${esc(method.code)}">${esc(method.label)}</option>`).join("")
+          : `<option value="">No active payment methods</option>`;
+        select.value = methods.some((method)=>method.code === selected) ? selected : (methods[0]?.code || "");
+      });
+    }
+    function isPrintElectronic(method){
+      const config = printPaymentConfig(method);
+      return config.methodType !== "cash";
+    }
+    function printPaymentConfig(method){
+      const code = normalizePaymentMethodCode(method || $("printPaymentMethod")?.value || "airtel_money");
+      return printPaymentMethods[code] || printPaymentMethods[printPaymentMethodOrder[0]] || paymentConfigFromSettings(code || "cash_on_pickup");
+    }
+    function hasPrintPaymentNumber(method){
+      const config = printPaymentConfig(method);
+      return !isPrintElectronic(method) || Boolean(config?.recipient && config?.number);
+    }
+    function paymentAmount(value, currency){
+      const code = String(currency || "MWK").toUpperCase();
+      return `${code} ${Number(value || 0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+    }
+    function displayPrintPaymentDestination(value, method){
+      const raw = String(value || "").trim();
+      const code = normalizePaymentMethodCode(method);
+      if(!["airtel_money","tnm_mpamba"].includes(code)) return raw;
+      const digits = raw.replace(/\D/g,"");
+      const local = digits.replace(/^265/,"0");
+      const match = local.match(/^0(\d{2})(\d{3})(\d{4})$/);
+      return match ? `0${match[1]} ${match[2]} ${match[3]}` : raw;
+    }
+    function copyPrintValue(value, button){
+      if(!value) return;
+      navigator.clipboard?.writeText(String(value)).then(()=>{
+        if(button){
+          const original = button.textContent;
+          button.textContent = "Copied";
+          window.setTimeout(()=>{button.textContent = original},1200);
+        }
+      }).catch(()=>printNotice("Copy is unavailable on this device. Please copy it manually.","bad"));
+    }
+    function renderPrintPaymentInstructions(){
+      const card = $("printPaymentInstructionCard");
+      if(!card) return;
+      const method = $("printPaymentMethod")?.value || "airtel_money";
+      if(!method || !printPaymentMethodOrder.length){
+        card.className = "print-payment-card unavailable";
+        card.innerHTML = `<p>No active payment methods are configured. Please contact LAVIDA support before submitting this order.</p>`;
+        updatePrintNextState();
+        return;
+      }
+      const config = printPaymentConfig(method);
+      const totals = printTotals();
+      const electronic = isPrintElectronic(method);
+      const amountText = paymentAmount(totals.total, config.currency);
+      if(electronic && !hasPrintPaymentNumber(method)){
+        card.className = "print-payment-card unavailable";
+        card.innerHTML = `<div class="print-payable-total"><span>Total payable</span><strong>${esc(amountText)}</strong></div><p>This payment method is active but missing receiving details. Please choose another method or contact an administrator.</p>`;
+        updatePrintNextState();
+        return;
+      }
+      card.className = "print-payment-card";
+      const logo = config.logo || config.label || paymentMethodLabel(method);
+      const bank = config.bankName ? `<div class="print-payment-detail"><div><span>Bank</span><b>${esc(config.bankName)}</b></div></div>` : "";
+      const branch = config.branchName ? `<div class="print-payment-detail"><div><span>Branch</span><b>${esc(config.branchName)}</b></div></div>` : "";
+      const accountType = config.accountType ? `<div class="print-payment-detail"><div><span>Account type</span><b>${esc(config.accountType)}</b></div></div>` : "";
+      const numberLabel = config.methodType === "bank_transfer" ? "Account number" : `${config.label} number`;
+      const destinationText = displayPrintPaymentDestination(config.number, method);
+      const numberBlock = config.number ? `<div class="print-payment-detail"><div><span>${esc(numberLabel)}</span><b>${esc(destinationText)}</b></div><button class="print-copy-button" type="button" data-print-copy="${esc(destinationText)}">Copy number</button></div>` : "";
+      const proofHint = electronic ? "Send the exact amount shown above, then enter the transaction reference and upload your payment confirmation." : config.instructions;
+      card.innerHTML = `<div class="print-payment-head"><span class="print-payment-brand"><span class="print-payment-logo">${esc(String(logo).slice(0,6))}</span>${esc(config.label || paymentMethodLabel(method))}</span></div>
+        <div class="print-payable-total"><span>Total payable</span><strong>${esc(amountText)}</strong></div>
+        <div class="print-payment-detail"><div><span>Pay to</span><b>${esc(config.recipient || "LAVIDA")}</b></div></div>
+        ${bank}
+        ${branch}
+        ${accountType}
+        ${numberBlock}
+        <div class="print-payment-detail"><div><span>Currency</span><b>${esc(config.currency || "MWK")}</b></div></div>
+        ${electronic ? `<div class="print-payment-detail"><div><span>Amount to send</span><b>${esc(amountText)}</b></div><button class="print-copy-button" type="button" data-print-copy="${esc(amountText)}">Copy amount</button></div>` : ""}
+        <p class="print-payment-instruction">${esc(proofHint || "Follow the payment instructions for the selected method.")}</p>`;
+      updatePrintNextState();
+    }
     function savePrintDraft(){
       sessionStorage.setItem(PRINT_DRAFT_KEY, JSON.stringify({
         selectedPrintServiceCode,
         printServicesExpanded,
         fulfilment:$("printFulfilment")?.value || "pickup",
-        paymentMethod:$("printPaymentMethod")?.value || "cash_on_pickup"
+        deliveryPhone:$("printDeliveryPhone")?.value || "",
+        deliveryLocation:$("printDeliveryLocation")?.value || "",
+        customerName:$("printCustomerName")?.value || "",
+        customerPhone:$("printCustomerPhone")?.value || "",
+        customerEmail:$("printCustomerEmail")?.value || "",
+        paymentMethod:$("printPaymentMethod")?.value || "cash_on_pickup",
+        paymentReference:$("printPaymentReference")?.value || ""
       }));
     }
     function restorePrintDraft(){
@@ -780,7 +1114,13 @@
         if(draft.selectedPrintServiceCode) selectedPrintServiceCode = printCardByCode(draft.selectedPrintServiceCode).code;
         if(typeof draft.printServicesExpanded === "boolean") printServicesExpanded = draft.printServicesExpanded;
         if(draft.fulfilment && $("printFulfilment")) $("printFulfilment").value = draft.fulfilment;
+        if(draft.deliveryPhone && $("printDeliveryPhone")) $("printDeliveryPhone").value = draft.deliveryPhone;
+        if(draft.deliveryLocation && $("printDeliveryLocation")) $("printDeliveryLocation").value = draft.deliveryLocation;
+        if(draft.customerName && $("printCustomerName")) $("printCustomerName").value = draft.customerName;
+        if(draft.customerPhone && $("printCustomerPhone")) $("printCustomerPhone").value = draft.customerPhone;
+        if(draft.customerEmail && $("printCustomerEmail")) $("printCustomerEmail").value = draft.customerEmail;
         if(draft.paymentMethod && $("printPaymentMethod")) $("printPaymentMethod").value = draft.paymentMethod;
+        if(draft.paymentReference && $("printPaymentReference")) $("printPaymentReference").value = draft.paymentReference;
       }catch(error){}
     }
     function requirePrintAuth(){
@@ -1548,16 +1888,23 @@ ${diagnosticJson(diagnostic?.exception??null)}
         if(!email) return;
         const {data} = await db.from("user_roles").select("role,active").eq("email", email).eq("active", true).maybeSingle();
         const role = String(data?.role || "").toLowerCase();
-        if(["owner","admin","executive","manager","printing_admin","service_admin","notification_admin","games_admin"].includes(role)){
+        const fullAdmin = ["owner","admin","executive","manager","service_admin","notification_admin","games_admin"].includes(role);
+        const paymentAdmin = ["owner","admin","executive","finance_admin"].includes(role);
+        const printAdmin = ["owner","admin","executive","manager","printing_admin","finance_admin"].includes(role);
+        if(fullAdmin || paymentAdmin || printAdmin){
           $("adminToolsSection").classList.remove("hidden");
           $("lavidaAdminMenuSection").classList.remove("hidden");
-          $("userManagementMenuLink").classList.remove("hidden");
-          $("userManagementAccountLink").classList.remove("hidden");
+          document.querySelectorAll(".full-admin-link").forEach((link)=>link.classList.toggle("hidden", !fullAdmin));
+          document.querySelectorAll(".payment-admin-link").forEach((link)=>link.classList.toggle("hidden", !paymentAdmin));
+          document.querySelectorAll(".print-admin-link").forEach((link)=>link.classList.toggle("hidden", !printAdmin));
+          $("userManagementMenuLink").classList.toggle("hidden", !fullAdmin);
+          $("userManagementAccountLink").classList.toggle("hidden", !fullAdmin);
         }
       }catch(error){}
     }
     function hideRestrictedLinks(){
       ["adminToolsSection","lavidaAdminMenuSection","userManagementMenuLink","userManagementAccountLink"].forEach((id)=>$(id)?.classList.add("hidden"));
+      document.querySelectorAll(".full-admin-link,.payment-admin-link,.print-admin-link").forEach((link)=>link.classList.add("hidden"));
     }
     async function validateCartItems(){
       const ids=[...new Set(cart.map(item=>String(item.product_id)).filter(Boolean))];
@@ -1591,6 +1938,8 @@ ${diagnosticJson(diagnostic?.exception??null)}
       if(!emailLooksValid(email))return showNotice("Please enter a valid email address, or leave it blank.","bad");
       if(!fulfilment)return showNotice("Please choose pickup or delivery.","bad");
       if(!paymentMethod)return showNotice("Please choose a payment method.","bad");
+      if(printPaymentMethodOrder.length && !printPaymentMethods[normalizePaymentMethodCode(paymentMethod)])return showNotice("This payment method is not currently available. Please choose another method.","bad");
+      if(printPaymentMethods[normalizePaymentMethodCode(paymentMethod)] && isPrintElectronic(paymentMethod) && !hasPrintPaymentNumber(paymentMethod))return showNotice("This payment method is active but missing receiving details. Please choose another method or contact an administrator.","bad");
       if(fulfilment==="delivery"&&!$("address").value.trim())return showNotice("Please enter a delivery address.","bad");
       const proofFile=$("paymentProof").files[0];
       if(isAirtelMoney(paymentMethod)&&!paymentReference&&!proofFile)return showNotice("Airtel Money requires a payment reference or uploaded payment proof.","bad");
@@ -1651,6 +2000,9 @@ ${diagnosticJson(diagnostic?.exception??null)}
       if(!phoneLooksValid(phone))return failCryptoDiagnostic(diagnostic,"Please enter a valid phone number.");
       if(!emailLooksValid(email))return failCryptoDiagnostic(diagnostic,"Please enter a valid email address, or leave it blank.");
       setCryptoDiagnosticStage(diagnostic,"06_VALIDATE_PAYMENT_METHOD");
+      if(!paymentMethod)return failCryptoDiagnostic(diagnostic,"Please choose a payment method.");
+      if(printPaymentMethodOrder.length && !printPaymentMethods[normalizePaymentMethodCode(paymentMethod)])return failCryptoDiagnostic(diagnostic,"This payment method is not currently available. Please choose another method.");
+      if(printPaymentMethods[normalizePaymentMethodCode(paymentMethod)] && isPrintElectronic(paymentMethod) && !hasPrintPaymentNumber(paymentMethod))return failCryptoDiagnostic(diagnostic,"This payment method is active but missing receiving details. Please choose another method or contact an administrator.");
       if(isAirtelMoney(paymentMethod)&&!paymentReference&&!proofFile)return failCryptoDiagnostic(diagnostic,"Airtel Money requires a payment reference or uploaded payment proof.");
       const button=$("confirmCryptoOrderButton"), originalButtonText=button.textContent;
       button.disabled=true;
@@ -1792,6 +2144,7 @@ ${diagnosticJson(diagnostic?.exception??null)}
         printPrices = [];
       }
       renderPrintServices();
+      await loadPrintPaymentMethods();
       renderPrintSummary();
     }
     async function refreshPrintSession(){
@@ -1854,17 +2207,35 @@ ${diagnosticJson(diagnostic?.exception??null)}
     }
     function renderPrintUploads(){
       $("printUploadList").innerHTML = printFiles.map((row,index)=>`<div class="print-upload-row"><div><b>${esc(row.file.name)}</b><br><small>${esc(row.file.type || "Unknown type")} | ${esc(fileSizeLabel(row.file.size))}</small><div class="print-progress"><span style="width:${row.uploaded ? 100 : 0}%"></span></div></div><button type="button" class="ghost" data-remove-print-file="${esc(row.id)}">Remove</button></div>`).join("") || `<div class="notice">No files selected yet.</div>`;
-      $("printDocumentOptions").innerHTML = printFiles.map((row,index)=>`<article class="print-doc-card" data-print-doc="${esc(row.id)}"><h3>${esc(row.file.name)}</h3><div class="print-grid three">
-        <select data-print-field="colour_mode"><option value="bw" ${row.colour_mode==="bw"?"selected":""}>Black & white</option><option value="colour" ${row.colour_mode==="colour"?"selected":""}>Colour</option></select>
-        <input data-print-field="page_count" type="number" min="1" value="${esc(row.page_count)}" placeholder="Number of pages">
-        <input data-print-field="copies" type="number" min="1" value="${esc(row.copies)}" placeholder="Copies">
-        <select data-print-field="sides"><option value="single" ${row.sides==="single"?"selected":""}>Single-sided</option><option value="double" ${row.sides==="double"?"selected":""}>Double-sided</option></select>
-        <select data-print-field="paper_size"><option value="A4" ${row.paper_size==="A4"?"selected":""}>A4</option><option value="A3" ${row.paper_size==="A3"?"selected":""}>A3</option><option value="custom" ${row.paper_size==="custom"?"selected":""}>Custom</option></select>
-        <input data-print-field="custom_paper_size" value="${esc(row.custom_paper_size)}" placeholder="Custom paper size">
-        <select data-print-field="orientation"><option value="portrait" ${row.orientation==="portrait"?"selected":""}>Portrait</option><option value="landscape" ${row.orientation==="landscape"?"selected":""}>Landscape</option></select>
-        <select data-print-field="pages_to_print"><option value="all" ${row.pages_to_print==="all"?"selected":""}>All pages</option><option value="range" ${row.pages_to_print==="range"?"selected":""}>Selected page range</option></select>
-        <input data-print-field="selected_page_range" value="${esc(row.selected_page_range)}" placeholder="Example: 1-3, 7">
-      </div><div class="checks"><label><input data-print-field="binding_required" type="checkbox" ${row.binding_required?"checked":""}> Binding</label><label><input data-print-field="lamination_required" type="checkbox" ${row.lamination_required?"checked":""}> Lamination</label><label><input data-print-field="express_required" type="checkbox" ${row.express_required?"checked":""}> Express</label></div><textarea data-print-field="instructions" placeholder="Additional instructions">${esc(row.instructions)}</textarea></article>`).join("") || `<div class="notice">Upload documents first.</div>`;
+      $("printDocumentOptions").innerHTML = printFiles.map((row,index)=>{
+        const line = printLine(row);
+        const showCustom = row.paper_size === "custom";
+        const showRange = row.pages_to_print === "selected" || row.pages_to_print === "range";
+        return `<article class="print-doc-card" data-print-doc="${esc(row.id)}">
+          <h3>${esc(row.file.name)}</h3>
+          <div class="print-grid three">
+            <label class="print-field">Colour mode<select data-print-field="colour_mode"><option value="bw" ${row.colour_mode==="bw"?"selected":""}>Black & white</option><option value="colour" ${row.colour_mode==="colour"?"selected":""}>Colour</option></select></label>
+            <label class="print-field">Number of pages<input data-print-field="page_count" type="number" min="1" value="${esc(row.page_count)}" placeholder="Pages"></label>
+            <label class="print-field">Number of copies<input data-print-field="copies" type="number" min="1" value="${esc(row.copies)}" placeholder="Copies"></label>
+            <label class="print-field">Printing sides<select data-print-field="sides"><option value="single" ${row.sides==="single"?"selected":""}>Single-sided</option><option value="double" ${row.sides==="double"?"selected":""}>Double-sided</option></select></label>
+            <label class="print-field">Paper size<select data-print-field="paper_size"><option value="A4" ${row.paper_size==="A4"?"selected":""}>A4</option><option value="A3" ${row.paper_size==="A3"?"selected":""}>A3</option><option value="custom" ${row.paper_size==="custom"?"selected":""}>Custom</option></select></label>
+            ${showCustom ? `<label class="print-field">Custom paper size<input data-print-field="custom_paper_size" value="${esc(row.custom_paper_size)}" placeholder="Example: 210 x 297 mm"></label>` : ""}
+            <label class="print-field">Orientation<select data-print-field="orientation"><option value="portrait" ${row.orientation==="portrait"?"selected":""}>Portrait</option><option value="landscape" ${row.orientation==="landscape"?"selected":""}>Landscape</option></select></label>
+            <label class="print-field">Pages to print<select data-print-field="pages_to_print"><option value="all" ${row.pages_to_print==="all"?"selected":""}>All pages</option><option value="selected" ${row.pages_to_print==="selected"?"selected":""}>Selected pages</option><option value="range" ${row.pages_to_print==="range"?"selected":""}>Custom range</option></select></label>
+            ${showRange ? `<label class="print-field">Page range<input data-print-field="selected_page_range" value="${esc(row.selected_page_range)}" placeholder="1-3, 7"><small>Example: 1&ndash;3, 7.</small></label>` : ""}
+          </div>
+          <div class="print-service-options" aria-label="Optional services">
+            <label class="print-service-option ${row.binding_required?"selected":""}"><input data-print-field="binding_required" type="checkbox" ${row.binding_required?"checked":""}><span><b>Binding</b><small>Bind your document for a professional finish.</small></span><strong>${esc(printAmount("binding") ? `+${money(printAmount("binding"))}` : "Quoted")}</strong></label>
+            <label class="print-service-option ${row.lamination_required?"selected":""}"><input data-print-field="lamination_required" type="checkbox" ${row.lamination_required?"checked":""}><span><b>Lamination</b><small>Protect printed pages with a sealed finish.</small></span><strong>${esc(printAmount("lamination") ? `+${money(printAmount("lamination"))}` : "Quoted")}</strong></label>
+            <label class="print-service-option ${row.express_required?"selected":""}"><input data-print-field="express_required" type="checkbox" ${row.express_required?"checked":""}><span><b>Express</b><small>Request faster handling where available.</small></span><strong>${esc(printAmount("express_service") ? `+${money(printAmount("express_service"))}` : "Quoted")}</strong></label>
+          </div>
+          <div class="print-instructions-shell">
+            <div class="print-instructions-mode" aria-label="Instruction mode"><button class="active" type="button">Type</button><button type="button">Record</button></div>
+            <label class="print-field">Additional instructions<textarea data-print-field="instructions" placeholder="Add notes for this document">${esc(row.instructions)}</textarea></label>
+          </div>
+          <div class="print-summary"><div><span>Document estimate</span><strong>${esc(money(line.total))}</strong></div></div>
+        </article>`;
+      }).join("") || `<div class="notice">Upload documents first.</div>`;
       renderPrintSummary();
     }
     function updatePrintOption(target){
@@ -1876,7 +2247,8 @@ ${diagnosticJson(diagnostic?.exception??null)}
       if(!field) return;
       row[field] = target.type === "checkbox" ? target.checked : target.value;
       if(["page_count","copies"].includes(field)) row[field] = Math.max(1, Number(row[field] || 1));
-      renderPrintSummary();
+      if(["paper_size","pages_to_print","binding_required","lamination_required","express_required"].includes(field)) renderPrintUploads();
+      else renderPrintSummary();
     }
     function printLine(row){
       const pages = Math.max(1, Number(row.page_count || 1));
@@ -1904,15 +2276,54 @@ ${diagnosticJson(diagnostic?.exception??null)}
       const html = `<div><span>Printing subtotal</span><strong>${esc(money(totals.printing))}</strong></div><div><span>Additional services</span><strong>${esc(money(totals.additional))}</strong></div><div><span>Delivery</span><strong>To be confirmed</strong></div><div><span>Grand total estimate</span><strong class="print-total">${esc(money(totals.total))}</strong></div>`;
       if($("printPriceSummary")) $("printPriceSummary").innerHTML = html;
       if($("printConfirmationSummary")){
-        $("printConfirmationSummary").innerHTML = `<h3>Order summary</h3><p><b>Files:</b> ${esc(printFiles.length)} document${printFiles.length===1?"":"s"}</p><p><b>Collection:</b> ${esc($("printFulfilment")?.value || "pickup")}</p><p><b>Payment:</b> ${esc(paymentMethodLabel($("printPaymentMethod")?.value || ""))}</p><div class="print-summary">${html}</div>`;
+        const paymentMethod = $("printPaymentMethod")?.value || "";
+        const payment = printPaymentConfig(paymentMethod);
+        const proof = $("printPaymentProof")?.files?.[0];
+        const services = printFiles.flatMap((row)=>{
+          const items = [];
+          if(row.binding_required) items.push("Binding");
+          if(row.lamination_required) items.push("Lamination");
+          if(row.express_required) items.push("Express");
+          return items;
+        });
+        const specs = printFiles.map((row)=>{
+          const line = printLine(row);
+          return `${row.file.name}: ${line.pages} pages x ${line.copies} copies, ${row.colour_mode === "colour" ? "Colour" : "Black & white"}, ${row.sides === "double" ? "Double-sided" : "Single-sided"}, ${row.paper_size === "custom" ? row.custom_paper_size || "Custom size" : row.paper_size}, ${row.orientation}`;
+        }).join("; ");
+        $("printConfirmationSummary").innerHTML = `<h3>Order summary</h3>
+          <div class="print-confirmation-grid">
+            <div><span>Uploaded document</span><b>${esc(printFiles.map((row)=>row.file.name).join(", ") || "None")}</b></div>
+            <div><span>Printing specifications</span><b>${esc(specs || "Not selected")}</b></div>
+            <div><span>Optional services</span><b>${esc([...new Set(services)].join(", ") || "None")}</b></div>
+            <div><span>Collection or delivery</span><b>${esc(fulfilmentLabel($("printFulfilment")?.value || "pickup"))}</b></div>
+            <div><span>Customer details</span><b>${esc(($("printCustomerName")?.value || "").trim() || "Not supplied")} | ${esc(($("printCustomerPhone")?.value || "").trim() || "No phone")}</b></div>
+            <div><span>Payment method</span><b>${esc(payment?.label || paymentMethodLabel(paymentMethod))}</b></div>
+            <div><span>Recipient name</span><b>${esc(payment?.recipient || "Not required")}</b></div>
+            <div><span>Receiving number/account</span><b>${esc(payment?.number ? displayPrintPaymentDestination(payment.number,paymentMethod) : (isPrintElectronic(paymentMethod) ? "Unavailable" : "Not required"))}</b></div>
+            <div><span>Amount to submit</span><b>${esc(paymentAmount(totals.total,payment?.currency))}</b></div>
+            <div><span>Transaction reference</span><b>${esc(($("printPaymentReference")?.value || "").trim() || "Not supplied")}</b></div>
+            <div><span>Uploaded payment proof</span><b>${esc(proof?.name || "Not uploaded")}</b></div>
+          </div>
+          <h3>Itemized charges</h3><div class="print-summary">${html}</div>`;
       }
+      renderPrintPaymentInstructions();
+      updatePrintNextState();
     }
     function showPrintStep(index){
       printStep = Math.max(0, Math.min(6, Number(index || 0)));
       document.querySelectorAll("[data-print-step]").forEach((section)=>section.classList.toggle("active", Number(section.dataset.printStep)===printStep));
-      document.querySelectorAll("[data-print-step-jump]").forEach((button)=>button.classList.toggle("active", Number(button.dataset.printStepJump)===printStep));
+      document.querySelectorAll("[data-print-step-jump]").forEach((button)=>{
+        const step = Number(button.dataset.printStepJump);
+        button.dataset.stepLabel = String(step + 1);
+        button.classList.toggle("active", step===printStep);
+        button.classList.toggle("done", step<printStep);
+      });
+      if($("printStepKicker")) $("printStepKicker").textContent = `Step ${printStep + 1} of 7`;
+      if($("printStepTitle")) $("printStepTitle").textContent = PRINT_STEP_TITLES[printStep] || "Printing Order";
+      if($("printStepProgressFill")) $("printStepProgressFill").style.width = `${((printStep + 1) / 7) * 100}%`;
       $("printPrevButton").disabled = printStep === 0;
-      $("printNextButton").classList.toggle("hidden", printStep === 6);
+      $("printNextButton").classList.remove("hidden");
+      $("printNextButton").textContent = printStep === 6 ? "Submit printing order" : "Next";
       renderPrintSummary();
     }
     function printNotice(text,type){
@@ -1922,11 +2333,50 @@ ${diagnosticJson(diagnostic?.exception??null)}
     function validPrintStep(){
       if(printStep === 0 && !printFiles.length){printNotice("Upload at least one document.","bad"); return false;}
       if(printStep === 1 && printFiles.some((row)=>Number(row.page_count)<1 || Number(row.copies)<1)){printNotice("Each document needs pages and copies.","bad"); return false;}
+      if(printStep === 1 && printFiles.some((row)=>row.paper_size==="custom" && !String(row.custom_paper_size || "").trim())){printNotice("Enter the custom paper size.","bad"); return false;}
+      if(printStep === 1 && printFiles.some((row)=>(row.pages_to_print==="selected" || row.pages_to_print==="range") && !String(row.selected_page_range || "").trim())){printNotice("Enter the page range.","bad"); return false;}
       if(printStep === 2 && $("printFulfilment").value==="delivery" && (!$("printDeliveryLocation").value.trim() || !$("printDeliveryPhone").value.trim())){printNotice("Delivery needs a location and phone number.","bad"); return false;}
       if(printStep === 3 && (!$("printCustomerName").value.trim() || !$("printCustomerPhone").value.trim() || !$("printCustomerEmail").value.trim())){printNotice("Customer name, phone and email are required.","bad"); return false;}
+      if(printStep === 5 && (!$("printPaymentMethod").value || !printPaymentMethodOrder.length)){printNotice("No active payment methods are configured. Please contact LAVIDA support.","bad"); return false;}
+      if(printStep === 5 && isPrintElectronic($("printPaymentMethod").value) && !hasPrintPaymentNumber($("printPaymentMethod").value)){printNotice("This payment method is active but missing receiving details. Please choose another method or contact an administrator.","bad"); return false;}
+      if(printStep === 5 && isPrintElectronic($("printPaymentMethod").value) && (!$("printPaymentReference").value.trim() || !$("printPaymentProof").files[0])){printNotice("Enter the transaction reference and upload payment proof.","bad"); return false;}
       printNotice("Ready.","hidden");
       $("printOrderNotice").classList.add("hidden");
       return true;
+    }
+    function printStepComplete(step=printStep){
+      if(step === 0) return printFiles.length > 0;
+      if(step === 1) return printFiles.length > 0 && printFiles.every((row)=>Number(row.page_count)>=1 && Number(row.copies)>=1 && (row.paper_size!=="custom" || String(row.custom_paper_size || "").trim()) && (!["selected","range"].includes(row.pages_to_print) || String(row.selected_page_range || "").trim()));
+      if(step === 2) return $("printFulfilment")?.value !== "delivery" || (($("printDeliveryLocation")?.value || "").trim() && ($("printDeliveryPhone")?.value || "").trim());
+      if(step === 3) return Boolean(($("printCustomerName")?.value || "").trim() && ($("printCustomerPhone")?.value || "").trim() && ($("printCustomerEmail")?.value || "").trim());
+      if(step === 4) return true;
+      if(step === 5){
+        const method = $("printPaymentMethod")?.value || "";
+        if(!method || !printPaymentMethodOrder.length) return false;
+        if(!isPrintElectronic(method)) return true;
+        return hasPrintPaymentNumber(method) && Boolean(($("printPaymentReference")?.value || "").trim() && $("printPaymentProof")?.files?.[0]);
+      }
+      return true;
+    }
+    function updatePrintNextState(){
+      const button = $("printNextButton");
+      if(!button) return;
+      button.disabled = !printStepComplete(printStep);
+    }
+    function renderPrintProofPreview(){
+      const box = $("printPaymentProofPreview");
+      const file = $("printPaymentProof")?.files?.[0];
+      if(!box) return;
+      if(!file){
+        box.classList.add("hidden");
+        box.innerHTML = "";
+        return;
+      }
+      const image = /^image\//i.test(file.type);
+      const thumb = image ? `<img src="${esc(URL.createObjectURL(file))}" alt="">` : `<img src="${placeholder({name:"Payment proof"})}" alt="">`;
+      box.classList.remove("hidden");
+      box.innerHTML = `${thumb}<div><b>${esc(file.name)}</b><small>${esc(fileSizeLabel(file.size))}</small></div>`;
+      updatePrintNextState();
     }
     async function uploadPrintFile(orderId,row){
       const path = `${printSession.user.id}/${orderId}/${Date.now()}-${safeFileName(row.file.name)}`;
@@ -1950,10 +2400,28 @@ ${diagnosticJson(diagnostic?.exception??null)}
         requirePrintAuth();
         return;
       }
-      if(!validPrintStep()) return;
+      for(let step = 0; step <= 5; step++){
+        if(!printStepComplete(step)){
+          showPrintStep(step);
+          validPrintStep();
+          return;
+        }
+      }
       const totals = printTotals();
-      const electronic = ["airtel_money","tnm_mpamba","bank_transfer"].includes($("printPaymentMethod").value);
-      $("confirmPrintOrderButton").disabled = true;
+      const paymentMethod = $("printPaymentMethod").value;
+      const paymentConfig = printPaymentConfig(paymentMethod);
+      const electronic = isPrintElectronic(paymentMethod);
+      if(!paymentMethod || !printPaymentMethodOrder.length){
+        showPrintStep(5);
+        printNotice("No active payment methods are configured. Please contact LAVIDA support.","bad");
+        return;
+      }
+      if(electronic && !hasPrintPaymentNumber(paymentMethod)){
+        showPrintStep(5);
+        printNotice("This payment method is active but missing receiving details. Please choose another method or contact an administrator.","bad");
+        return;
+      }
+      $("printNextButton").disabled = true;
       try{
         const orderPayload = {
           user_id: printSession.user.id,
@@ -1988,11 +2456,25 @@ ${diagnosticJson(diagnostic?.exception??null)}
           if(error) throw error;
         }
         const proofPath = await uploadPrintProof(order.id);
-        const {error:paymentError}=await db.from("printing_payments").insert({order_id:order.id,payment_method:$("printPaymentMethod").value,transaction_reference:$("printPaymentReference").value.trim(),proof_bucket:proofPath ? "printing-order-files" : null,proof_path:proofPath || null,amount_mwk:totals.total,verification_status:electronic ? "pending_verification" : "awaiting_payment"});
+        const {error:paymentError}=await db.from("printing_payments").insert({
+          order_id:order.id,
+          payment_method:paymentMethod,
+          payment_method_id:paymentConfig.id || null,
+          payment_method_name:paymentConfig.label || paymentMethodLabel(paymentMethod),
+          payment_recipient_name:paymentConfig.recipient || null,
+          payment_destination:paymentConfig.number || null,
+          payment_currency:paymentConfig.currency || "MWK",
+          amount_submitted:totals.total,
+          transaction_reference:$("printPaymentReference").value.trim(),
+          proof_bucket:proofPath ? "printing-order-files" : null,
+          proof_path:proofPath || null,
+          amount_mwk:totals.total,
+          verification_status:electronic ? "pending_verification" : "awaiting_payment"
+        });
         if(paymentError) throw paymentError;
         await db.from("printing_order_status_history").insert({order_id:order.id,changed_by:printSession.user.id,new_status:orderPayload.production_status,reason:"Customer submitted printing order"});
         $("confirmation").className = "confirmation";
-        $("confirmation").innerHTML = `<h2>Printing order submitted</h2><p>Your order number is <b>${esc(order.order_number)}</b>.</p><p>Total estimate: <b>${esc(money(totals.total))}</b></p><span class="pill">${esc(printStatusLabel(orderPayload.production_status))}</span>`;
+        $("confirmation").innerHTML = `<div class="print-success-card"><h2>Order submitted</h2><span class="pill">${esc(electronic ? "Payment pending verification" : "Awaiting payment")}</span><div class="print-confirmation-grid"><div><span>Order reference</span><b>${esc(order.order_number)}</b></div><div><span>Total paid</span><b>${esc(paymentAmount(totals.total,paymentConfig.currency))}</b></div><div><span>Payment method</span><b>${esc(paymentConfig.label || paymentMethodLabel(paymentMethod))}</b></div><div><span>Transaction reference</span><b>${esc($("printPaymentReference").value.trim() || "Not supplied")}</b></div></div><button class="print-button" type="button" data-service-page="printing-orders">View My Order</button></div>`;
         localStorage.setItem("lavida_connect_customer_phone", $("printCustomerPhone").value.trim());
         localStorage.setItem("lavida_connect_customer_email", $("printCustomerEmail").value.trim());
         printFiles = [];
@@ -2003,7 +2485,7 @@ ${diagnosticJson(diagnostic?.exception??null)}
         console.error("Print 365 submit error", error);
         printNotice(error?.message || "Printing order could not be submitted.","bad");
       }finally{
-        $("confirmPrintOrderButton").disabled = false;
+        updatePrintNextState();
       }
     }
     function printStatusLabel(value){
@@ -2011,9 +2493,11 @@ ${diagnosticJson(diagnostic?.exception??null)}
     }
     function renderPrintOrderTimeline(order){
       const status = order.production_status || "draft";
-      const stages = ["draft","payment_under_review","reviewing_document","printing",order.fulfilment_method==="delivery"?"out_for_delivery":"ready_for_pickup","completed"];
-      const index = Math.max(0, stages.indexOf(status));
-      return `<div class="print-timeline">${stages.slice(0,5).map((stage,i)=>`<div class="progress-step ${i<=index?"done":""} ${i===index?"current":""}"><span class="progress-dot">${i<=index?"OK":""}</span><span>${esc(printStatusLabel(stage))}</span></div>`).join("")}</div>`;
+      const stages = ["draft","payment_under_review","reviewing_document","printing","ready_for_pickup"];
+      const aliases = {awaiting_payment:"payment_under_review",payment_confirmed:"reviewing_document",approved_for_printing:"reviewing_document",out_for_delivery:"ready_for_pickup",completed:"ready_for_pickup"};
+      const normalized = aliases[status] || status;
+      const index = Math.max(0, stages.indexOf(normalized));
+      return `<div class="print-timeline">${stages.map((stage,i)=>`<div class="progress-step ${i<index?"done":""} ${i===index?"current":""}"><span class="progress-dot">${i<index?"&#10003;":""}</span><span>${esc(printStatusLabel(stage))}</span></div>`).join("")}</div>`;
     }
     async function loadPrintOrders(){
       const list = $("printOrdersList");
@@ -2021,10 +2505,10 @@ ${diagnosticJson(diagnostic?.exception??null)}
       await refreshPrintSession();
       if(!printSession?.user){list.innerHTML = `<div class="notice">Sign in to view your printing orders.</div>`; $("refreshPrintOrdersButton").classList.remove("loading"); return;}
       try{
-        const {data,error}=await db.from("printing_orders").select("*").eq("user_id",printSession.user.id).order("created_at",{ascending:false}).limit(50);
+        const {data,error}=await db.from("printing_orders").select("*,printing_payments(*)").eq("user_id",printSession.user.id).order("created_at",{ascending:false}).limit(50);
         if(error) throw error;
         printOrders = data || [];
-        list.innerHTML = printOrders.map((order)=>`<article class="print-order-card"><header><div><b class="order-number">${esc(order.order_number)}</b><small>${esc(cleanDate(order.created_at))}</small></div><strong>${esc(money(order.grand_total_mwk))}</strong></header><div class="print-order-meta"><div><span>Service</span><b>${esc(order.primary_service || "Printing")}</b></div><div><span>Payment</span><b>${esc(printStatusLabel(order.payment_status))}</b></div><div><span>Production</span><b>${esc(printStatusLabel(order.production_status))}</b></div><div><span>Method</span><b>${esc(fulfilmentLabel(order.fulfilment_method))}</b></div><div><span>Estimated completion</span><b>${esc(cleanDate(order.estimated_completion_time) || "To be confirmed")}</b></div></div>${renderPrintOrderTimeline(order)}<div class="order-card-actions single"><button class="order-action-primary" type="button" data-print-order-details="${esc(order.id)}">View Details</button></div></article>`).join("") || `<div class="orders-empty"><h3>No printing orders yet</h3><p>Start a Print 365 order to see it here.</p><a class="order-action-primary" href="#print365">Start Printing Order</a></div>`;
+        list.innerHTML = printOrders.map((order)=>{const payment=(order.printing_payments||[])[0]||{};return `<article class="print-order-card"><header><div><b class="order-number">${esc(order.order_number)}</b><small>${esc(cleanDate(order.created_at))}</small></div><strong>${esc(money(order.grand_total_mwk))}</strong></header><div class="print-order-meta"><div><span>Service</span><b>${esc(order.primary_service || "Printing")}</b></div><div><span>Payment method</span><b>${esc(payment.payment_method_name || paymentMethodLabel(payment.payment_method || ""))}</b></div><div><span>Amount submitted</span><b>${esc(paymentAmount(payment.amount_submitted || payment.amount_mwk || order.grand_total_mwk,payment.payment_currency))}</b></div><div><span>Transaction reference</span><b>${esc(payment.transaction_reference || "Not supplied")}</b></div><div><span>Payment status</span><b>${esc(printStatusLabel(order.payment_status))}</b></div><div><span>Stage</span><b>${esc(printStatusLabel(order.production_status))}</b></div></div>${renderPrintOrderTimeline(order)}<div class="order-card-actions single"><button class="order-action-primary" type="button" data-print-order-details="${esc(order.id)}">View Details</button></div></article>`}).join("") || `<div class="orders-empty"><h3>No printing orders yet</h3><p>Start a Print 365 order to see it here.</p><a class="order-action-primary" href="#print365">Start Printing Order</a></div>`;
       }catch(error){
         list.innerHTML = `<div class="notice bad">${esc(error?.message || "Printing orders could not be loaded.")}</div>`;
       }finally{
@@ -2037,15 +2521,19 @@ ${diagnosticJson(diagnostic?.exception??null)}
       try{
         await refreshPrintSession();
         if(!printSession?.user){requestSignIn("marketplace.html#printing-orders");return;}
-        const {data,error}=await db.from("printing_orders").select("*,printing_order_items(*),printing_order_files(*),printing_order_status_history(*)").eq("id",orderId).eq("user_id",printSession.user.id).single();
+        const {data,error}=await db.from("printing_orders").select("*,printing_order_items(*),printing_order_files(*),printing_order_status_history(*),printing_payments(*),printing_delivery_details(*)").eq("id",orderId).eq("user_id",printSession.user.id).single();
         if(error) throw error;
-        $("printOrderDetails").innerHTML = `<div class="orders-head"><h3>${esc(data.order_number)}</h3><span class="pill">${esc(printStatusLabel(data.production_status))}</span></div><div class="order-detail-grid"><div><b>Total</b><br>${esc(money(data.grand_total_mwk))}</div><div><b>Payment</b><br>${esc(printStatusLabel(data.payment_status))}</div><div><b>Collection</b><br>${esc(fulfilmentLabel(data.fulfilment_method))}</div><div><b>Estimated completion</b><br>${esc(cleanDate(data.estimated_completion_time) || "To be confirmed")}</div></div><h3>Documents</h3><div class="order-items">${(data.printing_order_items||[]).map((item)=>`<div class="order-item"><div><b>${esc(item.file_name)}</b><br>${esc(item.page_count)} pages x ${esc(item.copies)} copies | ${esc(item.colour_mode)}</div><b>${esc(money(item.line_total_mwk))}</b></div>`).join("")}</div><h3>Status timeline</h3><div class="timeline">${(data.printing_order_status_history||[]).map((h)=>`<div class="timeline-step"><span class="timeline-dot"></span><div><b>${esc(printStatusLabel(h.new_status))}</b><br><small>${esc(cleanDate(h.changed_at))}${h.reason ? ` - ${esc(h.reason)}` : ""}</small></div></div>`).join("")}</div>`;
+        const payment=(data.printing_payments||[])[0]||{};
+        const receive=printPaymentConfig(payment.payment_method || data.payment_method || "");
+        const snapshotDestination = payment.payment_destination || receive?.number || "";
+        const displayDestination = displayPrintPaymentDestination(snapshotDestination,payment.payment_method || "");
+        $("printOrderDetails").innerHTML = `<div class="orders-head"><h3>${esc(data.order_number)}</h3><span class="pill">${esc(printStatusLabel(data.production_status))}</span></div><div class="order-detail-grid"><div><b>Total</b><br>${esc(money(data.grand_total_mwk))}</div><div><b>Payment method</b><br>${esc(payment.payment_method_name || paymentMethodLabel(payment.payment_method || ""))}</div><div><b>Recipient name</b><br>${esc(payment.payment_recipient_name || receive?.recipient || "Not required")}</div><div><b>Number/account instructed</b><br>${esc(displayDestination || "Not required")}</div><div><b>Amount submitted</b><br>${esc(paymentAmount(payment.amount_submitted || payment.amount_mwk || data.grand_total_mwk,payment.payment_currency))}</div><div><b>Transaction reference</b><br>${esc(payment.transaction_reference || "Not supplied")}</div><div><b>Payment status</b><br>${esc(printStatusLabel(data.payment_status))}</div><div><b>Collection</b><br>${esc(fulfilmentLabel(data.fulfilment_method))}</div><div><b>Estimated completion</b><br>${esc(cleanDate(data.estimated_completion_time) || "To be confirmed")}</div></div><h3>Documents</h3><div class="order-items">${(data.printing_order_items||[]).map((item)=>`<div class="order-item"><div><b>${esc(item.file_name)}</b><br>${esc(item.page_count)} pages x ${esc(item.copies)} copies | ${esc(item.colour_mode)} | ${esc(item.sides || "")} | ${esc(item.paper_size || "")}${item.selected_page_range?`<br><small>Pages: ${esc(item.selected_page_range)}</small>`:""}${item.additional_instructions?`<br><small>${esc(item.additional_instructions)}</small>`:""}</div><b>${esc(money(item.line_total_mwk))}</b></div>`).join("")}</div><h3>Status timeline</h3>${renderPrintOrderTimeline(data)}<div class="timeline">${(data.printing_order_status_history||[]).map((h)=>`<div class="timeline-step"><span class="timeline-dot"></span><div><b>${esc(printStatusLabel(h.new_status))}</b><br><small>${esc(cleanDate(h.changed_at))}${h.reason ? ` - ${esc(h.reason)}` : ""}</small></div></div>`).join("")}</div>`;
         $("printOrderDetails").scrollIntoView({behavior:"smooth",block:"start"});
       }catch(error){
         $("printOrderDetails").innerHTML = `<div class="notice bad">${esc(error?.message || "Details could not be loaded.")}</div>`;
       }
     }
-    document.addEventListener("click",event=>{const printService=event.target.closest("[data-print-service]");if(printService){applyPrintServiceSelection(printService.dataset.printService);return}const printSignIn=event.target.closest("[data-print-sign-in]");if(printSignIn){requestSignIn("marketplace.html#print365");return}const startPrintInline=event.target.closest("[data-start-print-inline]");if(startPrintInline){$("printOrderForm").classList.remove("hidden");showPrintStep(0);$("printOrderForm").scrollIntoView({behavior:"smooth",block:"start"});return}const printDetails=event.target.closest("[data-print-order-details]");if(printDetails){viewPrintOrderDetails(printDetails.dataset.printOrderDetails);return}const removePrintFile=event.target.closest("[data-remove-print-file]");if(removePrintFile){printFiles=printFiles.filter((row)=>row.id!==removePrintFile.dataset.removePrintFile);renderPrintUploads();return}const tab=event.target.closest("[data-order-tab]");if(tab){activeOrderTab=tab.dataset.orderTab;renderOrders();return}const trackExisting=event.target.closest("[data-track-existing]");if(trackExisting){viewOrderDetails(trackExisting.dataset.trackExisting);return}const orderDetails=event.target.closest("[data-order-details]");if(orderDetails){viewOrderDetails(orderDetails.dataset.orderDetails);return}const add=event.target.closest("[data-add]");if(add){event.stopPropagation();addToCart(add.dataset.add);return}const details=event.target.closest("[data-details]");if(details){openDetails(details.dataset.details);return}const main=event.target.closest("[data-open-product]");if(main){openDetails(main.dataset.openProduct);return}const inc=event.target.closest("[data-inc]");if(inc){const item=cart.find(row=>String(row.product_id)===String(inc.dataset.inc));const p=products.find(row=>String(row.id)===String(inc.dataset.inc));if(item){item.quantity=Math.min(maxQty(p||{}),Number(item.quantity||0)+1);saveCart()}return}const dec=event.target.closest("[data-dec]");if(dec){const item=cart.find(row=>String(row.product_id)===String(dec.dataset.dec));if(item){item.quantity=Math.max(1,Number(item.quantity||0)-1);saveCart()}return}const rem=event.target.closest("[data-remove]");if(rem){cart=cart.filter(row=>String(row.product_id)!==String(rem.dataset.remove));saveCart()}})
+    document.addEventListener("click",event=>{const printCopy=event.target.closest("[data-print-copy]");if(printCopy){copyPrintValue(printCopy.dataset.printCopy,printCopy);return}const printService=event.target.closest("[data-print-service]");if(printService){applyPrintServiceSelection(printService.dataset.printService);return}const printSignIn=event.target.closest("[data-print-sign-in]");if(printSignIn){requestSignIn("marketplace.html#print365");return}const startPrintInline=event.target.closest("[data-start-print-inline]");if(startPrintInline){$("printOrderForm").classList.remove("hidden");showPrintStep(0);$("printOrderForm").scrollIntoView({behavior:"smooth",block:"start"});return}const printDetails=event.target.closest("[data-print-order-details]");if(printDetails){viewPrintOrderDetails(printDetails.dataset.printOrderDetails);return}const removePrintFile=event.target.closest("[data-remove-print-file]");if(removePrintFile){printFiles=printFiles.filter((row)=>row.id!==removePrintFile.dataset.removePrintFile);renderPrintUploads();return}const tab=event.target.closest("[data-order-tab]");if(tab){activeOrderTab=tab.dataset.orderTab;renderOrders();return}const trackExisting=event.target.closest("[data-track-existing]");if(trackExisting){viewOrderDetails(trackExisting.dataset.trackExisting);return}const orderDetails=event.target.closest("[data-order-details]");if(orderDetails){viewOrderDetails(orderDetails.dataset.orderDetails);return}const add=event.target.closest("[data-add]");if(add){event.stopPropagation();addToCart(add.dataset.add);return}const details=event.target.closest("[data-details]");if(details){openDetails(details.dataset.details);return}const main=event.target.closest("[data-open-product]");if(main){openDetails(main.dataset.openProduct);return}const inc=event.target.closest("[data-inc]");if(inc){const item=cart.find(row=>String(row.product_id)===String(inc.dataset.inc));const p=products.find(row=>String(row.id)===String(inc.dataset.inc));if(item){item.quantity=Math.min(maxQty(p||{}),Number(item.quantity||0)+1);saveCart()}return}const dec=event.target.closest("[data-dec]");if(dec){const item=cart.find(row=>String(row.product_id)===String(dec.dataset.dec));if(item){item.quantity=Math.max(1,Number(item.quantity||0)-1);saveCart()}return}const rem=event.target.closest("[data-remove]");if(rem){cart=cart.filter(row=>String(row.product_id)!==String(rem.dataset.remove));saveCart()}})
     const LAVIDA_CACHE_NAME = "lavida-connect-independent-v236";
     async function refreshLavidaAppShell(){
       try{
@@ -2395,7 +2883,11 @@ $("cryptoContinueButton").addEventListener("click",continueCryptoCheckout);
 document.addEventListener("click",(event)=>{if(event.target.closest("#cryptoChangeCustomerButton")){cryptoCustomerEditing=true;renderCryptoCustomerSection();$("cryptoCustomerName")?.focus();}});
 $("marketplaceSearchButton").addEventListener("click",()=>{navigateRoute("market");setTimeout(()=>$("search").focus(),0)});$("marketplaceNotificationsButton").addEventListener("click",openNotificationsFromHeader);$("marketplaceAuthMenuButton").addEventListener("click",event=>{event.preventDefault();event.stopPropagation();handleMenuAuthAction();});$("marketplaceMenuButton").addEventListener("click",event=>{event.stopPropagation();toggleMarketplaceMenu()});$("marketplaceHeaderMenu").addEventListener("click",(event)=>{const destination=event.target.closest("[data-menu-destination]");if(destination){event.preventDefault();event.stopPropagation();handleMenuNavigation(destination.dataset.menuDestination);return}event.stopPropagation();});document.addEventListener("click",event=>{if(!$("marketplaceHeaderMenu").contains(event.target)&&!$("marketplaceMenuButton").contains(event.target))toggleMarketplaceMenu(false)});$("orderFilterButton").addEventListener("click",()=>{$("orderFilterPanel").classList.toggle("hidden")});$("marketCartButton").addEventListener("click",()=>navigateRoute("cart"));$("closeCart").addEventListener("click",()=>{if(currentRoute()==="cart")history.back();else closeCart()});$("closeCrypto").addEventListener("click",closeCryptoDrawer);["cryptoReceiveAmount","cryptoNetwork","cryptoWalletAddress"].forEach((id)=>$(id).addEventListener("input",renderCryptoReview));$("confirmCryptoOrderButton").addEventListener("click",submitCryptoOrder);$("copyCryptoDiagnostic")?.addEventListener("click",async()=>{const text=$("cryptoDiagnosticText")?.textContent||"";try{await navigator.clipboard.writeText(text);$("copyCryptoDiagnostic").textContent="Copied"}catch(error){console.warn("Could not copy crypto diagnostic",error)}});$("fulfilment").addEventListener("change",renderCart);$("checkoutButton").addEventListener("click",checkout);$("trackButton").addEventListener("click",trackOrder);$("refreshOrdersButton").addEventListener("click",loadMyOrders);$("startPrintOrderButton").addEventListener("click",()=>{$("printOrderForm").classList.remove("hidden");showPrintStep(0);$("printOrderForm").scrollIntoView({behavior:"smooth",block:"start"});});$("myPrintOrdersButton").addEventListener("click",async()=>{const session=printSession||await refreshPrintSession();if(!session?.user){requestSignIn("marketplace.html#printing-orders");return}navigateRoute("printing-orders",{resetScroll:true});});$("printAuthContinueButton")?.addEventListener("click",()=>requestSignIn("marketplace.html#print365"));$("printFiles").addEventListener("change",()=>{const allowed=/(\.pdf|\.doc|\.docx|\.jpg|\.jpeg|\.png)$/i;Array.from($("printFiles").files||[]).forEach((file)=>{if(allowed.test(file.name))printFiles.push(defaultPrintOptions(file));});$("printFiles").value="";renderPrintUploads();});$("printDocumentOptions").addEventListener("input",(event)=>updatePrintOption(event.target));$("printDocumentOptions").addEventListener("change",(event)=>updatePrintOption(event.target));["printFulfilment","printPaymentMethod"].forEach((id)=>$(id).addEventListener("change",renderPrintSummary));$("printPrevButton").addEventListener("click",()=>showPrintStep(printStep-1));$("printNextButton").addEventListener("click",()=>{if(validPrintStep())showPrintStep(printStep+1);});document.querySelectorAll("[data-print-step-jump]").forEach((button)=>button.addEventListener("click",()=>{if(Number(button.dataset.printStepJump)<=printStep || validPrintStep())showPrintStep(button.dataset.printStepJump);}));$("editPrintOrderButton").addEventListener("click",()=>showPrintStep(0));$("confirmPrintOrderButton").addEventListener("click",submitPrintOrder);$("refreshPrintOrdersButton").addEventListener("click",loadPrintOrders);$("cancelExitButton").addEventListener("click",hideExitConfirmation);$("confirmExitButton").addEventListener("click",()=>{window.Capacitor?.Plugins?.App?.exitApp?.()});window.addEventListener("popstate",()=>{const wasOpen=!$("marketplaceHeaderMenu").hidden;if(wasOpen)toggleMarketplaceMenu(false);afterMenuClose(()=>routeFromHash());});window.addEventListener("hashchange",()=>{if(!$("marketplaceHeaderMenu").hidden){toggleMarketplaceMenu(false);afterMenuClose(()=>routeFromHash());return}routeFromHash();});window.addEventListener("focus",()=>{if(location.hash==="#orders"||location.hash==="#track")loadMyOrders();if(location.hash==="#printing-orders")loadPrintOrders();if($("marketplaceHeaderMenu").hidden)refreshAuthSession();});
     window.LavidaAuth.listen(db,(event,session)=>{if(event==="TOKEN_REFRESHED"){if(session?.user){authSession=session;printSession=session;authState="authenticated";updateAuthControls();loadUnreadNotifications()}return}if(event==="SIGNED_OUT"){authSession=null;printSession=null;authState="unauthenticated";adminToolsLoadedFor="";setNotificationBadge(0);hideRestrictedLinks();updateAuthControls();return}authSession=session || null;printSession=session || null;authState=session?.user?"authenticated":"unauthenticated";updateAuthControls();if(session?.user){loadUnreadNotifications();const userKey=authUserKey(session);if(userKey!==adminToolsLoadedFor){adminToolsLoadedFor=userKey;hideRestrictedLinks();checkAdminTools()}}else{adminToolsLoadedFor="";hideRestrictedLinks();setNotificationBadge(0)}});
-    refreshLavidaAppShell();loadSettings();loadProducts();renderCart();renderPrintServices();renderPrintUploads();updateAuthControls();refreshAuthSession();refreshPrintSession();checkAdminTools();setupOrdersRealtime();setupNativeBackButton();if(!location.hash)history.replaceState({route:"home"},"","#home");routeFromHash();
+    ["printDeliveryLocation","printDeliveryPhone","printCustomerName","printCustomerPhone","printCustomerEmail","printPaymentReference"].forEach((id)=>$(id)?.addEventListener("input",()=>{renderPrintSummary();savePrintDraft();}));
+    $("printPaymentProof")?.addEventListener("change",()=>{renderPrintProofPreview();renderPrintSummary();});
+    $("printPaymentMethod")?.addEventListener("change",()=>{renderPrintPaymentInstructions();updatePrintNextState();});
+    $("printNextButton")?.addEventListener("click",()=>{if(printStep===6 && printStepComplete(6)) submitPrintOrder();});
+    refreshLavidaAppShell();loadSettings().then(loadPrintPaymentMethods);loadProducts();renderCart();renderPrintServices();renderPrintUploads();updateAuthControls();refreshAuthSession();refreshPrintSession();checkAdminTools();setupOrdersRealtime();setupNativeBackButton();if(!location.hash)history.replaceState({route:"home"},"","#home");routeFromHash();
   </script>
   <script src="./lavida-services.js"></script>
   <script src="./lavida-notifications.js"></script>

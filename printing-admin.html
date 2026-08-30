@@ -110,7 +110,9 @@
     const STATUSES = ["draft","awaiting_payment","payment_under_review","payment_confirmed","reviewing_document","approved_for_printing","printing","ready_for_pickup","out_for_delivery","completed","cancelled","rejected"];
     let session = null, role = "", orders = [], selectedOrder = null, services = [], prices = [];
     function statusLabel(value){return String(value || "").replaceAll("_"," ").replace(/\b\w/g,(c)=>c.toUpperCase());}
-    function roleAllowed(value){return ["owner","admin","executive","manager","printing_admin"].includes(String(value || "").toLowerCase());}
+    function roleAllowed(value){return ["owner","admin","executive","manager","printing_admin","finance_admin"].includes(String(value || "").toLowerCase());}
+    function paymentAmount(value,currency){const code=String(currency||"MWK").toUpperCase();return `${code} ${Number(value||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;}
+    function paymentDestination(value,method){const raw=String(value||"").trim();if(!/airtel|tnm|mpamba/i.test(String(method||"")))return raw;const local=raw.replace(/\D/g,"").replace(/^265/,"0");const match=local.match(/^0(\d{2})(\d{3})(\d{4})$/);return match?`0${match[1]} ${match[2]} ${match[3]}`:raw;}
     function setStatus(id,text,type){$(id).textContent=text;$(id).className=`status ${type||""}`;}
     function showPanels(){["summaryPanel","pricesPanel","ordersPanel"].forEach((id)=>$(id).classList.remove("hidden"));$("loginBox").classList.add("hidden");}
     async function loadRole(){
@@ -160,7 +162,16 @@
       selectedOrder=data;$("detailPanel").classList.remove("hidden");$("detailTitle").textContent=data.order_number;$("detailSubtitle").textContent=`${data.customer_name} | ${data.customer_phone} | ${money(data.grand_total_mwk)}`;$("detailStatus").textContent=statusLabel(data.production_status);$("productionStatus").value=data.production_status;$("estimatedCompletion").value=data.estimated_completion_time?new Date(data.estimated_completion_time).toISOString().slice(0,16):"";$("revisedTotal").value=data.revised_total_mwk || "";$("deliveryFee").value=data.delivery_fee_mwk || ""; $("callCustomerLink").href=`tel:${String(data.customer_phone||"").replace(/[^\d+]/g,"")}`;
       $("filesBox").innerHTML=(data.printing_order_files||[]).map((f)=>`<p><b>${esc(f.file_name)}</b><br><span class="muted">${esc(f.file_type||"")} | ${esc(f.file_size_bytes||0)} bytes</span><br><button class="secondary" data-download-file="${esc(f.storage_path)}">Download File</button></p>`).join("") || `<p class="muted">No files found.</p>`;
       $("itemsBox").innerHTML=(data.printing_order_items||[]).map((i)=>`<div class="detail-block"><b>${esc(i.file_name)}</b><br>${esc(i.page_count)} pages x ${esc(i.copies)} copies | ${esc(i.colour_mode)} | ${esc(i.sides)} | ${esc(i.paper_size)}<br>${i.binding_required?"Binding | ":""}${i.lamination_required?"Lamination | ":""}${i.express_required?"Express | ":""}<br><span class="muted">${esc(i.additional_instructions||"")}</span></div>`).join("");
-      $("paymentBox").innerHTML=(data.printing_payments||[]).map((p)=>`<p><b>${esc(statusLabel(p.payment_method))}</b><br>Reference: ${esc(p.transaction_reference||"None")}<br>Status: ${esc(statusLabel(p.verification_status))}${p.proof_path?`<br><button class="secondary" data-download-file="${esc(p.proof_path)}">Download Proof</button>`:""}</p>`).join("") || `<p class="muted">No payment record.</p>`;
+      $("paymentBox").innerHTML=(data.printing_payments||[]).map((p)=>`<div class="detail-block">
+        <p><b>${esc(p.payment_method_name || statusLabel(p.payment_method))}</b><br><span class="muted">${esc(statusLabel(p.verification_status))}</span></p>
+        <p>Number/account instructed: <b>${esc(paymentDestination(p.payment_destination,p.payment_method) || "Not required")}</b></p>
+        <p>Recipient name: <b>${esc(p.payment_recipient_name || "Not supplied")}</b></p>
+        <p>Expected amount: <b>${esc(paymentAmount(p.amount_submitted || p.amount_mwk || data.grand_total_mwk,p.payment_currency))}</b></p>
+        <p>Transaction reference: <b>${esc(p.transaction_reference || "None")}</b></p>
+        <p>Submitted: <b>${esc(p.submitted_at ? new Date(p.submitted_at).toLocaleString() : new Date(data.created_at).toLocaleString())}</b></p>
+        ${p.rejection_reason ? `<p>Rejection reason: <b>${esc(p.rejection_reason)}</b></p>` : ""}
+        ${p.proof_path ? `<button class="secondary" data-download-file="${esc(p.proof_path)}">Download Proof</button>` : `<p class="muted">No proof of payment uploaded.</p>`}
+      </div>`).join("") || `<p class="muted">No payment record.</p>`;
       $("historyBox").innerHTML=(data.printing_order_status_history||[]).sort((a,b)=>new Date(b.changed_at)-new Date(a.changed_at)).map((h)=>`<div class="history-row"><span class="dot"></span><div><b>${esc(statusLabel(h.new_status))}</b><br><small>${esc(new Date(h.changed_at).toLocaleString())}${h.reason?` - ${esc(h.reason)}`:""}</small></div></div>`).join("") || `<p class="muted">No history yet.</p>`;
       $("detailPanel").scrollIntoView({behavior:"smooth",block:"start"});
     }
