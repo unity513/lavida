@@ -205,113 +205,11 @@ insert into public.payment_methods (
   is_active,
   display_order
 )
-select *
-from (
-  select
-    'airtel_money'::text,
-    'Airtel Money'::text,
-    'mobile_money'::text,
-    coalesce(
-      nullif(trim(to_jsonb(ms) ->> 'printing_airtel_money_recipient_name'), ''),
-      nullif(trim(to_jsonb(ms) ->> 'airtel_money_recipient_name'), ''),
-      nullif(trim(to_jsonb(ms) ->> 'payment_recipient_name'), ''),
-      nullif(trim(to_jsonb(ms) ->> 'marketplace_name'), '')
-    ),
-    case
-      when public.lavida_normalize_malawi_phone(coalesce(
-        nullif(trim(to_jsonb(ms) ->> 'printing_airtel_money_number'), ''),
-        nullif(trim(to_jsonb(ms) ->> 'airtel_money_number'), ''),
-        nullif(trim(to_jsonb(ms) ->> 'airtel_number'), '')
-      )) ~ '^265(88|89|98|99)[0-9]{7}$'
-      then public.lavida_normalize_malawi_phone(coalesce(
-        nullif(trim(to_jsonb(ms) ->> 'printing_airtel_money_number'), ''),
-        nullif(trim(to_jsonb(ms) ->> 'airtel_money_number'), ''),
-        nullif(trim(to_jsonb(ms) ->> 'airtel_number'), '')
-      ))
-      else null
-    end,
-    null::text,
-    'MWK'::text,
-    coalesce(nullif(trim(to_jsonb(ms) ->> 'printing_airtel_money_instructions'), ''), nullif(trim(to_jsonb(ms) ->> 'payment_instructions'), '')),
-    public.lavida_normalize_malawi_phone(coalesce(to_jsonb(ms) ->> 'printing_airtel_money_number', to_jsonb(ms) ->> 'airtel_money_number', to_jsonb(ms) ->> 'airtel_number', '')) ~ '^265(88|89|98|99)[0-9]{7}$',
-    10
-  from (select * from public.marketplace_settings limit 1) ms
-  union all
-  select
-    'tnm_mpamba',
-    'TNM Mpamba',
-    'mobile_money',
-    coalesce(
-      nullif(trim(to_jsonb(ms) ->> 'printing_tnm_mpamba_recipient_name'), ''),
-      nullif(trim(to_jsonb(ms) ->> 'tnm_mpamba_recipient_name'), ''),
-      nullif(trim(to_jsonb(ms) ->> 'payment_recipient_name'), ''),
-      nullif(trim(to_jsonb(ms) ->> 'marketplace_name'), '')
-    ),
-    case
-      when public.lavida_normalize_malawi_phone(coalesce(
-        nullif(trim(to_jsonb(ms) ->> 'printing_tnm_mpamba_number'), ''),
-        nullif(trim(to_jsonb(ms) ->> 'tnm_mpamba_number'), ''),
-        nullif(trim(to_jsonb(ms) ->> 'mpamba_number'), '')
-      )) ~ '^265(88|89|98|99)[0-9]{7}$'
-      then public.lavida_normalize_malawi_phone(coalesce(
-        nullif(trim(to_jsonb(ms) ->> 'printing_tnm_mpamba_number'), ''),
-        nullif(trim(to_jsonb(ms) ->> 'tnm_mpamba_number'), ''),
-        nullif(trim(to_jsonb(ms) ->> 'mpamba_number'), '')
-      ))
-      else null
-    end,
-    null,
-    'MWK',
-    coalesce(nullif(trim(to_jsonb(ms) ->> 'printing_tnm_mpamba_instructions'), ''), nullif(trim(to_jsonb(ms) ->> 'payment_instructions'), '')),
-    public.lavida_normalize_malawi_phone(coalesce(to_jsonb(ms) ->> 'printing_tnm_mpamba_number', to_jsonb(ms) ->> 'tnm_mpamba_number', to_jsonb(ms) ->> 'mpamba_number', '')) ~ '^265(88|89|98|99)[0-9]{7}$',
-    20
-  from (select * from public.marketplace_settings limit 1) ms
-  union all
-  select
-    'bank_transfer',
-    'Bank Transfer',
-    'bank_transfer',
-    coalesce(
-      nullif(trim(to_jsonb(ms) ->> 'printing_bank_account_name'), ''),
-      nullif(trim(to_jsonb(ms) ->> 'bank_account_name'), ''),
-      nullif(trim(to_jsonb(ms) ->> 'payment_recipient_name'), ''),
-      nullif(trim(to_jsonb(ms) ->> 'marketplace_name'), '')
-    ),
-    coalesce(nullif(trim(to_jsonb(ms) ->> 'printing_bank_account_number'), ''), nullif(trim(to_jsonb(ms) ->> 'bank_account_number'), '')),
-    nullif(trim(to_jsonb(ms) ->> 'bank_name'), ''),
-    'MWK',
-    coalesce(nullif(trim(to_jsonb(ms) ->> 'printing_bank_instructions'), ''), nullif(trim(to_jsonb(ms) ->> 'payment_instructions'), '')),
-    coalesce(
-      length(trim(coalesce(to_jsonb(ms) ->> 'printing_bank_account_number', to_jsonb(ms) ->> 'bank_account_number', ''))) > 0,
-      false
-    ),
-    30
-  from (select * from public.marketplace_settings limit 1) ms
-  union all
-  select
-    'cash_on_pickup',
-    'Cash on Pickup',
-    'cash',
-    coalesce(nullif(trim(to_jsonb(ms) ->> 'marketplace_name'), ''), 'LAVIDA'),
-    null,
-    null,
-    'MWK',
-    'Pay at the pickup point when LAVIDA confirms your order is ready.',
-    true,
-    40
-  from (select * from public.marketplace_settings limit 1) ms
-) defaults(
-  method_code,
-  display_name,
-  method_type,
-  recipient_name,
-  payment_number,
-  bank_name,
-  currency,
-  customer_instructions,
-  is_active,
-  display_order
-)
+values
+  ('airtel_money','Airtel Money','mobile_money',null,null,null,'MWK','Send the exact amount shown at checkout.',false,10),
+  ('tnm_mpamba','TNM Mpamba','mobile_money',null,null,null,'MWK','Send the exact amount shown at checkout.',false,20),
+  ('bank_transfer','Bank Transfer','bank_transfer',null,null,null,'MWK','Use your order number or transaction reference when paying.',false,30),
+  ('cash_on_pickup','Cash on Pickup','cash','LAVIDA',null,null,'MWK','Pay at the pickup point when LAVIDA confirms your order is ready.',true,40)
 on conflict (method_code) do nothing;
 
 insert into public.payment_methods (
