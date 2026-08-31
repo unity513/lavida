@@ -218,7 +218,7 @@
     <section id="connectHome" class="connect-home page-panel active" data-page="home">
       <div class="home-hero-carousel" data-home-hero-carousel>
         <div class="home-hero-track" data-home-hero-track>
-          <article class="connect-hero work-center-hero home-hero-slide" data-home-hero-slide>
+          <article class="connect-hero work-center-hero home-hero-slide active" data-home-hero-slide>
             <div class="work-center-copy">
               <span class="hero-kicker">Your Professional</span>
               <h1>Work Center</h1>
@@ -227,7 +227,7 @@
             </div>
             <img class="work-center-art" src="./assets/printing-hero-canon.png" alt="Professional printing and document services" loading="eager">
           </article>
-          <article class="connect-hero work-center-hero marketplace-hero home-hero-slide" data-home-hero-slide>
+          <article class="connect-hero work-center-hero marketplace-hero home-hero-slide" data-home-hero-slide hidden aria-hidden="true">
             <div class="work-center-copy">
               <span class="hero-kicker">Check the</span>
               <h1>Marketplace</h1>
@@ -241,7 +241,7 @@
               <span class="market-device"></span>
             </div>
           </article>
-          <article class="connect-hero work-center-hero web-hero home-hero-slide" data-home-hero-slide>
+          <article class="connect-hero work-center-hero web-hero home-hero-slide" data-home-hero-slide hidden aria-hidden="true">
             <div class="work-center-copy">
               <span class="hero-kicker">Build Online</span>
               <h1>Websites &amp; Hosting</h1>
@@ -2671,8 +2671,13 @@ ${diagnosticJson(diagnostic?.exception??null)}
       let timer;
       const show = (index)=>{
         active = (index + slides.length) % slides.length;
-        track.style.transform = `translateX(-${active * 100}%)`;
-        slides.forEach((slide,i)=>slide.classList.toggle("active",i===active));
+        track.style.transform = "none";
+        slides.forEach((slide,i)=>{
+          const selected = i === active;
+          slide.classList.toggle("active",selected);
+          slide.hidden = !selected;
+          slide.setAttribute("aria-hidden",selected ? "false" : "true");
+        });
         dots.forEach((dot,i)=>dot.classList.toggle("active",i===active));
       };
       const restart = ()=>{
