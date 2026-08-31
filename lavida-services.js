@@ -199,7 +199,7 @@
       <div class="professional-service-grid">
         ${serviceCardMarkup("digital","digital")}
         ${serviceCardMarkup("documents","documents")}
-        <a class="professional-service-card printing" href="printing" data-service-page="print365"><span class="professional-service-icon">${icon("printing")}</span><span class="professional-service-copy"><strong>Printing Services</strong><span>Professional physical printing and finishing.</span><span class="professional-service-action">Start Printing <span aria-hidden="true">&rarr;</span></span></span><span class="professional-service-chevron" aria-hidden="true">&rsaquo;</span></a>
+        <a class="professional-service-card printing" href="marketplace.html?route=print365" data-service-page="print365"><span class="professional-service-icon">${icon("printing")}</span><span class="professional-service-copy"><strong>Printing Services</strong><span>Professional physical printing and finishing.</span><span class="professional-service-action">Start Printing <span aria-hidden="true">&rarr;</span></span></span><span class="professional-service-chevron" aria-hidden="true">&rsaquo;</span></a>
       </div>`;
     hero.insertAdjacentElement("afterend",section);
     const mainListTitle = [...home.querySelectorAll(".home-section-title")].find((node)=>node.textContent.trim()==="More Services");
