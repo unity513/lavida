@@ -1198,7 +1198,7 @@
     function showNotice(text,type){const n=$("checkoutNotice");n.textContent=text;n.className=`notice ${type||""}`}
     function cryptoNotice(text,type){const n=$("cryptoNotice");n.textContent=text;n.className=`notice ${type||""}`}
     function cryptoAmount(){return Number($("cryptoReceiveAmount").value || 0)}
-    function cryptoRate(){return Number(selectedCryptoAsset?.supplier_base_rate_mwk || productPrice(selectedCryptoProduct) || 0)}
+    function cryptoRate(){return Number(selectedCryptoAsset?.lavida_selling_rate_mwk || productPrice(selectedCryptoProduct) || 0)}
     function cryptoValue(){return cryptoAmount() * cryptoRate()}
     function cryptoCustomerProfile(){
       const user = authSession?.user || null;
@@ -1291,7 +1291,7 @@
             const {data:symbolAssets,error:symbolError}=await db.from("crypto_assets").select("*").ilike("asset_symbol", symbol).eq("is_active", true).limit(10);
             if(symbolError) throw symbolError;
             asset = (symbolAssets || []).find((row)=>String(row.marketplace_product_id)===String(productId))
-              || (symbolAssets || []).find((row)=>Number(row.supplier_base_rate_mwk || row.lavida_selling_rate_mwk || 0) > 0)
+              || (symbolAssets || []).find((row)=>Number(row.lavida_selling_rate_mwk || 0) > 0)
               || (symbolAssets || [])[0]
               || null;
           }
@@ -1306,7 +1306,7 @@
         selectedCryptoNetworks = networks || [];
         if(!selectedCryptoNetworks.length) throw new Error("No supported networks are available for this crypto asset yet.");
         $("cryptoNetwork").innerHTML = `<option value="">Select network</option>` + selectedCryptoNetworks.map((n)=>`<option value="${esc(n.id)}">${esc(n.network_name)}</option>`).join("");
-        $("cryptoAssetSummary").innerHTML = `<div class="crypto-asset-title">${esc(asset.asset_name)} (${esc(asset.asset_symbol)})</div><div class="crypto-asset-rate">Rate: ${esc(money(asset.supplier_base_rate_mwk))} / ${esc(asset.asset_symbol)}</div><div class="crypto-asset-limits">Minimum: ${esc(asset.minimum_purchase)} ${esc(asset.asset_symbol)}${asset.maximum_purchase?` | Maximum: ${esc(asset.maximum_purchase)} ${esc(asset.asset_symbol)}`:""}</div>`;
+        $("cryptoAssetSummary").innerHTML = `<div class="crypto-asset-title">${esc(asset.asset_name)} (${esc(asset.asset_symbol)})</div><div class="crypto-asset-rate">Rate: ${esc(money(asset.lavida_selling_rate_mwk))} / ${esc(asset.asset_symbol)}</div><div class="crypto-asset-limits">Minimum: ${esc(asset.minimum_purchase)} ${esc(asset.asset_symbol)}${asset.maximum_purchase?` | Maximum: ${esc(asset.maximum_purchase)} ${esc(asset.asset_symbol)}`:""}</div>`;
         setCryptoStep(1);
         renderCryptoReview();
       }catch(error){

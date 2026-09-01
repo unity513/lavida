@@ -569,7 +569,8 @@
       cryptoSavedNetworks = [];
       if(!productId) return;
       try{
-        const {data:asset} = await db.from("crypto_assets").select("*").eq("marketplace_product_id", productId).maybeSingle();
+        const {data:asset,error:assetLoadError} = await db.rpc("get_crypto_asset_admin",{p_marketplace_product_id:productId});
+        if(assetLoadError) throw assetLoadError;
         if(asset){
           $("cryptoAssetName").value = asset.asset_name || "";
           $("cryptoAssetSymbol").value = asset.asset_symbol || "";
@@ -811,8 +812,10 @@
         updated_at: new Date().toISOString()
       };
       if(!selectedId) assetPayload.created_by = session.user.id;
-      const {data:asset,error:assetError} = await db.from("crypto_assets").upsert(assetPayload,{onConflict:"marketplace_product_id"}).select("*").single();
+      const {error:assetError} = await db.from("crypto_assets").upsert(assetPayload,{onConflict:"marketplace_product_id"});
       if(assetError) throw assetError;
+      const {data:asset,error:assetLoadError} = await db.rpc("get_crypto_asset_admin",{p_marketplace_product_id:productId});
+      if(assetLoadError) throw assetLoadError;
       if(!asset?.id) throw new Error("Crypto asset was saved without an asset ID.");
       const networks = readNetworkLines();
       const networkRows = networks.map((row)=>({...row,asset_id:asset.id}));

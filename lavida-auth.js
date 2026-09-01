@@ -2,6 +2,8 @@
   "use strict";
 
   const APP_NAME = "LAVIDA Connect";
+  const SUPABASE_URL = "https://cgvpoddtqswmtzvyrmwj.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndnBvZGR0cXN3bXR6dnlybXdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDE0OTMsImV4cCI6MjA5MTkxNzQ5M30.Ut_5jGo8L66zi8zxqR25nV_gkDBYLrT7p3Fx-4G5wGQ";
   const DEFAULT_DESTINATION = "./marketplace.html#home";
   const ROLE_DESTINATIONS = Object.freeze({
     owner: "./marketplace-admin.html",
@@ -20,6 +22,7 @@
     "marketplace-orders-admin.html",
     "user-management.html",
     "printing-admin.html",
+    "payments-pricing-admin.html",
     "signin.html",
     "register.html",
     "forgot-password.html",
@@ -46,6 +49,10 @@
       }
     });
     return client;
+  }
+
+  function getClient(){
+    return createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }
 
   function debug(label, error, extra){
@@ -175,8 +182,10 @@
 
   root.LavidaAuth = {
     APP_NAME,
+    SUPABASE_URL,
     ROLE_DESTINATIONS,
     createClient,
+    getClient,
     debug,
     friendlyError,
     destinationForRole,
