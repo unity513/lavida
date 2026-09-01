@@ -21,7 +21,7 @@
     <div class="admin-header-actions">
       <div class="admin-desktop-actions">
         <a href="./marketplace.html">Public Connect</a>
-        <a class="payment-admin-link hidden" href="#payment-settings">Payment Settings</a>
+        <a class="payment-admin-link hidden" href="./payments-pricing-admin.html">Payments &amp; Pricing</a>
         <a class="content-admin-link hidden" href="./user-management.html">User Management</a>
         <a class="content-admin-link hidden" href="./marketplace-orders-admin.html">Orders Management</a>
         <button id="logoutBtnDesktop" type="button">Log Out</button>
@@ -31,7 +31,7 @@
   </header>
   <div id="adminHeaderMenu" class="admin-header-menu" hidden>
     <a href="./marketplace.html">Public Connect</a>
-    <a class="payment-admin-link hidden" href="#payment-settings">Payment Settings</a>
+    <a class="payment-admin-link hidden" href="./payments-pricing-admin.html">Payments &amp; Pricing</a>
     <a class="content-admin-link hidden" href="./user-management.html">User Management</a>
     <a class="content-admin-link hidden" href="./marketplace-orders-admin.html">Orders Management</a>
     <button id="logoutBtn" type="button">Log Out</button>
@@ -193,11 +193,10 @@
     function setStatus(id, text, type){ const el=$(id); if(el){ el.textContent=text; el.className=`status ${type||""}`; } }
     function showApp(){
       ["productPanel","productsPanel","ordersPanel","settingsPanel","categoriesPanel"].forEach((id)=>$(id).classList.toggle("hidden", !canManageContent()));
-      $("paymentSettingsPanel").classList.toggle("hidden", !canManagePaymentSettings());
+      $("paymentSettingsPanel").classList.add("hidden");
       document.querySelectorAll(".payment-admin-link").forEach((link)=>link.classList.toggle("hidden", !canManagePaymentSettings()));
       document.querySelectorAll(".content-admin-link").forEach((link)=>link.classList.toggle("hidden", !canManageContent()));
       $("loginBox").classList.add("hidden");
-      if(location.hash === "#payment-settings" && canManagePaymentSettings()) setTimeout(()=>$("paymentSettingsPanel").scrollIntoView({behavior:"smooth",block:"start"}), 0);
     }
     async function loadRole(){
       try{
