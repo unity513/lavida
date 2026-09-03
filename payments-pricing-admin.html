@@ -41,6 +41,8 @@
     const db=window.LavidaAuth.getClient(),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
     const SECTIONS=[["payment-methods","Payment Methods"],["printing","Printing Prices"],["professional-services","Professional Services"],["marketplace","Marketplace & Rates"],["games","Games Pricing"],["payment-rules","Payment Rules"],["history","Change History"]],ROLES=["owner","admin","executive","finance_admin"];
     let session=null,role="",shared=null,paymentMethods=[],printingPrices=[],pricingSettings=[],products=[],cryptoAssets=[],dirty=false,saving=false;
+    let authAttempt=0,authSubscription=null,disposed=false,lastAuthRefresh=0;
+    const SESSION_TIMEOUT_MS=8000,PERMISSION_TIMEOUT_MS=8000,SETTINGS_TIMEOUT_MS=15000;
     const status=(id,text,type="")=>{const el=$(id);if(el){el.textContent=text;el.className=`status ${type}`}};
     function setDirty(value=true){dirty=value} window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue=""}});
     function normalizePhone(value){let digits=String(value||"").replace(/\D/g,"");if(/^0(88|89|98|99)\d{7}$/.test(digits))digits="265"+digits.slice(1);return digits}
@@ -54,7 +56,8 @@
         expired:["Session expired","Your session has expired. Sign in again to continue.","Sign in again"],
         denied:["Access denied","Your signed-in LAVIDA account is not authorised to manage payments and pricing.","Back to Admin"],
         configuration:["Configuration unavailable","LAVIDA could not connect to its configured account service. Please retry after the deployment configuration is checked.","Retry"],
-        loading:["Settings could not be loaded","Your access was confirmed, but the settings request failed. Existing prices and payment details were not changed.","Retry"]
+        loading:["Settings could not be loaded","Your access was confirmed, but the settings request failed. Existing prices and payment details were not changed.","Retry"],
+        timeout:["Connection timed out","LAVIDA could not finish the access check. Your session was not cleared. Check your connection and try again.","Retry"]
       };
       const [title,message,action]=states[kind]||states.loading;
       $("loadingPanel").classList.add("hidden");$("workspace").classList.add("hidden");$("accessPanel").classList.remove("hidden");
@@ -62,16 +65,31 @@
       status("authStatus",kind==="denied"?"Access denied":"Action required",kind==="denied"?"bad":"warn");
     }
     function goToSignIn(){window.LavidaAuth.rememberReturnTo();location.href=`signin.html?returnTo=${encodeURIComponent(`payments-pricing-admin.html${location.hash}`)}`}
-    function classifyAuthError(error){const text=`${error?.message||""} ${error?.code||""}`.toLowerCase();if(/invalid api key|apikey|project.*not found/.test(text))return"configuration";if(/expired|refresh.*token|session.*missing|jwt/.test(text))return"expired";if(/42501|access denied|permission|forbidden|unauthorized/.test(text))return"denied";return"loading"}
-    async function requireAccess(){
+    function classifyAuthError(error){const text=`${error?.message||""} ${error?.code||""}`.toLowerCase();if(error?.name==="TimeoutError")return"timeout";if(/invalid api key|apikey|project.*not found/.test(text))return"configuration";if(/expired|refresh.*token|session.*missing|jwt/.test(text))return"expired";if(/42501|access denied|permission|forbidden|unauthorized/.test(text))return"denied";return"loading"}
+    function withTimeout(promise,ms,label){
+      let timer;
+      const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>{const error=new Error(`${label} timed out`);error.name="TimeoutError";reject(error)},ms)});
+      return Promise.race([promise,timeout]).finally(()=>clearTimeout(timer));
+    }
+    function currentAttempt(attempt){return !disposed&&attempt===authAttempt}
+    async function requireAccess(attempt,providedSession){
       $("loadingPanel").classList.remove("hidden");$("accessPanel").classList.add("hidden");$("workspace").classList.add("hidden");status("authStatus","Checking access");
-      try{session=await window.LavidaAuth.getSession(db)}catch(error){showAccessState(classifyAuthError(error));return false}
+      let restoredSession=providedSession;
+      if(providedSession===undefined){
+        try{restoredSession=await withTimeout(window.LavidaAuth.getSession(db),SESSION_TIMEOUT_MS,"Session restoration")}catch(error){if(currentAttempt(attempt))showAccessState(classifyAuthError(error));return false}
+      }
+      if(!currentAttempt(attempt))return false;
+      session=restoredSession||null;
       if(!session){showAccessState("signed_out");return false}
-      try{role=String(await window.LavidaAuth.loadRole(db,session)||"").toLowerCase()}catch(error){showAccessState(classifyAuthError(error));return false}
+      status("authStatus","Checking permission");
+      let loadedRole="";
+      try{loadedRole=String(await withTimeout(window.LavidaAuth.loadRole(db,session),PERMISSION_TIMEOUT_MS,"Permission check")||"").toLowerCase()}catch(error){if(currentAttempt(attempt))showAccessState(classifyAuthError(error)==="denied"?"loading":classifyAuthError(error));return false}
+      if(!currentAttempt(attempt))return false;
+      role=loadedRole;
       if(!ROLES.includes(role)){showAccessState("denied");return false}
       $("loadingPanel").classList.add("hidden");$("accessPanel").classList.add("hidden");$("workspace").classList.remove("hidden");status("authStatus",`${role} access`);return true
     }
-    async function loadAll(){status("authStatus","Loading settings...");const {data,error}=await db.rpc("get_payments_pricing_admin_bundle");if(error)throw error;const bundle=data||{};paymentMethods=bundle.payment_methods||[];printingPrices=bundle.printing_prices||[];pricingSettings=bundle.pricing_settings||[];products=bundle.marketplace_products||[];cryptoAssets=bundle.crypto_assets||[];shared=paymentMethods.find(x=>x.method_code==="shared_mobile_money")||null;renderAll(bundle.history||[]);status("authStatus",`${role} access`);setDirty(false)}
+    async function loadAll(attempt=authAttempt){status("authStatus","Loading settings...");const {data,error}=await withTimeout(db.rpc("get_payments_pricing_admin_bundle"),SETTINGS_TIMEOUT_MS,"Settings request");if(error)throw error;if(!currentAttempt(attempt))return false;const bundle=data||{};paymentMethods=bundle.payment_methods||[];printingPrices=bundle.printing_prices||[];pricingSettings=bundle.pricing_settings||[];products=bundle.marketplace_products||[];cryptoAssets=bundle.crypto_assets||[];shared=paymentMethods.find(x=>x.method_code==="shared_mobile_money")||null;renderAll(bundle.history||[]);status("authStatus",`${role} access`);setDirty(false);return true}
     function renderAll(history){renderMobile();renderPrinting();renderServices();renderMarket();renderGames();renderRules();renderHistory(history)}
     function renderMobile(){const row=shared||{};$("receivingNumber").value=formatPhone(row.payment_number);$("recipientName").value=row.recipient_name||"";$("provider").value=row.provider||"";$("mobileInstructions").value=row.customer_instructions||"";$("mobileActive").checked=!!row.is_active;document.querySelectorAll("[data-applies]").forEach(x=>x.checked=(row.applies_to||[]).includes(x.dataset.applies));const candidates=paymentMethods.filter(x=>x.method_type==="mobile_money"&&x.method_code!=="shared_mobile_money"&&(x.payment_number||x.recipient_name));$("candidatePanel").classList.toggle("hidden",!candidates.length);$("candidateList").innerHTML=candidates.map(x=>`<div class="candidate"><div><b>${esc(x.display_name)}</b><div class="hint">${esc(x.recipient_name||"No recipient")} &middot; ${esc(formatPhone(x.payment_number)||"No number")}</div></div><button class="secondary" type="button" data-use-candidate="${esc(x.id)}">Use</button></div>`).join("");$("otherMethods").innerHTML=table(["Method","Type","Status","Destination"],paymentMethods.filter(x=>x.method_code!=="shared_mobile_money").map(x=>[x.display_name,x.method_type,x.is_active?"Active":"Inactive",formatPhone(x.payment_number)||x.payment_number||"Not required"]));updatePreview()}
     function updatePreview(){ $("previewProvider").textContent=$("provider").value||"Not configured";$("previewRecipient").textContent=$("recipientName").value.trim()||"Not configured";$("previewNumber").textContent=formatPhone($("receivingNumber").value)||"Not configured";$("previewInstructions").textContent=$("mobileInstructions").value.trim()||"Not configured" }
@@ -90,8 +108,28 @@
     async function saveSetting(row){const payload={section:row.section,setting_code:row.setting_code,display_name:row.display_name,pricing_mode:row.pricing_mode,amount:row.amount,currency:row.currency,unit:row.unit,description:row.description,is_active:row.is_active,public_value:row.public_value||{},private_value:row.private_value||{},display_order:row.display_order||0};const {error}=await db.rpc("save_lavida_pricing_setting",{p_setting:payload,p_expected_version:row.row_version||null});if(error)throw error}
     async function saveTable(section){readRowInputs();const sid=section==="professional_services"?"servicesStatus":section==="marketplace"?"marketStatus":section==="games"?"gamesStatus":"rulesStatus";status(sid,"Saving...","warn");try{if(section==="printing"){for(const x of printingPrices){const {error}=await db.rpc("save_printing_price_admin",{p_id:x.id,p_display_name:x.display_name,p_amount_mwk:x.amount_mwk,p_pricing_unit:x.pricing_unit,p_active:x.active});if(error)throw error}status("printingStatus","Printing prices updated successfully.","good")}else if(section==="marketplace"){for(const x of products){const {error}=await db.rpc("save_marketplace_product_price_admin",{p_id:x.id,p_selling_price:x.selling_price});if(error)throw error}for(const x of cryptoAssets){const {error}=await db.rpc("save_crypto_price_admin",{p_id:x.id,p_supplier_rate:x.supplier_base_rate_mwk,p_customer_rate:x.lavida_selling_rate_mwk,p_minimum_purchase:x.minimum_purchase,p_is_active:x.is_active});if(error)throw error}status(sid,"Marketplace prices updated successfully.","good")}else{let row=settingRows(section)[0];if(section==="games"){row={...(row||{}),section:"games",setting_code:"credit_purchase",display_name:"Game credit purchase",pricing_mode:"fixed",amount:Number(document.querySelector('[data-single="games.amount"]').value),currency:document.querySelector('[data-single="games.currency"]').value.toUpperCase(),unit:"per_credit",description:"Price for new game-credit purchases.",is_active:document.querySelector('[data-single="games.active"]').checked,public_value:{minimum_purchase:Number(document.querySelector('[data-single="games.minimum"]').value)}}}if(section==="payment_rules"){row={...(row||{}),section:"payment_rules",setting_code:"verification_estimate",display_name:"Verification estimate",pricing_mode:"rule",amount:Number(document.querySelector('[data-single="rules.minutes"]').value),currency:"MIN",unit:"minutes",description:"Estimated manual payment verification time.",is_active:true,public_value:{message:document.querySelector('[data-single="rules.message"]').value.trim()}}}if(section==="professional_services")for(const x of settingRows(section))await saveSetting(x);else await saveSetting(row);status(sid,"Payments & pricing updated successfully.","good")}setDirty(false);await loadAll()}catch(e){status(sid,window.LavidaAuth.friendlyError(e,"Settings could not be saved. Your changes remain in the form."),"bad")}}
     document.addEventListener("input",e=>{if(e.target.matches("input,select,textarea")){setDirty();if(["receivingNumber","recipientName","provider","mobileInstructions"].includes(e.target.id))updatePreview()}});$("tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b)showSection(b.dataset.tab)});$("candidateList").addEventListener("click",e=>{const b=e.target.closest("[data-use-candidate]");if(!b)return;const x=paymentMethods.find(r=>r.id===b.dataset.useCandidate);if(x){$("receivingNumber").value=formatPhone(x.payment_number);$("recipientName").value=x.recipient_name||"";$("provider").value=x.provider||x.display_name;updatePreview();setDirty()}});document.addEventListener("click",e=>{const save=e.target.closest("[data-save-table]");if(save)saveTable(save.dataset.saveTable);const add=e.target.closest("[data-add-setting]");if(add){const code=`service_${Date.now()}`;pricingSettings.push({id:crypto.randomUUID(),section:"professional_services",setting_code:code,display_name:"New service",pricing_mode:"custom_quote",amount:null,currency:"MWK",unit:"per_order",description:"Request a quote",is_active:true,public_value:{},private_value:{},display_order:settingRows("professional_services").length*10,row_version:null});renderServices();setDirty()}});$("saveMobile").onclick=saveMobile;$("cancelConfirm").onclick=()=>$("confirmDialog").close();$("confirmSave").onclick=confirmedMobileSave;$("refreshAll").onclick=()=>{if(!dirty||confirm("Discard unsaved changes and refresh?"))initialize()};$("accessAction").onclick=()=>{const action=$("accessAction").dataset.action;if(action==="signed_out"||action==="expired")goToSignIn();else if(action==="denied")location.href="marketplace-admin.html";else initialize()};
-    async function initialize(){if(await requireAccess()){try{await loadAll()}catch(error){showAccessState(classifyAuthError(error))}}}
-    renderTabs();window.LavidaAuth.listen(db,()=>initialize());initialize();
+    async function initialize(options={}){
+      const attempt=++authAttempt;
+      const supplied=Object.prototype.hasOwnProperty.call(options,"session")?options.session:undefined;
+      if(await requireAccess(attempt,supplied)){
+        try{await loadAll(attempt)}catch(error){if(currentAttempt(attempt))showAccessState(classifyAuthError(error))}
+      }
+    }
+    function scheduleAuthCheck(nextSession){
+      setTimeout(()=>{if(!disposed)initialize({session:nextSession})},0);
+    }
+    function refreshAfterReturn(){
+      const now=Date.now();
+      if(document.visibilityState==="hidden"||now-lastAuthRefresh<1500)return;
+      lastAuthRefresh=now;initialize();
+    }
+    renderTabs();
+    authSubscription=window.LavidaAuth.listen(db,(_event,nextSession)=>scheduleAuthCheck(nextSession));
+    window.addEventListener("focus",refreshAfterReturn);
+    document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")refreshAfterReturn()});
+    window.addEventListener("pageshow",(event)=>{disposed=false;if(event.persisted)refreshAfterReturn()});
+    window.addEventListener("pagehide",(event)=>{if(!event.persisted){disposed=true;authAttempt+=1;authSubscription?.unsubscribe?.()}});
+    initialize();
   </script>
 </body>
 </html>
