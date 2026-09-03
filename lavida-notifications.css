@@ -8,3 +8,5 @@
 @media(prefers-reduced-motion:reduce){.notification-toast,.notification-toast.leaving{transition:none}.notification-toast-countdown{animation:none;transform:scaleX(0)}}
 .notification-toast{top:var(--lavida-toast-top,calc(72px + env(safe-area-inset-top,0px)))}
 @media(max-width:767px){.notification-toast{top:var(--lavida-toast-top,calc(64px + env(safe-area-inset-top,0px)))}}
+.notification-toast{width:min(420px,calc(100% - 32px))}.notification-toast-icon svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}.notification-toast-close svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}.notification-toast-action:focus-visible,.notification-toast-close:focus-visible{outline:3px solid rgba(8,169,91,.34);outline-offset:2px}
+@media(max-width:520px){.notification-toast{width:calc(100% - 24px)}}

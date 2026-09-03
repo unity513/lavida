@@ -582,16 +582,20 @@
     }
     return toast;
   }
+  function toastGlyph(type){
+    if(type === "success")return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"></path></svg>';
+    if(type === "info")return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 11v6"></path><path d="M12 7h.01"></path></svg>';
+    return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5"></path><path d="M12 17h.01"></path></svg>';
+  }
   function showNextToast(){
     if(activeToast || toastFadeTimer || !toastQueue.length)return;
     const item = toastQueue.shift();
     activeToast = item;
     const toast = ensureToast();
     const type = ["success","error","warning","info"].includes(item.type) ? item.type : "info";
-    const glyph = type === "success" ? "check" : type === "error" ? "!" : type === "warning" ? "!" : "i";
     const action = item.actionLabel && item.onAction ? `<button class="notification-toast-action" type="button" data-toast-action>${html(item.actionLabel)}</button>` : "";
     toast.className = `notification-toast ${type}`;
-    toast.innerHTML = `<span class="notification-toast-icon" aria-hidden="true">${glyph}</span><div class="notification-toast-copy">${item.title ? `<b>${html(item.title)}</b>` : ""}<span>${html(item.message || item.body || "")}</span></div>${action}<button class="notification-toast-close" type="button" data-toast-close aria-label="Dismiss notification">&times;</button><span class="notification-toast-countdown" aria-hidden="true"></span>`;
+    toast.innerHTML = `<span class="notification-toast-icon" aria-hidden="true">${toastGlyph(type)}</span><div class="notification-toast-copy">${item.title ? `<b>${html(item.title)}</b>` : ""}<span>${html(item.message || item.body || "")}</span></div>${action}<button class="notification-toast-close" type="button" data-toast-close aria-label="Dismiss notification"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button><span class="notification-toast-countdown" aria-hidden="true"></span>`;
     toast.querySelector("[data-toast-close]").addEventListener("click",dismissToast);
     toast.querySelector("[data-toast-action]")?.addEventListener("click",()=>{item.onAction();dismissToast()});
     toastRemaining = Math.max(1,Number(item.duration || TOAST_DURATION));
