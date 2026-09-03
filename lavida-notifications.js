@@ -24,7 +24,16 @@
   const DEFAULT_DESTINATION = "marketplace.html#notifications";
   let activeFilter = "all";
   let realtimeChannel = null;
-  let lastToastTimer = null;
+  const TOAST_DURATION = 3000;
+  const toastQueue = [];
+  const queuedToastKeys = new Set();
+  let activeToast = null;
+  let toastTimer = null;
+  let toastFadeTimer = null;
+  let toastStartedAt = 0;
+  let toastRemaining = TOAST_DURATION;
+  let toastHovered = false;
+  let toastFocused = false;
 
   function byId(id){return document.getElementById(id)}
   function html(value){return typeof esc === "function" ? esc(value) : String(value ?? "").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
@@ -503,18 +512,117 @@
     await database.from("notification_preferences").upsert(payload,{onConflict:"user_id"});
     await renderSettings();
   }
-  function showToast(row){
+  function toastKey(item){
+    return item.key || `${item.type || "info"}:${item.title || ""}:${item.message || item.body || ""}`;
+  }
+  function updateToastOffset(){
+    const toast = byId("notificationToast");
+    if(!toast)return;
+    const headers = [...document.querySelectorAll("header,.topbar,.app-header,[data-app-header]")];
+    const bottom = headers.reduce((max,node)=>{
+      const style = getComputedStyle(node);
+      if(style.display === "none" || style.visibility === "hidden")return max;
+      const rect = node.getBoundingClientRect();
+      return rect.bottom > 0 && rect.top <= 1 ? Math.max(max,rect.bottom) : max;
+    },0);
+    document.documentElement.style.setProperty("--lavida-toast-top",`${Math.max(12,Math.ceil(bottom)+12)}px`);
+  }
+  function clearToastTimers(){
+    clearTimeout(toastTimer);
+    clearTimeout(toastFadeTimer);
+    toastTimer = null;
+    toastFadeTimer = null;
+  }
+  function pauseToast(){
+    const toast = byId("notificationToast");
+    if(!toast || !activeToast || toast.classList.contains("leaving"))return;
+    toastRemaining = Math.max(0,toastRemaining-(Date.now()-toastStartedAt));
+    clearTimeout(toastTimer);
+    toastTimer = null;
+    toast.classList.add("paused");
+    toast.style.setProperty("--lavida-toast-remaining",`${toastRemaining}ms`);
+  }
+  function resumeToast(){
+    const toast = byId("notificationToast");
+    if(!toast || !activeToast || toastHovered || toastFocused || toast.classList.contains("leaving"))return;
+    toast.classList.remove("paused");
+    toastStartedAt = Date.now();
+    toast.style.setProperty("--lavida-toast-remaining",`${toastRemaining}ms`);
+    toastTimer = setTimeout(dismissToast,toastRemaining);
+  }
+  function dismissToast(){
+    const toast = byId("notificationToast");
+    if(!toast || !activeToast)return;
+    clearToastTimers();
+    toast.classList.remove("visible","paused");
+    toast.classList.add("leaving");
+    const dismissedKey = toastKey(activeToast);
+    activeToast = null;
+    queuedToastKeys.delete(dismissedKey);
+    toastFadeTimer = setTimeout(()=>{
+      toast.classList.remove("leaving");
+      toastFadeTimer = null;
+      showNextToast();
+    },220);
+  }
+  function ensureToast(){
     let toast = byId("notificationToast");
     if(!toast){
       toast = document.createElement("div");
       toast.id = "notificationToast";
       toast.className = "notification-toast";
+      toast.setAttribute("role","status");
+      toast.setAttribute("aria-live","polite");
+      toast.setAttribute("aria-atomic","true");
       document.body.appendChild(toast);
+      toast.addEventListener("mouseenter",()=>{toastHovered=true;pauseToast()});
+      toast.addEventListener("mouseleave",()=>{toastHovered=false;resumeToast()});
+      toast.addEventListener("focusin",()=>{toastFocused=true;pauseToast()});
+      toast.addEventListener("focusout",()=>{toastFocused=toast.contains(document.activeElement);resumeToast()});
     }
-    toast.innerHTML = `<div><b>${html(row.title)}</b><small>${html(row.body)}</small></div><button type="button" data-open-notification="${html(row.id)}">View</button>`;
-    toast.classList.add("visible");
-    clearTimeout(lastToastTimer);
-    lastToastTimer = setTimeout(()=>toast.classList.remove("visible"), 6500);
+    return toast;
+  }
+  function showNextToast(){
+    if(activeToast || toastFadeTimer || !toastQueue.length)return;
+    const item = toastQueue.shift();
+    activeToast = item;
+    const toast = ensureToast();
+    const type = ["success","error","warning","info"].includes(item.type) ? item.type : "info";
+    const glyph = type === "success" ? "check" : type === "error" ? "!" : type === "warning" ? "!" : "i";
+    const action = item.actionLabel && item.onAction ? `<button class="notification-toast-action" type="button" data-toast-action>${html(item.actionLabel)}</button>` : "";
+    toast.className = `notification-toast ${type}`;
+    toast.innerHTML = `<span class="notification-toast-icon" aria-hidden="true">${glyph}</span><div class="notification-toast-copy">${item.title ? `<b>${html(item.title)}</b>` : ""}<span>${html(item.message || item.body || "")}</span></div>${action}<button class="notification-toast-close" type="button" data-toast-close aria-label="Dismiss notification">&times;</button><span class="notification-toast-countdown" aria-hidden="true"></span>`;
+    toast.querySelector("[data-toast-close]").addEventListener("click",dismissToast);
+    toast.querySelector("[data-toast-action]")?.addEventListener("click",()=>{item.onAction();dismissToast()});
+    toastRemaining = Math.max(1,Number(item.duration || TOAST_DURATION));
+    toastStartedAt = Date.now();
+    toastHovered = false;
+    toastFocused = false;
+    toast.style.setProperty("--lavida-toast-duration",`${toastRemaining}ms`);
+    updateToastOffset();
+    requestAnimationFrame(()=>toast.classList.add("visible"));
+    toastTimer = setTimeout(dismissToast,toastRemaining);
+  }
+  function notify(input,type){
+    const item = typeof input === "string" ? {message:input,type:type || "info"} : {...(input || {})};
+    item.type = item.type || type || "info";
+    const key = toastKey(item);
+    if(queuedToastKeys.has(key))return false;
+    queuedToastKeys.add(key);
+    toastQueue.push(item);
+    showNextToast();
+    return true;
+  }
+  function showToast(row){
+    notify({
+      key:`realtime:${row.id || `${row.title}:${row.body}`}`,
+      type:"info",
+      title:row.title || "LAVIDA Update",
+      message:row.body || "",
+      duration:6500,
+      actionLabel:row.id ? "View" : "",
+      onAction:row.id ? ()=>openNotification(row.id) : null
+    });
   }
   function setupRealtime(user){
     const database = client();
@@ -606,8 +714,17 @@
     enablePhoneNotifications,
     registerAndroidPushToken,
     deactivateAndroidPushToken,
-    prepareLogout
+    prepareLogout,
+    show:notify,
+    success:(message,options={})=>notify({...options,message,type:"success"}),
+    error:(message,options={})=>notify({...options,message,type:"error"}),
+    warning:(message,options={})=>notify({...options,message,type:"warning"}),
+    info:(message,options={})=>notify({...options,message,type:"info"}),
+    dismiss:dismissToast
   };
+
+  window.addEventListener("resize",updateToastOffset,{passive:true});
+  window.addEventListener("orientationchange",updateToastOffset,{passive:true});
 
   init();
 })();
