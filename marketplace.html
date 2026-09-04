@@ -169,6 +169,10 @@
       .print-nav{grid-template-columns:1fr}
       .print-copy-button{width:100%}
     }
+    .home-professional-services{display:grid;gap:9px}.home-professional-heading h2{margin:0}.home-professional-heading p{margin:4px 0 0;color:#697386;font-size:13px;line-height:1.35}.home-professional-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.home-professional-row{width:100%;min-width:0;min-height:72px;margin:0;padding:10px 12px;display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:10px;border:1px solid #e5e9f1;border-radius:8px;background:#fff;color:var(--navy);text-align:left;box-shadow:0 7px 18px rgba(3,22,61,.055)}.home-professional-row .service-icon{width:42px;height:42px;border-radius:8px;display:grid;place-items:center;background:#edf4ff;color:var(--navy)}.home-professional-row .service-icon.gold{background:#fff4d6;color:#a66b00}.home-professional-row .service-icon.blue{background:#e9f2ff;color:#0b59b5}.home-professional-row svg{width:21px;height:21px;stroke:currentColor}.home-professional-row .home-service-copy{min-width:0}.home-professional-row strong{display:block;color:var(--navy);font-size:14px;line-height:1.18}.home-professional-row .home-service-copy span{display:-webkit-box;margin-top:3px;overflow:hidden;color:#657086;font-size:11.5px;font-weight:500;line-height:1.3;-webkit-box-orient:vertical;-webkit-line-clamp:2}.home-professional-row>b{color:var(--navy);font-size:22px;font-weight:500}.home-professional-row:hover{border-color:#cbd8ec;box-shadow:0 10px 22px rgba(3,22,61,.08)}
+    #connectHome>.professional-services{display:none}
+    @media(min-width:768px){.work-center-hero{min-height:200px;padding:24px 30px}.work-center-art{max-height:178px}.home-professional-heading .home-section-title{font-size:23px}}
+    @media(max-width:767px){.home-professional-services{gap:8px}.home-professional-heading .home-section-title{font-size:20px}.home-professional-heading p{font-size:12px}.home-professional-grid{grid-template-columns:1fr;gap:8px}.home-professional-row{min-height:68px;padding:9px 10px}.home-professional-row strong{font-size:14px}.home-professional-row .home-service-copy span{font-size:11.5px}}
   </style>
 </head>
 <body>
@@ -261,25 +265,26 @@
           <button type="button" data-home-hero-dot="2" aria-label="Show website services highlight"></button>
         </div>
       </div>
-      <h2 class="home-section-title">More Services</h2>
-      <div class="home-service-list flagship-services" aria-label="Primary LAVIDA Connect services">
-        <a class="service-card home-service-card home-service-card-featured" href="marketplace.html?route=print365" data-service-page="print365">
-          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 9V3h12v6"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><path d="M6 14h12v7H6z"></path></svg></div>
-          <div class="home-service-copy"><strong>Printing 365</strong><span>High quality printing &amp; document services</span></div>
-        </a>
-        <a class="service-card home-service-card home-service-card-featured" href="games365.html" data-module-link="games365.html">
-          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 12h4"></path><path d="M8 10v4"></path><path d="M15 13h.01"></path><path d="M18 11h.01"></path><path d="M17.32 5H6.68a4 4 0 0 0-3.95 3.35l-1.2 7.2A3 3 0 0 0 4.49 19h.22a3 3 0 0 0 2.12-.88L8.95 16h6.1l2.12 2.12a3 3 0 0 0 2.12.88h.22a3 3 0 0 0 2.96-3.45l-1.2-7.2A4 4 0 0 0 17.32 5Z"></path></svg></div>
-          <div class="home-service-copy"><strong>Games 365</strong><span>Play, compete &amp; connect</span></div>
-        </a>
-        <a class="service-card home-service-card" href="#homeBusinessLinks">
-          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M3 13h18"></path></svg></div>
-          <div class="home-service-copy"><strong>Business Solutions</strong><span>Tools and services for your business</span></div>
-        </a>
-        <a class="service-card home-service-card" href="community.html" data-module-link="community.html">
-          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path></svg></div>
-          <div class="home-service-copy"><div class="service-title-row"><strong>Community</strong><span class="status-pill muted">Coming Soon</span></div><span>Connect, share &amp; grow together</span></div>
-        </a>
-      </div>
+      <section class="home-professional-services" aria-labelledby="homeProfessionalTitle">
+        <div class="home-professional-heading">
+          <h2 id="homeProfessionalTitle" class="home-section-title">Professional Services</h2>
+          <p>Request work, upload evidence, review quotes and track delivery.</p>
+        </div>
+        <div class="home-professional-grid">
+          <button class="home-professional-row" type="button" data-service-start="digital">
+            <span class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg></span>
+            <span class="home-service-copy"><strong>Digital &amp; Systems Support</strong><span>Technology, websites, hosting, software and technical assistance.</span></span><b aria-hidden="true">&rsaquo;</b>
+          </button>
+          <a class="home-professional-row" href="marketplace.html?route=print365" data-service-page="print365">
+            <span class="service-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 9V3h12v6"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><path d="M6 14h12v7H6z"></path></svg></span>
+            <span class="home-service-copy"><strong>Documents &amp; Printing</strong><span>Print, scan, copy and prepare important documents quickly.</span></span><b aria-hidden="true">&rsaquo;</b>
+          </a>
+          <a class="home-professional-row" href="#homeBusinessLinks">
+            <span class="service-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"></path></svg></span>
+            <span class="home-service-copy"><strong>Business &amp; Administration</strong><span>Practical support for business, forms and administrative tasks.</span></span><b aria-hidden="true">&rsaquo;</b>
+          </a>
+        </div>
+      </section>
       <section class="home-market-highlight" aria-labelledby="homeMarketTitle">
         <div>
           <h2 id="homeMarketTitle">Check the Marketplace</h2>
