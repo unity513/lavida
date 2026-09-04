@@ -52,6 +52,8 @@
     const $ = (id)=>document.getElementById(id);
     const esc = (value)=>String(value ?? "").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
     const money = (value)=>"MWK " + Number(value || 0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    const usdMoney = (value)=>"USD " + Number(value || 0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    const payableMoney = (currency,value)=>String(currency || "").toUpperCase()==="MWK" ? "MWK " + Math.round(Number(value || 0)).toLocaleString() : usdMoney(value);
     const ADMIN_ROLES = ["owner","admin","executive","manager","printing_admin","service_admin"];
     const STATUSES = ["submitted","under_review","more_information_required","scope_confirmed","quotation_ready","quote_accepted","invoice_issued","awaiting_payment","payment_confirmed","in_progress","client_review","completed","cancelled","active_subscription","payment_due","suspended"];
     let session = null, adminRole = "", requests = [], selected = null;
@@ -121,7 +123,7 @@
       $("detailBody").innerHTML = `<div class="notice">Loading details...</div>`;
       detailNotice("");
       try{
-        const {data,error}=await db.from("service_requests").select("*,service_request_files(*),service_quotes(*,service_quote_items(*)),service_invoices(*),service_project_updates(*),service_admin_notes(*)").eq("id",id).single();
+        const {data,error}=await db.from("service_requests").select("*,service_request_files(*),service_quotes(*,service_quote_items(*)),service_invoices(*),service_payment_quotes(*),service_payments(*),service_project_updates(*),service_admin_notes(*)").eq("id",id).single();
         if(error)throw error;
         selected = data;
         $("detailTitle").textContent = data.request_number;
@@ -143,6 +145,8 @@
       const notes = selected.service_admin_notes || [];
       const quote = (selected.service_quotes || [])[0] || null;
       const invoice = (selected.service_invoices || [])[0] || null;
+      const paymentQuotes = selected.service_payment_quotes || [];
+      const payments = selected.service_payments || [];
       $("detailBody").innerHTML = `<div class="detail-grid">
         <div class="detail-box"><b>Customer</b><br>${esc(selected.contact_name)}<br>${esc(selected.contact_phone)}<br>${esc(selected.contact_email)}</div>
         <div class="detail-box"><b>Service</b><br>${esc(selected.service_area_name)}<br>${esc(selected.service_name)}</div>
@@ -150,6 +154,8 @@
         <div class="detail-box"><b>Deadline</b><br>${esc(selected.deadline || "Not specified")}</div>
         <div class="detail-box"><b>Route</b><br>${esc(label(selected.commercial_route))}</div>
         <div class="detail-box"><b>Existing URL</b><br>${esc(selected.existing_website_url || "None")}</div>
+        ${selected.selected_package_name?`<div class="detail-box"><b>Selected Package</b><br>${esc(selected.selected_package_name)}<br>${esc(selected.quantity || 1)} ${esc(selected.billing_unit || "")}</div>`:""}
+        ${selected.service_total_usd?`<div class="detail-box"><b>USD Total</b><br>${esc(usdMoney(selected.service_total_usd))}<br>${esc(selected.payable_amount?payableMoney(selected.payable_currency,selected.payable_amount):"No payable amount")}</div>`:""}
       </div>
       <div class="detail-box" style="margin-top:10px"><b>Request</b><p>${esc(selected.description || "")}</p><pre style="white-space:pre-wrap;overflow:auto">${esc(JSON.stringify(selected.answers || {},null,2))}</pre></div>
       <h3 style="margin-top:14px">Files</h3><div class="file-list">${fileRows.join("") || `<div class="notice">No files uploaded.</div>`}</div>
@@ -170,6 +176,10 @@
         <input id="quoteDelivery" placeholder="Estimated delivery period">
         <button class="primary" type="button" data-create-service-quote>Create / Send Quote</button>
       </div>
+      <h3 style="margin-top:14px">Digital Payment Quote</h3>
+      ${paymentQuotes.map((pq)=>`<div class="detail-box"><b>${esc(pq.quote_reference)}</b><br>${esc(label(pq.status))}<br>${esc(payableMoney(pq.payable_currency,pq.payable_amount))}<br>USD base: ${esc(usdMoney(pq.base_total_usd))}${pq.exchange_rate_mwk_per_usd?`<br>Rate: 1 USD = ${esc(payableMoney("MWK",pq.exchange_rate_mwk_per_usd))}`:""}${pq.expires_at?`<br>Expires: ${esc(cleanDate(pq.expires_at))}`:""}<p>${esc(pq.payment_method_name || "")}${pq.payment_destination?` / ${esc(pq.payment_destination)}`:""}</p></div>`).join("") || `<div class="notice">No Digital payment quote yet.</div>`}
+      <h3 style="margin-top:14px">Submitted Payments</h3>
+      ${payments.map((p)=>`<div class="detail-box"><b>${esc(p.payment_method_name || "Payment")}</b><br>${esc(label(p.status))}<br>${esc(payableMoney(p.payable_currency,p.payable_amount))}${p.transaction_reference?`<br>Reference: ${esc(p.transaction_reference)}`:""}<br>Submitted: ${esc(cleanDate(p.submitted_at))}${p.status==="pending_verification"?`<div class="actions" style="margin-top:8px"><button class="primary" type="button" data-verify-service-payment="${esc(p.id)}">Mark Verified</button><button class="secondary" type="button" data-reject-service-payment="${esc(p.id)}">Reject</button></div>`:""}</div>`).join("") || `<div class="notice">No payment submitted yet.</div>`}
       <h3 style="margin-top:14px">Invoice</h3>
       ${invoice ? `<div class="detail-box"><b>${esc(invoice.invoice_number)}</b><br>${esc(label(invoice.status))}<br>${esc(money(invoice.total_mwk))}</div>` : `<div class="notice">No invoice issued yet.</div>`}
       <div class="form-grid">
@@ -236,11 +246,32 @@
         await openRequest(selected.id);
       }catch(error){detailNotice(error.message || "Invoice could not be issued.","bad")}
     }
+    async function updatePaymentStatus(id,status){
+      if(!selected)return;
+      detailNotice(status==="verified" ? "Verifying payment..." : "Rejecting payment...");
+      try{
+        const payment = (selected.service_payments || []).find((row)=>row.id===id);
+        const {error}=await db.from("service_payments").update({status,verified_by:status==="verified"?session.user.id:null,verified_at:status==="verified"?new Date().toISOString():null}).eq("id",id);
+        if(error)throw error;
+        if(payment?.payment_quote_id){
+          const {error:quoteError}=await db.from("service_payment_quotes").update({status:status==="verified"?"paid":"reconciliation_required"}).eq("id",payment.payment_quote_id);
+          if(quoteError)throw quoteError;
+        }
+        const requestPatch = status==="verified" ? {status:"payment_confirmed",payment_status:"paid"} : {payment_status:"reconciliation_required"};
+        const {error:requestError}=await db.from("service_requests").update(requestPatch).eq("id",selected.id);
+        if(requestError)throw requestError;
+        await db.from("service_project_updates").insert({request_id:selected.id,created_by:session.user.id,visible_to_customer:true,update_type:"payment",message:status==="verified"?"Your payment has been verified.":"Your payment could not be verified. LAVIDA will contact you for reconciliation."});
+        await loadRequests();
+        await openRequest(selected.id);
+      }catch(error){detailNotice(error.message || "Payment status could not be updated.","bad")}
+    }
     document.addEventListener("click",(event)=>{
       const open = event.target.closest("[data-open-request]"); if(open){openRequest(open.dataset.openRequest);return}
       if(event.target.closest("[data-save-request-status]"))saveStatus();
       if(event.target.closest("[data-create-service-quote]"))createQuote();
       if(event.target.closest("[data-create-service-invoice]"))createInvoice();
+      const verify = event.target.closest("[data-verify-service-payment]"); if(verify)updatePaymentStatus(verify.dataset.verifyServicePayment,"verified");
+      const reject = event.target.closest("[data-reject-service-payment]"); if(reject)updatePaymentStatus(reject.dataset.rejectServicePayment,"rejected");
     });
     ["searchBox","statusFilter","areaFilter"].forEach((id)=>$(id).addEventListener("input",renderRequests));
     $("reloadRequestsBtn").addEventListener("click",loadRequests);

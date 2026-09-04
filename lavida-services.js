@@ -70,6 +70,10 @@
   let serviceState = freshState();
   let myServices = [];
   let activeServiceTab = "all";
+  let serviceCheckoutConfig = {packages:[],payment_methods:[],exchange_rate:null,quote_validity_minutes:30};
+  let serviceCheckoutLoaded = false;
+  let serviceCheckoutLoading = false;
+  let serviceCheckoutError = "";
 
   function byId(id){return document.getElementById(id)}
   function escapeHtml(value){return typeof esc === "function" ? esc(value) : String(value ?? "").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
@@ -89,6 +93,52 @@
   function currentArea(){return SERVICE_AREAS[serviceState.area] || SERVICE_AREAS.digital}
   function currentService(){return currentArea().services.find(([code])=>code===serviceState.serviceCode) || null}
   function currentServiceName(){const found=currentService(); return found ? found[1] : currentArea().title}
+  function digitalCheckoutActive(){return serviceState.area === "digital"}
+  function serviceSteps(){return digitalCheckoutActive()?["Service","Details","Files","Review","Payment","Confirm"]:["Service","Details","Files","Review"]}
+  function usdMoney(value){const n=Number(value||0);return `USD ${n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`}
+  function mwkMoney(value){const n=Number(value||0);return `MWK ${Math.round(n).toLocaleString()}`}
+  function cleanUnit(value){return String(value||"per_order").replace(/^per_/,"per ").replaceAll("_"," ")}
+  function checkoutPackages(){return Array.isArray(serviceCheckoutConfig.packages)?serviceCheckoutConfig.packages:[]}
+  function checkoutPaymentMethods(){return Array.isArray(serviceCheckoutConfig.payment_methods)?serviceCheckoutConfig.payment_methods:[]}
+  function packagesForService(code=serviceState.serviceCode){return checkoutPackages().filter((row)=>row?.public_value?.service_code===code)}
+  function currentPackage(){return checkoutPackages().find((row)=>row.setting_code===serviceState.answers.package_code) || null}
+  function packageAllowsQuantity(pkg){return pkg?.public_value?.quantity_allowed === true || pkg?.public_value?.quantity_allowed === "true"}
+  function packageQuantity(pkg=currentPackage()){const raw=Number(serviceState.answers.quantity || 1);return packageAllowsQuantity(pkg)?Math.max(1,raw || 1):1}
+  function packagePriced(pkg=currentPackage()){return !!pkg && String(pkg.currency||"").toUpperCase()==="USD" && pkg.pricing_mode!=="custom_quote" && Number(pkg.amount_usd)>0}
+  function packageTotalUsd(pkg=currentPackage()){return packagePriced(pkg)?Number((Number(pkg.amount_usd)*packageQuantity(pkg)).toFixed(2)):null}
+  function packagePriceText(pkg){return packagePriced(pkg)?`${usdMoney(pkg.amount_usd)} ${cleanUnit(pkg.unit)}`:"Quote required"}
+  function selectedPaymentMethod(){return checkoutPaymentMethods().find((row)=>row.id===serviceState.answers.payment_method_id) || null}
+  function isMwkPaymentMethod(method){return !!method && (String(method.currency||"").toUpperCase()==="MWK" || method.method_type==="mobile_money" || ["airtel_money","tnm_mpamba","shared_mobile_money","mobile_money"].includes(method.method_code))}
+  function paymentMethodDisabledReason(method){if(!method)return"";if(isMwkPaymentMethod(method)&&!serviceCheckoutConfig.exchange_rate)return"MWK rate not configured";if(!isMwkPaymentMethod(method)&&String(method.currency||"").toUpperCase()!=="USD")return"Currency not supported";return""}
+  function checkoutPreview(){
+    const pkg = currentPackage();
+    const totalUsd = packageTotalUsd(pkg);
+    const method = selectedPaymentMethod();
+    if(!packagePriced(pkg))return {quoteOnly:true,pkg,totalUsd:null,method};
+    if(!method)return {quoteOnly:false,pkg,totalUsd,method:null};
+    if(isMwkPaymentMethod(method)){
+      const rate = Number(serviceCheckoutConfig.exchange_rate?.amount || 0);
+      return {quoteOnly:false,pkg,totalUsd,method,currency:"MWK",rate,payable:rate>0?Math.round(totalUsd*rate):null,missingRate:!(rate>0)};
+    }
+    return {quoteOnly:false,pkg,totalUsd,method,currency:"USD",rate:null,payable:totalUsd,missingRate:false};
+  }
+  async function loadDigitalCheckout(force=false){
+    if(serviceCheckoutLoading || (serviceCheckoutLoaded && !force))return;
+    serviceCheckoutLoading = true;
+    serviceCheckoutError = "";
+    try{
+      const {data,error}=await db.rpc("get_public_digital_service_checkout");
+      if(error)throw error;
+      serviceCheckoutConfig = data || {packages:[],payment_methods:[],exchange_rate:null,quote_validity_minutes:30};
+      serviceCheckoutLoaded = true;
+    }catch(error){
+      console.error("LAVIDA service checkout config error",error);
+      serviceCheckoutError = friendlyServiceError(error);
+    }finally{
+      serviceCheckoutLoading = false;
+      if(!byId("serviceRequestModal")?.hidden && digitalCheckoutActive())renderServiceRequest();
+    }
+  }
   function serviceKind(code){
     if(/website|web_application/.test(code))return"website";
     if(/hosting|domain|email|migration/.test(code))return"hosting";
@@ -280,6 +330,7 @@
     byId("serviceRequestModal").hidden = false;
     document.body.classList.add("business-modal-open");
     document.body.classList.add("service-request-open");
+    if(serviceState.area==="digital")loadDigitalCheckout();
     renderServiceRequest();
   }
   function closeServiceRequest(){
@@ -296,6 +347,8 @@
       if(field.type === "checkbox"){
         const values = [...body.querySelectorAll(`[data-service-field="${CSS.escape(key)}"]:checked`)].map((input)=>input.value);
         serviceState.answers[key] = values;
+      }else if(field.type === "radio"){
+        if(field.checked)serviceState.answers[key] = field.value;
       }else{
         serviceState.answers[key] = field.value;
       }
@@ -308,7 +361,8 @@
   }
   function renderServiceRequest(){
     const area = currentArea();
-    const steps = ["Service","Details","Files","Review"];
+    const steps = serviceSteps();
+    const finalStep = steps.length - 1;
     byId("serviceRequestKicker").textContent = area.shortTitle;
     byId("serviceRequestTitle").textContent = serviceState.submitted ? "Request received" : area.title;
     byId("serviceProgress").innerHTML = steps.map((label,index)=>`<button type="button" data-service-step="${index}" class="${index===serviceState.step?"active":""} ${index<serviceState.step?"done":""}">${escapeHtml(label)}</button>`).join("");
@@ -317,10 +371,13 @@
     else if(serviceState.step===0) body.innerHTML = serviceSelectionMarkup(area);
     else if(serviceState.step===1) body.innerHTML = detailsMarkup();
     else if(serviceState.step===2) body.innerHTML = filesMarkup();
-    else body.innerHTML = reviewMarkup();
+    else if(serviceState.step===3) body.innerHTML = reviewMarkup();
+    else if(serviceState.step===4) body.innerHTML = paymentMethodMarkup();
+    else body.innerHTML = confirmPaymentMarkup();
     body.querySelectorAll("[data-service-field]").forEach((field)=>{
       const key = field.dataset.serviceField;
-      if(field.type !== "checkbox" && Object.prototype.hasOwnProperty.call(serviceState.answers,key))field.value = serviceState.answers[key] || "";
+      if(field.type === "radio")field.checked = serviceState.answers[key] === field.value;
+      else if(field.type !== "checkbox" && Object.prototype.hasOwnProperty.call(serviceState.answers,key))field.value = serviceState.answers[key] || "";
     });
     if(serviceState.notice) body.insertAdjacentHTML("beforeend",`<div class="service-notice ${serviceState.noticeType==="bad"?"bad":""}">${escapeHtml(serviceState.notice)}</div>`);
     const actions = document.querySelector(".service-request-actions");
@@ -328,13 +385,14 @@
     actions.classList.toggle("hidden",!serviceState.submitted && serviceState.step===0);
     back.textContent = serviceState.submitted ? "Done" : serviceState.step===0 ? "Close" : "Back";
     next.classList.toggle("hidden",Boolean(serviceState.submitted));
-    next.textContent = serviceState.step===3 ? (serviceState.submitting ? "Submitting..." : "Submit Request") : "Continue";
+    next.textContent = serviceState.step===finalStep ? (serviceState.submitting ? "Submitting..." : digitalCheckoutActive() ? (checkoutPreview().quoteOnly ? "Submit Quote Request" : "Confirm Payment") : "Submit Request") : "Continue";
     next.disabled = serviceState.submitting;
   }
   function serviceSelectionMarkup(area){
     return `<h3 class="service-step-title">What kind of ${area.area==="digital"?"support":"document help"} do you need?</h3>
       <p class="service-step-copy">${escapeHtml(area.longDescription)}</p>
-      <div class="service-choice-list">${area.services.map(([code,name,desc])=>`<button class="service-choice ${serviceState.serviceCode===code?"active":""}" type="button" data-service-option="${escapeHtml(code)}"><span><b>${escapeHtml(name)}</b><small>${escapeHtml(desc)}</small></span><span aria-hidden="true">›</span></button>`).join("")}</div>`;
+      ${area.area==="digital"&&serviceCheckoutError?`<div class="service-notice bad">${escapeHtml(serviceCheckoutError)}</div>`:""}
+      <div class="service-choice-list">${area.services.map(([code,name,desc])=>{const options=area.area==="digital"?packagesForService(code):[];const priced=options.filter(packagePriced).map((pkg)=>Number(pkg.amount_usd));const label=area.area==="digital"&&!serviceCheckoutLoaded?"Loading prices...":priced.length?`From ${usdMoney(Math.min(...priced))}`:area.area==="digital"?"Quote required":desc;return `<button class="service-choice ${serviceState.serviceCode===code?"active":""}" type="button" data-service-option="${escapeHtml(code)}"><span><b>${escapeHtml(name)}</b><small>${escapeHtml(desc)}</small></span><span class="service-choice-price">${escapeHtml(label)}</span></button>`}).join("")}</div>`;
   }
   function dynamicDetailsMarkup(kind){
     if(kind==="website")return `<label class="service-field"><span>What do you need?</span><select data-service-field="website_need"><option value="">Choose one</option><option>New website</option><option>Existing website redesign</option><option>Website maintenance</option><option>E-commerce website</option><option>Web application</option><option>Customer/client portal</option><option>Hosting only</option><option>Domain only</option><option>Business email</option><option>Website migration</option><option>Other</option></select></label>
@@ -370,10 +428,26 @@
     const selected = Array.isArray(serviceState.answers[name]) ? serviceState.answers[name] : [];
     return `<div class="service-field full"><span>${name==="existing_assets"?"What do you already have?":"Select all that apply"}</span><div class="service-checks">${options.map((option)=>`<label><input data-service-field="${escapeHtml(name)}" type="checkbox" value="${escapeHtml(option)}" ${selected.includes(option)?"checked":""}> ${escapeHtml(option)}</label>`).join("")}</div></div>`;
   }
+  function digitalPackageMarkup(){
+    if(!digitalCheckoutActive())return "";
+    if(serviceCheckoutLoading && !serviceCheckoutLoaded)return `<div class="service-notice">Loading Digital & Systems Support pricing...</div>`;
+    if(serviceCheckoutError && !serviceCheckoutLoaded)return `<div class="service-notice bad">${escapeHtml(serviceCheckoutError)}</div>`;
+    const packages = packagesForService();
+    if(!packages.length)return `<div class="service-notice">No package is configured for this service yet. LAVIDA will need to review this as a custom quote.</div>`;
+    if(!serviceState.answers.package_code || !packages.some((pkg)=>pkg.setting_code===serviceState.answers.package_code)){
+      serviceState.answers.package_code = packages[0].setting_code;
+    }
+    const pkg = currentPackage();
+    const quantity = packageQuantity(pkg);
+    return `<div class="service-field full"><span>Service package</span><div class="service-package-list">${packages.map((item)=>`<label class="service-package-option ${serviceState.answers.package_code===item.setting_code?"active":""}"><input data-service-field="package_code" type="radio" name="digital_service_package" value="${escapeHtml(item.setting_code)}" ${serviceState.answers.package_code===item.setting_code?"checked":""}><span><b>${escapeHtml(item.display_name)}</b><small>${escapeHtml(item.description || item.public_value?.included_scope || "")}</small>${item.public_value?.exclusions?`<em>${escapeHtml(item.public_value.exclusions)}</em>`:""}</span><strong>${escapeHtml(packagePriceText(item))}</strong></label>`).join("")}</div></div>
+      ${packageAllowsQuantity(pkg)?`<label class="service-field"><span>${escapeHtml(pkg.public_value?.quantity_label || "Quantity")}</span><input data-service-field="quantity" type="number" min="1" step="1" value="${escapeHtml(quantity)}"></label>`:`<input data-service-field="quantity" type="hidden" value="1">`}
+      <div class="service-review-row"><span>Current checkout status</span><b>${packagePriced(pkg)?`${usdMoney(packageTotalUsd(pkg))} total in USD`:"USD checkout not configured for this package yet. Submit it as a quote request."}</b></div>`;
+  }
   function detailsMarkup(){
     const kind = serviceKind(serviceState.serviceCode);
     return `<h3 class="service-step-title">${escapeHtml(currentServiceName())}</h3><p class="service-step-copy">Add the key details. LAVIDA will review the scope before quoting custom work.</p>
       <div class="service-field-grid">
+        ${digitalPackageMarkup()}
         <label class="service-field"><span>Request title</span><input data-service-field="title" value="${escapeHtml(getValue("title"))}" placeholder="Short title"></label>
         <label class="service-field"><span>Deadline</span><input data-service-field="deadline" type="date" value="${escapeHtml(getValue("deadline"))}"></label>
         <label class="service-field full"><span>Main request</span><textarea data-service-field="description" placeholder="Describe what you need.">${escapeHtml(getValue("description"))}</textarea></label>
@@ -395,20 +469,66 @@
   }
   function reviewMarkup(){
     const answers = serviceState.answers;
+    const pkg = currentPackage();
+    const preview = checkoutPreview();
     const rows = [
       ["Service area",currentArea().title],
       ["Selected service",currentServiceName()],
+      ...(digitalCheckoutActive() ? [
+        ["Package",pkg?.display_name || "Not selected"],
+        ["Package price",pkg ? packagePriceText(pkg) : "Quote required"],
+        ["Quantity",String(packageQuantity(pkg))],
+        ["USD total",preview.totalUsd ? usdMoney(preview.totalUsd) : "Quote required"]
+      ] : []),
       ["Request title",answers.title || currentServiceName()],
       ["Main request",answers.description || answers.goal || answers.source_materials || "Not provided"],
       ["Deadline",answers.deadline || "Not specified"],
       ["Files",`${serviceState.files.length} file${serviceState.files.length===1?"":"s"}`],
       ["Contact",`${answers.contact_name || ""} ${answers.contact_phone ? " / " + answers.contact_phone : ""} ${answers.contact_email ? " / " + answers.contact_email : ""}`.trim()]
     ];
-    return `<h3 class="service-step-title">Review request</h3><p class="service-step-copy">Check the summary before sending it to LAVIDA for professional review.</p><div class="service-review">${rows.map(([label,value])=>`<div class="service-review-row"><span>${escapeHtml(label)}</span><b>${escapeHtml(value)}</b></div>`).join("")}</div><div class="service-notice">After submission, LAVIDA will review your requirements and supporting files. If scope confirmation is needed, your quotation or invoice will appear in My Services.</div>`;
+    return `<h3 class="service-step-title">Review request</h3><p class="service-step-copy">Check the summary before sending it to LAVIDA for professional review.</p><div class="service-review">${rows.map(([label,value])=>`<div class="service-review-row"><span>${escapeHtml(label)}</span><b>${escapeHtml(value)}</b></div>`).join("")}</div><div class="service-notice">${digitalCheckoutActive()&&packagePriced(pkg)?"Next, choose a payment method. MWK payment amounts are calculated by LAVIDA from the configured USD-to-MWK rate.":"After submission, LAVIDA will review your requirements and supporting files. If scope confirmation is needed, your quotation or invoice will appear in My Services."}</div>`;
+  }
+  function paymentMethodMarkup(){
+    const pkg = currentPackage();
+    if(!packagePriced(pkg)){
+      return `<h3 class="service-step-title">Payment method</h3><p class="service-step-copy">This package does not have an approved USD price yet.</p><div class="service-notice">Submit the request and LAVIDA will review the scope before issuing a quote. No payment is collected now.</div>`;
+    }
+    const methods = checkoutPaymentMethods();
+    return `<h3 class="service-step-title">Payment method</h3><p class="service-step-copy">Choose how you want to pay for the USD-priced service.</p>
+      <div class="service-review-row"><span>USD service total</span><b>${escapeHtml(usdMoney(packageTotalUsd(pkg)))}</b></div>
+      <div class="service-payment-list">${methods.map((method)=>{const reason=paymentMethodDisabledReason(method);return `<label class="service-payment-option ${serviceState.answers.payment_method_id===method.id?"active":""} ${reason?"disabled":""}"><input data-service-field="payment_method_id" type="radio" name="digital_payment_method" value="${escapeHtml(method.id)}" ${serviceState.answers.payment_method_id===method.id?"checked":""} ${reason?"disabled":""}><span><b>${escapeHtml(method.display_name)}</b><small>${escapeHtml(method.recipient_name || method.provider || method.method_type || "")}${reason?` · ${escapeHtml(reason)}`:""}</small></span><strong>${isMwkPaymentMethod(method)?"MWK":"USD"}</strong></label>`}).join("") || `<div class="service-notice bad">No enabled Digital & Systems Support payment methods are configured. Card and 2Checkout payments remain unavailable until configured.</div>`}</div>
+      ${serviceCheckoutConfig.exchange_rate?`<div class="service-notice">Current MWK conversion setting: 1 USD = ${escapeHtml(mwkMoney(serviceCheckoutConfig.exchange_rate.amount))}. The server locks the final payable amount when you confirm.</div>`:`<div class="service-notice">MWK payment methods are disabled until an admin configures the USD-to-MWK rate.</div>`}`;
+  }
+  function confirmPaymentMarkup(){
+    const preview = checkoutPreview();
+    if(preview.quoteOnly){
+      return `<h3 class="service-step-title">Confirm request</h3><p class="service-step-copy">This package is quote-only until LAVIDA adds an approved USD price.</p><div class="service-review"><div class="service-review-row"><span>Package</span><b>${escapeHtml(preview.pkg?.display_name || currentServiceName())}</b></div><div class="service-review-row"><span>Payment</span><b>No payment required now</b></div></div><div class="service-notice">LAVIDA will review the details and send a quote in My Services.</div>`;
+    }
+    if(!preview.method){
+      return `<h3 class="service-step-title">Confirm payment</h3><div class="service-notice bad">Choose a payment method before confirming.</div>`;
+    }
+    if(preview.missingRate){
+      return `<h3 class="service-step-title">Confirm payment</h3><div class="service-notice bad">This MWK payment method is unavailable because the USD-to-MWK rate has not been configured.</div>`;
+    }
+    const destination = preview.method.payment_number || preview.method.bank_name || "Configured destination";
+    return `<h3 class="service-step-title">Confirm payment</h3><p class="service-step-copy">Review the locked payment details that LAVIDA will snapshot with your request.</p>
+      <div class="service-review">
+        <div class="service-review-row"><span>USD service total</span><b>${escapeHtml(usdMoney(preview.totalUsd))}</b></div>
+        <div class="service-review-row"><span>Payment method</span><b>${escapeHtml(preview.method.display_name)}</b></div>
+        ${preview.currency==="MWK"?`<div class="service-review-row"><span>Exchange rate</span><b>1 USD = ${escapeHtml(mwkMoney(preview.rate))}</b></div>`:""}
+        <div class="service-review-row"><span>Exact amount payable</span><b>${escapeHtml(preview.currency==="MWK"?mwkMoney(preview.payable):usdMoney(preview.payable))}</b></div>
+        <div class="service-review-row"><span>Pay to</span><b>${escapeHtml(preview.method.recipient_name || "")}${preview.method.recipient_name?" / ":""}${escapeHtml(destination)}</b></div>
+        <div class="service-review-row"><span>Quote expiry</span><b>${escapeHtml(serviceCheckoutConfig.quote_validity_minutes || 30)} minutes after confirmation</b></div>
+      </div>
+      ${preview.method.customer_instructions?`<div class="service-notice">${escapeHtml(preview.method.customer_instructions)}</div>`:""}
+      <label class="service-field"><span>Payment reference, if already paid</span><input data-service-field="payment_reference" value="${escapeHtml(getValue("payment_reference"))}" placeholder="Transaction ID or reference"></label>
+      <div class="service-notice">You can confirm now to create the payment quote, then submit the reference after paying if needed.</div>`;
   }
   function successMarkup(){
     const row = serviceState.submitted;
-    return `<div class="service-success"><span class="service-success-icon">${icon("check")}</span><h3 class="service-step-title">Request received successfully</h3><p class="service-step-copy">Your request has been sent to the LAVIDA team for review.</p><div class="service-review"><div class="service-review-row"><span>Request ID</span><b>${escapeHtml(row.request_number || row.requestNumber)}</b></div><div class="service-review-row"><span>Status</span><b>${escapeHtml(statusLabel(row.status || "submitted"))}</b></div></div><p class="service-step-copy">Once the scope is confirmed, your quotation or invoice will appear in your account and you will receive a notification.</p><button class="service-small-button" type="button" data-view-my-services>View My Request</button></div>`;
+    const paymentQuote = row._payment_quote;
+    const paymentLine = paymentQuote ? `<div class="service-review-row"><span>Amount payable</span><b>${escapeHtml(paymentQuote.payable_currency==="MWK"?mwkMoney(paymentQuote.payable_amount):usdMoney(paymentQuote.payable_amount))}</b></div><div class="service-review-row"><span>Payment quote</span><b>${escapeHtml(paymentQuote.quote_reference || "Created")} · expires ${escapeHtml(cleanDate?.(paymentQuote.expires_at) || "")}</b></div>` : `<div class="service-review-row"><span>Payment</span><b>No payment required now</b></div>`;
+    return `<div class="service-success"><span class="service-success-icon">${icon("check")}</span><h3 class="service-step-title">Request received successfully</h3><p class="service-step-copy">Your request has been sent to the LAVIDA team for review.</p><div class="service-review"><div class="service-review-row"><span>Request ID</span><b>${escapeHtml(row.request_number || row.requestNumber)}</b></div><div class="service-review-row"><span>Status</span><b>${escapeHtml(statusLabel(row.status || "submitted"))}</b></div>${paymentLine}</div><p class="service-step-copy">${paymentQuote?"Your payment details were snapshotted with the request. Manual payments remain pending until LAVIDA verifies them.":"Once the scope is confirmed, your quotation or invoice will appear in your account and you will receive a notification."}</p><button class="service-small-button" type="button" data-view-my-services>View My Request</button></div>`;
   }
   function validateStep(){
     collectCurrentStep();
@@ -416,15 +536,27 @@
     if(serviceState.step===0 && !serviceState.serviceCode){setNotice("Choose the service you need.","bad");return false}
     if(serviceState.step===1){
       const a = serviceState.answers;
+      if(digitalCheckoutActive() && !serviceCheckoutLoaded){setNotice("Digital & Systems Support pricing is still loading. Try again in a moment.","bad");return false}
+      if(digitalCheckoutActive() && serviceCheckoutLoaded && packagesForService().length && !a.package_code){setNotice("Choose a service package.","bad");return false}
+      const pkg = currentPackage();
+      if(digitalCheckoutActive() && packageAllowsQuantity(pkg) && (!Number(a.quantity) || Number(a.quantity)<1)){setNotice("Enter a valid quantity.","bad");return false}
       if(!a.description && !a.goal && !a.source_materials){setNotice("Tell us what you need help with.","bad");return false}
       if(!a.contact_name || !a.contact_phone || !a.contact_email){setNotice("Add your name, phone and email so LAVIDA can follow up.","bad");return false}
       if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(a.contact_email)){setNotice("Please enter a valid email address.","bad");return false}
+    }
+    if(digitalCheckoutActive() && serviceState.step===4 && packagePriced() && !selectedPaymentMethod()){setNotice("Choose a payment method.","bad");return false}
+    if(digitalCheckoutActive() && serviceState.step===4 && selectedPaymentMethod() && paymentMethodDisabledReason(selectedPaymentMethod())){setNotice(paymentMethodDisabledReason(selectedPaymentMethod()),"bad");return false}
+    if(digitalCheckoutActive() && serviceState.step===5 && !checkoutPreview().quoteOnly){
+      const preview = checkoutPreview();
+      if(!preview.method){setNotice("Choose a payment method.","bad");return false}
+      if(preview.missingRate){setNotice("MWK payment is unavailable until the exchange rate is configured.","bad");return false}
     }
     return true;
   }
   async function nextStep(){
     if(serviceState.submitted)return;
-    if(serviceState.step < 3){
+    const finalStep = serviceSteps().length - 1;
+    if(serviceState.step < finalStep){
       if(!validateStep()){renderServiceRequest();return}
       serviceState.step += 1;
       renderServiceRequest();
@@ -477,6 +609,49 @@
       throw error;
     }
   }
+  async function attachServiceFiles(requestId,session){
+    const fileRows = [];
+    for(const row of serviceState.files){
+      const path = await uploadServiceFile(requestId,row);
+      fileRows.push({request_id:requestId,storage_bucket:"service-request-files",storage_path:path,file_name:row.file.name,file_type:row.file.type || "",file_size_bytes:row.file.size,file_description:row.description || "",uploaded_by:session.user.id});
+    }
+    if(fileRows.length){
+      const {error:fileError}=await db.from("service_request_files").insert(fileRows);
+      if(fileError)throw fileError;
+    }
+  }
+  async function submitDigitalCheckout(session){
+    if(!serviceState.answers.checkout_id)serviceState.answers.checkout_id = crypto.randomUUID();
+    const service = currentService();
+    const payload = {
+      idempotency_key: serviceState.answers.checkout_id,
+      package_code: serviceState.answers.package_code,
+      quantity: packageQuantity(),
+      payment_method_id: serviceState.answers.payment_method_id || null,
+      payment_reference: serviceState.answers.payment_reference || null,
+      title: serviceState.answers.title || (service ? service[1] : currentArea().title),
+      description: serviceState.answers.description || serviceState.answers.goal || serviceState.answers.source_materials || "",
+      deadline: serviceState.answers.deadline || null,
+      contact_name: serviceState.answers.contact_name,
+      contact_phone: serviceState.answers.contact_phone,
+      contact_email: serviceState.answers.contact_email,
+      existing_website_url: serviceState.answers.existing_url || null,
+      answers: serviceState.answers,
+      uploaded_file_count: serviceState.files.length
+    };
+    const {data,error}=await db.rpc("submit_digital_service_checkout",{p_order:payload});
+    if(error)throw error;
+    const result = data || {};
+    const row = result.request || {};
+    await attachServiceFiles(row.id,session);
+    localStorage.setItem("lavida_connect_customer_phone", serviceState.answers.contact_phone);
+    localStorage.setItem("lavida_connect_customer_email", serviceState.answers.contact_email);
+    serviceState.submitted = {...row,_payment_quote:result.payment_quote || null,_payment:result.payment || null};
+    serviceState.submitting = false;
+    clearDraft();
+    loadMyServices();
+    renderServiceRequest();
+  }
   async function submitRequest(){
     serviceState.submitting = true;
     renderServiceRequest();
@@ -487,6 +662,10 @@
         saveDraft();
         sessionStorage.setItem("lavida_pending_service_request","1");
         requestSignIn?.("marketplace.html#account");
+        return;
+      }
+      if(digitalCheckoutActive()){
+        await submitDigitalCheckout(session);
         return;
       }
       const area = currentArea();
@@ -513,15 +692,7 @@
       };
       const {data,error} = await db.from("service_requests").insert(payload).select("*").single();
       if(error)throw error;
-      const fileRows = [];
-      for(const row of serviceState.files){
-        const path = await uploadServiceFile(data.id,row);
-        fileRows.push({request_id:data.id,storage_bucket:"service-request-files",storage_path:path,file_name:row.file.name,file_type:row.file.type || "",file_size_bytes:row.file.size,file_description:row.description || "",uploaded_by:session.user.id});
-      }
-      if(fileRows.length){
-        const {error:fileError}=await db.from("service_request_files").insert(fileRows);
-        if(fileError)throw fileError;
-      }
+      await attachServiceFiles(data.id,session);
       await db.from("service_project_updates").insert({request_id:data.id,created_by:session.user.id,visible_to_customer:true,update_type:"status",message:"Request submitted for LAVIDA review."});
       localStorage.setItem("lavida_connect_customer_phone", serviceState.answers.contact_phone);
       localStorage.setItem("lavida_connect_customer_email", serviceState.answers.contact_email);
@@ -586,7 +757,7 @@
     panel.classList.remove("hidden");
     panel.innerHTML = `<div class="service-notice">Loading service details...</div>`;
     try{
-      const {data,error}=await db.from("service_requests").select("*,service_request_files(*),service_quotes(*,service_quote_items(*)),service_invoices(*),service_project_updates(*)").eq("id",id).single();
+      const {data,error}=await db.from("service_requests").select("*,service_request_files(*),service_quotes(*,service_quote_items(*)),service_invoices(*),service_payment_quotes(*),service_payments(*),service_project_updates(*)").eq("id",id).single();
       if(error)throw error;
       panel.innerHTML = serviceDetailMarkup(data);
       panel.scrollIntoView({behavior:"smooth",block:"start"});
@@ -598,16 +769,23 @@
     const files = row.service_request_files || [];
     const quotes = row.service_quotes || [];
     const invoices = row.service_invoices || [];
+    const paymentQuotes = row.service_payment_quotes || [];
+    const payments = row.service_payments || [];
     const updates = row.service_project_updates || [];
     return `<h4>${escapeHtml(row.service_name || row.title)}</h4><div class="service-review">
       <div class="service-review-row"><span>Request ID</span><b>${escapeHtml(row.request_number)}</b></div>
       <div class="service-review-row"><span>Status</span><b>${escapeHtml(statusLabel(row.status))}</b></div>
+      ${row.selected_package_name?`<div class="service-review-row"><span>Package</span><b>${escapeHtml(row.selected_package_name)}</b></div>`:""}
+      ${row.service_total_usd?`<div class="service-review-row"><span>USD service total</span><b>${escapeHtml(usdMoney(row.service_total_usd))}</b></div>`:""}
+      ${row.payable_amount?`<div class="service-review-row"><span>Payable amount</span><b>${escapeHtml(row.payable_currency==="MWK"?mwkMoney(row.payable_amount):usdMoney(row.payable_amount))}</b></div>`:""}
       <div class="service-review-row"><span>Requirements</span><b>${escapeHtml(row.description || "Not provided")}</b></div>
       <div class="service-review-row"><span>Deadline</span><b>${escapeHtml(row.deadline || "Not specified")}</b></div>
     </div>
     <h4>Uploaded Files</h4><div class="service-file-list">${files.map((file)=>`<div class="service-file-row"><b>${escapeHtml(file.file_name)}</b><small>${escapeHtml(file.file_description || file.file_type || "")}</small></div>`).join("") || `<div class="service-notice">No files uploaded yet.</div>`}</div>
     <label class="service-file-input"><b>Upload More Files</b><input type="file" id="serviceMoreFiles" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.zip"></label><button class="service-small-button" type="button" data-upload-more-service-files="${escapeHtml(row.id)}">Add Files</button>
     <h4>Quote</h4>${quotes.map((quote)=>`<div class="service-review-row"><span>${escapeHtml(statusLabel(quote.status))}</span><b>${escapeHtml(quote.scope || "Quote ready")} · ${typeof money==="function"?money(quote.total_mwk):quote.total_mwk}</b></div>`).join("") || `<div class="service-notice">No quote yet.</div>`}
+    <h4>Payment Quote</h4>${paymentQuotes.map((quote)=>`<div class="service-review-row"><span>${escapeHtml(statusLabel(quote.status))}</span><b>${escapeHtml(quote.quote_reference)} · ${escapeHtml(quote.payable_currency==="MWK"?mwkMoney(quote.payable_amount):usdMoney(quote.payable_amount))}${quote.exchange_rate_mwk_per_usd?` · 1 USD = ${escapeHtml(mwkMoney(quote.exchange_rate_mwk_per_usd))}`:""}${quote.expires_at?` · expires ${escapeHtml(cleanDate?.(quote.expires_at) || "")}`:""}</b></div>`).join("") || `<div class="service-notice">No payment quote yet.</div>`}
+    <h4>Payments</h4>${payments.map((payment)=>`<div class="service-review-row"><span>${escapeHtml(statusLabel(payment.status))}</span><b>${escapeHtml(payment.payment_method_name || "Payment")} · ${escapeHtml(payment.payable_currency==="MWK"?mwkMoney(payment.payable_amount):usdMoney(payment.payable_amount))}${payment.transaction_reference?` · Ref ${escapeHtml(payment.transaction_reference)}`:""}</b></div>`).join("") || `<div class="service-notice">No submitted payment yet.</div>`}
     <h4>Invoice</h4>${invoices.map((invoice)=>`<div class="service-review-row"><span>${escapeHtml(statusLabel(invoice.status))}</span><b>${escapeHtml(invoice.invoice_number || "Invoice")} · ${typeof money==="function"?money(invoice.total_mwk):invoice.total_mwk}</b></div>`).join("") || `<div class="service-notice">No invoice yet.</div>`}
     <h4>Messages / Updates</h4><div class="timeline">${updates.filter((row)=>row.visible_to_customer!==false).map((update)=>`<div class="timeline-step"><span class="timeline-dot"></span><div><b>${escapeHtml(update.message)}</b><br><small>${escapeHtml(cleanDate?.(update.created_at) || "")}</small></div></div>`).join("") || `<div class="service-notice">No updates yet.</div>`}</div>`;
   }
@@ -641,7 +819,7 @@
       const start = event.target.closest("[data-service-start]");
       if(start){event.preventDefault();event.stopPropagation();serviceState=freshState();openServiceRequest(start.dataset.serviceStart,{restore:false});return}
       const option = event.target.closest("[data-service-option]");
-      if(option){serviceState.serviceCode=option.dataset.serviceOption;serviceState.step=1;setNotice("","");saveDraft();renderServiceRequest();return}
+      if(option){serviceState.serviceCode=option.dataset.serviceOption;delete serviceState.answers.package_code;delete serviceState.answers.payment_method_id;delete serviceState.answers.payment_reference;serviceState.answers.quantity=1;serviceState.step=1;setNotice("","");saveDraft();renderServiceRequest();return}
       const step = event.target.closest("[data-service-step]");
       if(step){collectCurrentStep();const target=Number(step.dataset.serviceStep);if(target<=serviceState.step || validateStep()){serviceState.step=target;renderServiceRequest();}return}
       if(event.target.closest("#closeServiceRequestButton")){backFromHeader();return}
