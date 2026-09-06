@@ -521,7 +521,7 @@
         <div class="service-review-row"><span>Quote expiry</span><b>${escapeHtml(serviceCheckoutConfig.quote_validity_minutes || 30)} minutes after confirmation</b></div>
       </div>
       ${preview.method.customer_instructions?`<div class="service-notice">${escapeHtml(preview.method.customer_instructions)}</div>`:""}
-      <label class="service-field"><span>Payment reference, if already paid</span><input data-service-field="payment_reference" value="${escapeHtml(getValue("payment_reference"))}" placeholder="Transaction ID or reference"></label>
+      <label class="service-field"><span>Transaction reference (optional)</span><input data-service-field="payment_reference" value="${escapeHtml(getValue("payment_reference"))}" placeholder="Enter reference if available"></label>
       <div class="service-notice">You can confirm now to create the payment quote, then submit the reference after paying if needed.</div>`;
   }
   function successMarkup(){
@@ -628,7 +628,7 @@
       package_code: serviceState.answers.package_code,
       quantity: packageQuantity(),
       payment_method_id: serviceState.answers.payment_method_id || null,
-      payment_reference: serviceState.answers.payment_reference || null,
+      payment_reference: (serviceState.answers.payment_reference || "").trim() || null,
       title: serviceState.answers.title || (service ? service[1] : currentArea().title),
       description: serviceState.answers.description || serviceState.answers.goal || serviceState.answers.source_materials || "",
       deadline: serviceState.answers.deadline || null,

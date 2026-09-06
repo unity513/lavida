@@ -543,7 +543,7 @@
           <h2>Payment</h2>
           <label class="field-label" for="printPaymentMethod">Payment method<select id="printPaymentMethod"><option value="airtel_money">Airtel Money</option><option value="tnm_mpamba">TNM Mpamba</option><option value="cash_on_pickup">Cash on pickup</option><option value="bank_transfer">Bank transfer</option></select></label>
           <div id="printPaymentInstructionCard" class="print-payment-card"></div>
-          <label class="field-label" for="printPaymentReference">Transaction reference<input id="printPaymentReference" placeholder="Enter reference (e.g. 123456789)"></label>
+          <label class="field-label" for="printPaymentReference">Transaction reference (optional)<input id="printPaymentReference" placeholder="Enter reference if available"></label>
           <label class="field-label file-picker-label" for="printPaymentProof"><span>Upload payment proof</span><span class="branded-file-button">Upload payment proof</span><input id="printPaymentProof" type="file" accept="image/*,.pdf" capture="environment"></label>
           <div id="printPaymentProofPreview" class="print-proof-preview hidden"></div>
           <div class="notice print-payment-note">Your payment will remain <b>Pending Verification</b> until it is confirmed by LAVIDA. Printing begins only after confirmation.</div>
@@ -631,7 +631,7 @@
         <select id="paymentMethod"><option value="cash_on_pickup">Cash</option><option value="airtel_money">Airtel Money</option><option value="tnm_mpamba">TNM Mpamba</option><option value="bank_transfer">Bank transfer</option><option value="cash_on_delivery">Pay on delivery</option></select>
         <input id="customerName" placeholder="Full name"><input id="customerPhone" placeholder="Phone number"><input id="customerEmail" placeholder="Email optional">
         <textarea id="address" placeholder="Delivery address, if delivery"></textarea><textarea id="deliveryNotes" placeholder="Order notes optional"></textarea>
-        <input id="paymentReference" placeholder="Payment reference optional"><label class="field-label" for="paymentProof">Upload proof of payment<input id="paymentProof" type="file" accept="image/*,.pdf"></label>
+        <input id="paymentReference" aria-label="Transaction reference (optional)" placeholder="Enter reference if available"><label class="field-label" for="paymentProof">Upload proof of payment<input id="paymentProof" type="file" accept="image/*,.pdf"></label>
         <div id="checkoutNotice" class="notice hidden"></div><button id="checkoutButton" type="button">Checkout</button>
       </div>
     </div>
@@ -668,7 +668,7 @@
         </div>
         <h3>Payment</h3>
         <select id="cryptoPaymentMethod"><option value="airtel_money">Airtel Money</option><option value="tnm_mpamba">TNM Mpamba</option><option value="bank_transfer">Bank transfer</option><option value="cash_on_pickup">Cash</option></select>
-        <input id="cryptoPaymentReference" placeholder="Payment reference (optional)">
+        <input id="cryptoPaymentReference" aria-label="Transaction reference (optional)" placeholder="Enter reference if available">
         <label class="field-label" for="cryptoPaymentProof">Upload proof of payment<input id="cryptoPaymentProof" type="file" accept="image/*,.pdf"></label>
         <div class="crypto-step-actions"><button id="confirmCryptoOrderButton" type="button">Submit Order</button></div>
       </section>
@@ -1128,7 +1128,7 @@
       const numberLabel = config.methodType === "bank_transfer" ? "Account number" : `${config.label} number`;
       const destinationText = displayPrintPaymentDestination(config.number, method);
       const numberBlock = config.number ? `<div class="print-payment-detail"><div><span>${esc(numberLabel)}</span><b>${esc(destinationText)}</b></div><button class="print-copy-button" type="button" data-print-copy="${esc(destinationText)}">Copy number</button></div>` : "";
-      const proofHint = electronic ? "Send the exact amount shown above, then enter the transaction reference and upload your payment confirmation." : config.instructions;
+      const proofHint = electronic ? "Send the exact amount shown above, then upload your payment confirmation. Reference is optional; add it if available." : config.instructions;
       card.innerHTML = `<div class="print-payment-head"><span class="print-payment-brand"><span class="print-payment-logo">${esc(String(logo).slice(0,6))}</span>${esc(config.label || paymentMethodLabel(method))}</span></div>
         <div class="print-payable-total"><span>Total payable</span><strong>${esc(amountText)}</strong></div>
         <div class="print-payment-detail"><div><span>Pay to</span><b>${esc(config.recipient || "LAVIDA")}</b></div></div>
@@ -1989,7 +1989,6 @@ ${diagnosticJson(diagnostic?.exception??null)}
       if(printPaymentMethods[normalizePaymentMethodCode(paymentMethod)] && isPrintElectronic(paymentMethod) && !hasPrintPaymentNumber(paymentMethod))return showNotice("This payment method is active but missing receiving details. Please choose another method or contact an administrator.","bad");
       if(fulfilment==="delivery"&&!$("address").value.trim())return showNotice("Please enter a delivery address.","bad");
       const proofFile=$("paymentProof").files[0];
-      if(isAirtelMoney(paymentMethod)&&!paymentReference&&!proofFile)return showNotice("Airtel Money requires a payment reference or uploaded payment proof.","bad");
       $("checkoutButton").disabled=true;
       try{
         await validateCartItems();
@@ -2002,7 +2001,7 @@ ${diagnosticJson(diagnostic?.exception??null)}
           if(!paymentReference)throw uploadError;
           showNotice("Payment proof could not be uploaded, so the order will use your payment reference only.","warn");
         }
-        payload={customer_name:name,phone,email,fulfilment_method:fulfilment,delivery_address:$("address").value.trim(),delivery_notes:$("deliveryNotes").value.trim(),payment_method:paymentMethod,payment_reference:paymentReference,payment_proof_url:proofUrl,delivery_fee:deliveryFee(),source_device_id:localStorage.getItem("lavida_marketplace_device")||crypto.randomUUID(),idempotency_key:crypto.randomUUID(),items:cart.map(i=>({product_id:i.product_id,quantity:Number(i.quantity||0)}))};
+        payload={customer_name:name,phone,email,fulfilment_method:fulfilment,delivery_address:$("address").value.trim(),delivery_notes:$("deliveryNotes").value.trim(),payment_method:paymentMethod,payment_reference:paymentReference || null,payment_proof_url:proofUrl,delivery_fee:deliveryFee(),source_device_id:localStorage.getItem("lavida_marketplace_device")||crypto.randomUUID(),idempotency_key:crypto.randomUUID(),items:cart.map(i=>({product_id:i.product_id,quantity:Number(i.quantity||0)}))};
         localStorage.setItem("lavida_marketplace_device",payload.source_device_id);
         const{data,error}=await db.rpc("submit_marketplace_order",{p_order:payload});
         if(error)throw error;
@@ -2050,7 +2049,6 @@ ${diagnosticJson(diagnostic?.exception??null)}
       if(!paymentMethod)return failCryptoDiagnostic(diagnostic,"Please choose a payment method.");
       if(printPaymentMethodOrder.length && !printPaymentMethods[normalizePaymentMethodCode(paymentMethod)])return failCryptoDiagnostic(diagnostic,"This payment method is not currently available. Please choose another method.");
       if(printPaymentMethods[normalizePaymentMethodCode(paymentMethod)] && isPrintElectronic(paymentMethod) && !hasPrintPaymentNumber(paymentMethod))return failCryptoDiagnostic(diagnostic,"This payment method is active but missing receiving details. Please choose another method or contact an administrator.");
-      if(isAirtelMoney(paymentMethod)&&!paymentReference&&!proofFile)return failCryptoDiagnostic(diagnostic,"Airtel Money requires a payment reference or uploaded payment proof.");
       const button=$("confirmCryptoOrderButton"), originalButtonText=button.textContent;
       button.disabled=true;
       button.textContent="Preparing your order...";
@@ -2074,7 +2072,7 @@ ${diagnosticJson(diagnostic?.exception??null)}
           }
         }
         setCryptoDiagnosticStage(diagnostic,"09_BUILD_ORDER_PAYLOAD");
-        payload={product_id:selectedCryptoProduct.id,receive_amount:amount,network_id:networkId,wallet_address:wallet,customer_name:name,phone,email,payment_method:paymentMethod,payment_reference:paymentReference,payment_proof_url:proofUrl,source_device_id:localStorage.getItem("lavida_marketplace_device")||crypto.randomUUID()};
+        payload={product_id:selectedCryptoProduct.id,receive_amount:amount,network_id:networkId,wallet_address:wallet,customer_name:name,phone,email,payment_method:paymentMethod,payment_reference:paymentReference || null,payment_proof_url:proofUrl,source_device_id:localStorage.getItem("lavida_marketplace_device")||crypto.randomUUID()};
         payload.idempotency_key = cryptoOrderIdempotencyKey(payload);
         diagnostic.payload={...payload,crypto_asset_id:selectedCryptoAsset?.id||null,asset_symbol:selectedCryptoAsset?.asset_symbol||null,product_name:productName(selectedCryptoProduct),network_name:network?.network_name||null,network_code:network?.network_code||null,order_type:"crypto",service_fee:selectedCryptoFee||null};
         localStorage.setItem("lavida_marketplace_device",payload.source_device_id);
@@ -2386,7 +2384,7 @@ ${diagnosticJson(diagnostic?.exception??null)}
       if(printStep === 3 && (!$("printCustomerName").value.trim() || !$("printCustomerPhone").value.trim() || !$("printCustomerEmail").value.trim())){printNotice("Customer name, phone and email are required.","bad"); return false;}
       if(printStep === 5 && (!$("printPaymentMethod").value || !printPaymentMethodOrder.length)){printNotice("No active payment methods are configured. Please contact LAVIDA support.","bad"); return false;}
       if(printStep === 5 && isPrintElectronic($("printPaymentMethod").value) && !hasPrintPaymentNumber($("printPaymentMethod").value)){printNotice("This payment method is active but missing receiving details. Please choose another method or contact an administrator.","bad"); return false;}
-      if(printStep === 5 && isPrintElectronic($("printPaymentMethod").value) && (!$("printPaymentReference").value.trim() || !$("printPaymentProof").files[0])){printNotice("Enter the transaction reference and upload payment proof.","bad"); return false;}
+      if(printStep === 5 && isPrintElectronic($("printPaymentMethod").value) && !$("printPaymentProof").files[0]){printNotice("Upload payment proof before continuing.","bad"); return false;}
       printNotice("Ready.","hidden");
       $("printOrderNotice").classList.add("hidden");
       return true;
@@ -2401,7 +2399,7 @@ ${diagnosticJson(diagnostic?.exception??null)}
         const method = $("printPaymentMethod")?.value || "";
         if(!method || !printPaymentMethodOrder.length) return false;
         if(!isPrintElectronic(method)) return true;
-        return hasPrintPaymentNumber(method) && Boolean(($("printPaymentReference")?.value || "").trim() && $("printPaymentProof")?.files?.[0]);
+        return hasPrintPaymentNumber(method) && Boolean($("printPaymentProof")?.files?.[0]);
       }
       return true;
     }
@@ -2513,7 +2511,7 @@ ${diagnosticJson(diagnostic?.exception??null)}
           payment_currency:paymentConfig.currency || "MWK",
           payment_instructions_snapshot:paymentConfig.instructions || null,
           amount_submitted:totals.total,
-          transaction_reference:$("printPaymentReference").value.trim(),
+          transaction_reference:($("printPaymentReference").value || "").trim() || null,
           proof_bucket:proofPath ? "printing-order-files" : null,
           proof_path:proofPath || null,
           amount_mwk:totals.total,
