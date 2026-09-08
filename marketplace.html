@@ -75,7 +75,9 @@
     .file-picker-label input[type=file]{position:absolute;inline-size:1px;block-size:1px;opacity:0;pointer-events:none}
     .branded-file-button{min-height:54px;border:1px solid var(--navy);border-radius:11px;background:#fff;color:var(--navy);display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:950}
     .branded-file-button:before{content:"";width:22px;height:22px;border:3px solid currentColor;border-radius:6px;box-shadow:0 -5px 0 -2px currentColor inset}
-    .print-payment-card{border:1px solid #f0cf65;border-radius:12px;background:#fff9df;padding:14px;display:grid;gap:12px}
+    .print-payment-card{border:1px solid #eadca1;border-radius:18px;background:#fff9df;padding:18px;display:grid;gap:14px;box-shadow:0 12px 25px rgba(6,27,66,.07);animation:print-payment-rise .24s ease-out}
+    .print-payment-card.choose-method{border-color:#c9ddfa;background:#eef5ff;color:#27466f}
+    @keyframes print-payment-rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
     .print-payment-card.unavailable{border-color:#f5aaa2;background:#fff0ed;color:var(--bad)}
     .print-payment-head{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--navy)}
     .print-payment-brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:950}
@@ -83,7 +85,8 @@
     .print-payable-total{border:1px solid rgba(3,22,61,.12);border-radius:10px;background:#fff;padding:10px 12px;display:flex;justify-content:space-between;gap:12px}
     .print-payable-total span,.print-payment-detail span{color:#667085;font-size:13px}
     .print-payable-total strong{color:var(--green);font-size:19px;text-align:right}
-    .print-payment-detail{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+    .print-payment-detail{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(16,32,68,.09)}
+    .print-payment-detail:last-of-type{border-bottom:0}
     .print-payment-detail b{display:block;color:var(--navy);font-size:17px;margin-top:2px;overflow-wrap:anywhere}
     .print-copy-button{min-height:42px;border:1px solid var(--navy);border-radius:9px;background:#fff;color:var(--navy);font-weight:950;padding:0 12px;white-space:nowrap}
     .print-payment-instruction{margin:0;color:#071f4d;line-height:1.4}
@@ -1049,9 +1052,9 @@
         if(!select) return;
         const selected = select.value;
         select.innerHTML = methods.length
-          ? methods.map((method)=>`<option value="${esc(method.code)}">${esc(method.label)}</option>`).join("")
+          ? `<option value="">Choose a payment method</option>${methods.map((method)=>`<option value="${esc(method.code)}">${esc(method.label)}</option>`).join("")}`
           : `<option value="">No active payment methods</option>`;
-        select.value = methods.some((method)=>method.code === selected) ? selected : (methods[0]?.code || "");
+        select.value = methods.some((method)=>method.code === selected) ? selected : "";
       });
     }
     function isPrintElectronic(method){
@@ -1092,10 +1095,12 @@
     function renderPrintPaymentInstructions(){
       const card = $("printPaymentInstructionCard");
       if(!card) return;
-      const method = $("printPaymentMethod")?.value || "airtel_money";
+      const method = $("printPaymentMethod")?.value || "";
       if(!method || !printPaymentMethodOrder.length){
-        card.className = "print-payment-card unavailable";
-        card.innerHTML = `<p>No active payment methods are configured. Please contact LAVIDA support before submitting this order.</p>`;
+        card.className = printPaymentMethodOrder.length ? "print-payment-card choose-method" : "print-payment-card unavailable";
+        card.innerHTML = printPaymentMethodOrder.length
+          ? `<div class="print-payment-head"><b>Payment details</b></div><p>Choose a payment method above to view its secure payment details, amount, and copy options.</p>`
+          : `<p>No active payment methods are configured. Please contact LAVIDA support before submitting this order.</p>`;
         updatePrintNextState();
         return;
       }
@@ -1114,7 +1119,7 @@
       const bank = config.bankName ? `<div class="print-payment-detail"><div><span>Bank</span><b>${esc(config.bankName)}</b></div></div>` : "";
       const branch = config.branchName ? `<div class="print-payment-detail"><div><span>Branch</span><b>${esc(config.branchName)}</b></div></div>` : "";
       const accountType = config.accountType ? `<div class="print-payment-detail"><div><span>Account type</span><b>${esc(config.accountType)}</b></div></div>` : "";
-      const numberLabel = config.methodType === "bank_transfer" ? "Account number" : `${config.label} number`;
+      const numberLabel = config.methodType === "bank_transfer" ? "Account number" : "Mobile number or payment code";
       const destinationText = displayPrintPaymentDestination(config.number, method);
       const numberBlock = config.number ? `<div class="print-payment-detail"><div><span>${esc(numberLabel)}</span><b>${esc(destinationText)}</b></div><button class="print-copy-button" type="button" data-print-copy="${esc(destinationText)}">Copy number</button></div>` : "";
       const proofHint = electronic ? "Send the exact amount shown above, then upload your payment confirmation. Reference is optional; add it if available." : config.instructions;
@@ -1140,7 +1145,7 @@
         customerName:$("printCustomerName")?.value || "",
         customerPhone:$("printCustomerPhone")?.value || "",
         customerEmail:$("printCustomerEmail")?.value || "",
-        paymentMethod:$("printPaymentMethod")?.value || "cash_on_pickup",
+        paymentMethod:$("printPaymentMethod")?.value || "",
         paymentReference:$("printPaymentReference")?.value || ""
       }));
     }
