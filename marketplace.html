@@ -541,7 +541,7 @@
         </section>
         <section class="print-form-step" data-print-step="5">
           <h2>Payment</h2>
-          <label class="field-label" for="printPaymentMethod">Payment method<select id="printPaymentMethod"><option value="airtel_money">Airtel Money</option><option value="tnm_mpamba">TNM Mpamba</option><option value="cash_on_pickup">Cash on pickup</option><option value="bank_transfer">Bank transfer</option></select></label>
+          <label class="field-label" for="printPaymentMethod">Payment method<select id="printPaymentMethod"><option value="">Loading payment methods…</option></select></label>
           <div id="printPaymentInstructionCard" class="print-payment-card"></div>
           <label class="field-label" for="printPaymentReference">Transaction reference (optional)<input id="printPaymentReference" placeholder="Enter reference if available"></label>
           <label class="field-label file-picker-label" for="printPaymentProof"><span>Upload payment proof</span><span class="branded-file-button">Upload payment proof</span><input id="printPaymentProof" type="file" accept="image/*,.pdf" capture="environment"></label>
@@ -628,7 +628,7 @@
       <div class="totals"><div><span>Total</span><strong id="grandTotal">MWK 0.00</strong></div></div>
       <div class="checkout">
         <select id="fulfilment"><option value="pickup">Shop pickup</option><option value="delivery">Delivery</option></select>
-        <select id="paymentMethod"><option value="cash_on_pickup">Cash</option><option value="airtel_money">Airtel Money</option><option value="tnm_mpamba">TNM Mpamba</option><option value="bank_transfer">Bank transfer</option><option value="cash_on_delivery">Pay on delivery</option></select>
+        <select id="paymentMethod"><option value="">Loading payment methods…</option></select>
         <input id="customerName" placeholder="Full name"><input id="customerPhone" placeholder="Phone number"><input id="customerEmail" placeholder="Email optional">
         <textarea id="address" placeholder="Delivery address, if delivery"></textarea><textarea id="deliveryNotes" placeholder="Order notes optional"></textarea>
         <input id="paymentReference" aria-label="Transaction reference (optional)" placeholder="Enter reference if available"><label class="field-label" for="paymentProof">Upload proof of payment<input id="paymentProof" type="file" accept="image/*,.pdf"></label>
@@ -667,7 +667,7 @@
           <input id="cryptoCustomerEmail" placeholder="Email (optional)">
         </div>
         <h3>Payment</h3>
-        <select id="cryptoPaymentMethod"><option value="airtel_money">Airtel Money</option><option value="tnm_mpamba">TNM Mpamba</option><option value="bank_transfer">Bank transfer</option><option value="cash_on_pickup">Cash</option></select>
+        <select id="cryptoPaymentMethod"><option value="">Loading payment methods…</option></select>
         <input id="cryptoPaymentReference" aria-label="Transaction reference (optional)" placeholder="Enter reference if available">
         <label class="field-label" for="cryptoPaymentProof">Upload proof of payment<input id="cryptoPaymentProof" type="file" accept="image/*,.pdf"></label>
         <div class="crypto-step-actions"><button id="confirmCryptoOrderButton" type="button">Submit Order</button></div>
@@ -997,18 +997,7 @@
           isActive:Boolean(firstConfigured(["printing_bank_account_number","bank_account_number","bank_number","payment_bank_account_number"]))
         };
       }
-      return {
-        code:"cash_on_pickup",
-        label:"Cash on Pickup",
-        logo:"cash",
-        methodType:"cash",
-        recipient:firstConfigured(commonRecipient) || "LAVIDA",
-        number:"",
-        instructions:"Pay at the pickup point when LAVIDA confirms your order is ready.",
-        currency:"MWK",
-        isActive:true,
-        displayOrder:40
-      };
+      return {code:"",label:"No payment method",methodType:"other",recipient:"",number:"",instructions:"",currency:"MWK",isActive:false};
     }
     async function loadPrintPaymentMethods(){
       const found = {};
@@ -1043,7 +1032,7 @@
             });
           }catch(error){}
         }
-        ["airtel_money","tnm_mpamba","bank_transfer","cash_on_pickup"].forEach((code)=>{
+        ["airtel_money","tnm_mpamba","bank_transfer"].forEach((code)=>{
           const fallback = paymentConfigFromSettings(code);
           if(found[code] || fallback.isActive) found[code] = found[code] || fallback;
         });
@@ -1071,7 +1060,7 @@
     }
     function printPaymentConfig(method){
       const code = normalizePaymentMethodCode(method || $("printPaymentMethod")?.value || "airtel_money");
-      return printPaymentMethods[code] || printPaymentMethods[printPaymentMethodOrder[0]] || paymentConfigFromSettings(code || "cash_on_pickup");
+      return printPaymentMethods[code] || printPaymentMethods[printPaymentMethodOrder[0]] || paymentConfigFromSettings(code);
     }
     function hasPrintPaymentNumber(method){
       const config = printPaymentConfig(method);

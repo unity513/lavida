@@ -111,4 +111,31 @@ $$;
 revoke all on function public.update_lavida_bank_payment_details(bigint,uuid,text,text,text,boolean) from public;
 grant execute on function public.update_lavida_bank_payment_details(bigint,uuid,text,text,text,boolean) to authenticated;
 
+-- Customer checkout must use the same rule as the admin screen: a mobile code
+-- is a valid destination, and Cash on Pickup is no longer offered.
+create or replace function public.get_public_lavida_payment_methods(p_service text default null)
+returns table (
+  id uuid, method_code text, display_name text, method_type text, recipient_name text,
+  payment_number text, provider text, bank_name text, branch_name text, account_type text,
+  currency text, customer_instructions text, display_order integer, updated_at timestamptz
+)
+language sql stable security definer set search_path=public as $$
+  select pm.id, pm.method_code, pm.display_name, pm.method_type, pm.recipient_name,
+         coalesce(nullif(trim(pm.payment_number),''), nullif(trim(pm.agent_code),'')) as payment_number,
+         pm.provider, pm.bank_name, pm.branch_name, pm.account_type, pm.currency,
+         pm.customer_instructions, pm.display_order, pm.updated_at
+  from public.payment_methods pm
+  where pm.is_active=true and pm.archived_at is null and pm.method_type<>'cash'
+    and (p_service is null or p_service=any(pm.applies_to))
+    and trim(coalesce(pm.recipient_name,''))<>''
+    and (trim(coalesce(pm.payment_number,''))<>'' or (pm.method_type='mobile_money' and trim(coalesce(pm.agent_code,''))<>''))
+  order by pm.display_order, pm.display_name;
+$$;
+revoke all on function public.get_public_lavida_payment_methods(text) from public;
+grant execute on function public.get_public_lavida_payment_methods(text) to anon,authenticated;
+
+update public.payment_methods
+set is_active=false
+where method_code='cash_on_pickup' and archived_at is null;
+
 commit;
