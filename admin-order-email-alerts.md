@@ -44,14 +44,17 @@ alerts, can always manage the list, and cannot be removed.
 
 ### 1. Apply the database migrations
 
-Run both migrations, in order:
+Run all three migrations, in order:
 
 1. `supabase/migrations/202610120001_admin_order_email_alerts.sql`
 2. `supabase/migrations/202610120002_admin_alert_email_automation.sql`
+3. `supabase/migrations/202610120003_admin_alert_never_blocks_orders.sql`
 
 The first creates the tables, triggers, console RPCs and cron dispatcher. The
 second adds the self-configuring helpers so the sender connection can be
-finished from inside the console with one button.
+finished from inside the console with one button. The third makes order
+checkout immune to any alert problem: if alerting ever fails, the order still
+goes through and the failure is logged instead of stopping the app.
 
 ### 2. Deploy the email worker
 
@@ -86,6 +89,11 @@ If you ever rotate `ADMIN_ALERT_WORKER_SECRET`, press the button again.
 
 Place a test order, or press **Send Queued Emails Now** in the console, then
 check **Recent Email Activity** for `sent` status.
+
+If anything looks stuck, press **Check System**. It reports the worker address,
+the shared secret, recipient count, whether alerts are switched on, the
+queue/sent/failed counts, and the last few order events — including any that
+were skipped and why.
 
 ## Delivery safety
 
