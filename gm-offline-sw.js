@@ -1,4 +1,4 @@
-const CACHE_NAME = "lavida-connect-independent-v236";
+const CACHE_NAME = "lavida-connect-independent-v237";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -13,6 +13,7 @@ const APP_SHELL = [
   "./lavida-notifications.js",
   "./assets/lavida-notification-l-v2.png",
   "./assets/lavida-notification-l-badge-v2.png",
+  "./assets/printing-hero-canon.png",
   "./games365.html",
   "./chess365.html",
   "./bawo365.html",
@@ -63,7 +64,13 @@ self.addEventListener("fetch", (event) => {
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
         return response;
       })
-      .catch(() => caches.match(event.request).then((cached) => cached || caches.match("./index.html")))
+      .catch(() => {
+        if(event.request.mode === "navigate"){
+          return caches.match(event.request, { ignoreSearch: true })
+            .then((cached) => cached || caches.match("./index.html"));
+        }
+        return caches.match(event.request).then((cached) => cached || Response.error());
+      })
   );
 });
 
