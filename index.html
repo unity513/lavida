@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Market 365 | LAVIDA Connect</title>
+</head>
+<body>
+  <p><a id="marketplaceRedirectLink" href="../marketplace.html#market">Open Market 365</a></p>
+  <script>
+    const destination = `../marketplace.html${window.location.search || ""}${window.location.hash || "#market"}`;
+    document.getElementById("marketplaceRedirectLink").href = destination;
+    window.location.replace(destination);
+  </script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#03163d">
+  <title>HRM 365 | LAVIDA Connect</title>
+  <style>
+    :root{--navy:#03163d;--navy2:#08245a;--gold:#f5b821;--green:#08783e;--ink:#071126;--muted:#667085;--line:#dfe5ee;--page:#f3f5f8;--white:#fff;--bad:#b42318;--teal:#087e8b;--violet:#5b4b8a}
+    *{box-sizing:border-box} body{margin:0;background:var(--page);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;padding-bottom:calc(98px + env(safe-area-inset-bottom,0px))} button,input,select,textarea{font:inherit} button{cursor:pointer} a{text-decoration:none;color:inherit}.hidden{display:none!important}
+    .topbar{position:sticky;top:0;z-index:1000;min-height:88px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:calc(16px + env(safe-area-inset-top,0px)) max(18px,calc(14px + env(safe-area-inset-right,0px))) 12px max(18px,calc(14px + env(safe-area-inset-left,0px)));box-shadow:0 8px 22px rgba(3,22,61,.2)}.brand strong{display:block;color:#fff;font-size:27px;line-height:1;font-weight:950;letter-spacing:.3px}.brand span{display:block;color:var(--gold);font-size:15px;margin-top:5px;font-weight:900}.back-button{width:52px;height:52px;border:1px solid rgba(255,255,255,.16);border-radius:17px;background:rgba(255,255,255,.05);color:#fff;display:grid;place-items:center}.back-button svg{width:28px;height:28px;stroke:currentColor}
+    main{max-width:1180px;margin:auto;padding:16px max(14px,calc(12px + env(safe-area-inset-right,0px))) 24px max(14px,calc(12px + env(safe-area-inset-left,0px)));display:grid;gap:14px}.hero{background:var(--navy);color:#fff;border-radius:14px;padding:18px;box-shadow:0 14px 28px rgba(3,22,61,.18);display:grid;gap:12px}.hero h1{margin:0;font-size:31px;line-height:1.05}.hero p{margin:0;color:#e7edf9;line-height:1.4}.hero .managed{color:var(--gold);font-weight:950}.lavida-word{display:inline-block;background:var(--navy);color:#fff;border-radius:6px;padding:0 .18em}.hero .lavida-word{background:rgba(255,255,255,.13);color:#fff}.hero-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.primary,.secondary,.ghost{min-height:46px;border-radius:10px;font-weight:950;display:flex;align-items:center;justify-content:center;gap:8px}.primary{border:1px solid var(--gold);background:var(--gold);color:var(--navy)}.secondary{border:1px solid rgba(255,255,255,.28);background:#fff;color:var(--navy)}.ghost{border:1px solid var(--line);background:#fff;color:var(--navy)}.primary svg,.secondary svg,.ghost svg{width:19px;height:19px;stroke:currentColor}
+    .notice{background:#fff7d6;border:1px solid #f0d57b;border-radius:12px;padding:12px;color:#5d4300;line-height:1.4}.notice.bad{background:#fff0ed;border-color:#f5aaa2;color:var(--bad)}.notice.good{background:#eefbf2;border-color:#b8ecc4;color:#075f28}
+    .metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.metric{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px;box-shadow:0 8px 18px rgba(3,22,61,.06);min-height:92px}.metric span{display:block;color:#5f6b7d;font-size:12px;font-weight:850;line-height:1.25}.metric strong{display:block;color:var(--navy);font-size:26px;line-height:1.1;margin-top:6px}.metric small{display:block;color:#667085;margin-top:5px;font-weight:750}
+    .workspace{display:grid;grid-template-columns:270px 1fr;gap:14px}.tabs{position:sticky;top:104px;align-self:start;background:#fff;border:1px solid var(--line);border-radius:14px;padding:9px;display:grid;gap:6px;box-shadow:0 8px 18px rgba(3,22,61,.06)}.tab{min-height:44px;border:0;border-radius:9px;background:transparent;color:var(--navy);font-weight:900;text-align:left;padding:0 11px;display:flex;align-items:center;gap:9px}.tab.active{background:var(--navy);color:#fff}.tab svg{width:20px;height:20px;stroke:currentColor;flex:0 0 auto}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 10px 24px rgba(3,22,61,.07);display:none}.panel.active{display:block}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}.panel h2{margin:0;color:var(--navy);font-size:23px}.panel p{margin:5px 0 0;color:#59657a;line-height:1.42}.tool-row{display:grid;grid-template-columns:1fr auto auto;gap:9px;margin:12px 0}input,select,textarea{width:100%;min-height:46px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:0 13px;color:var(--ink)}textarea{min-height:92px;padding:12px;resize:vertical}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.record-card{border:1px solid var(--line);border-radius:12px;background:#f8fafc;padding:13px;display:grid;gap:8px}.record-card b{color:var(--navy)}.record-card span{color:#667085;font-size:13px;line-height:1.35}.status-pill{display:inline-flex;align-items:center;width:max-content;border-radius:999px;background:#e9fbfa;color:var(--teal);padding:4px 9px;font-size:12px;font-weight:950}.status-pill.gold{background:#fff5d6;color:#7b4e00}.status-pill.violet{background:#f2efff;color:var(--violet)}.empty{border:1px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:#667085;background:#fff}.empty b{display:block;color:var(--navy);font-size:18px;margin-bottom:5px}.activity{display:grid;gap:8px}.activity-row{display:grid;grid-template-columns:auto 1fr;gap:10px;border-bottom:1px solid #edf0f5;padding:9px 0}.activity-dot{width:10px;height:10px;border-radius:999px;background:var(--gold);margin-top:6px}.bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:900;background:var(--navy);border-top:1px solid rgba(255,255,255,.14);border-radius:24px 24px 0 0;box-shadow:0 -14px 38px rgba(3,22,61,.28);display:grid;grid-template-columns:repeat(5,1fr);padding:9px max(10px,calc(8px + env(safe-area-inset-right,0px))) calc(18px + env(safe-area-inset-bottom,0px)) max(10px,calc(8px + env(safe-area-inset-left,0px)))}.bottom-nav a,.bottom-nav button{min-height:58px;background:transparent;border:0;color:#fff;display:grid;place-items:center;gap:2px;font-size:12px;font-weight:800;border-radius:16px}.bottom-nav svg{width:23px;height:23px;stroke:currentColor}.bottom-nav .active{color:#d89400}
+    @media(max-width:820px){.workspace{grid-template-columns:1fr}.tabs{position:static;display:flex;overflow:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{flex:0 0 auto;white-space:nowrap}.cards{grid-template-columns:1fr}.tool-row{grid-template-columns:1fr}.hero h1{font-size:27px}.hero-actions{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:360px){.metrics{grid-template-columns:1fr}.brand strong{font-size:24px}.panel h2{font-size:20px}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="marketplace.html#home"><strong>LAVIDA Connect</strong><span>HRM 365</span></a>
+    <button id="backButton" class="back-button" type="button" aria-label="Back to LAVIDA Connect"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6"><path d="m15 18-6-6 6-6"></path></svg></button>
+  </header>
+  <main>
+    <section class="hero">
+      <div>
+        <h1>HRM 365</h1>
+        <p>Professional Human Resource Solutions</p>
+        <p class="managed">Managed by Sir Adams HR Consultancy</p>
+        <p>Powered by <span class="lavida-word">LAVIDA</span></p>
+      </div>
+      <div class="hero-actions">
+        <button class="primary" type="button" data-tab-jump="recruitment"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 11h-6M19 8v6"></path></svg>Recruitment</button>
+        <button class="secondary" type="button" data-tab-jump="employees"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><path d="M20 8v6M23 11h-6"></path></svg>Employees</button>
+      </div>
+    </section>
+    <div id="connectionNotice" class="notice">Checking HRM 365 database tables...</div>
+    <section class="metrics" aria-label="HRM 365 dashboard metrics" id="metricsGrid"></section>
+    <section class="workspace">
+      <nav class="tabs" aria-label="HRM 365 sections" id="tabs"></nav>
+      <div id="panels"></div>
+    </section>
+  </main>
+  <nav class="bottom-nav" aria-label="HRM 365 bottom navigation">
+    <a href="marketplace.html#home"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Home</a>
+    <button class="active" type="button" data-tab-jump="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 13h6V4H4zM14 20h6V4h-6zM4 20h6v-3H4z"></path></svg>HRM</button>
+    <button type="button" data-tab-jump="recruitment"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M10 6h10M10 12h10M10 18h10"></path><path d="M4 6h.01M4 12h.01M4 18h.01"></path></svg>Jobs</button>
+    <button type="button" data-tab-jump="leave"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M8 2v4M16 2v4M3 10h18"></path><rect x="3" y="4" width="18" height="18" rx="2"></rect></svg>Leave</button>
+    <button type="button" data-tab-jump="reports"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"></path><path d="M14 3v6h6M8 13h8M8 17h5"></path></svg>Reports</button>
+  </nav>
+  <script src="./vendor/supabase-js.js"></script>
+  <script>
+    const SUPABASE_URL = "https://cgvpoddtqswmtzvyrmwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndnBvZGR0cXN3bXR6dnlybXdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDE0OTMsImV4cCI6MjA5MTkxNzQ5M30.Ut_5jGo8L66zi8zxqR25nV_gkDBYLrT7p3Fx-4G5wGQ";
+    const db = window.supabase?.createClient?.(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const $ = (id) => document.getElementById(id);
+    const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+    const sections = [
+      ["dashboard","Dashboard","M4 13h6V4H4zM14 20h6V4h-6zM4 20h6v-3H4z","Overview of organizations, employees, vacancies, leave, contracts and HR activity."],
+      ["organizations","Organizations","M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6","Register companies, NGOs, schools and departments managed through HRM 365."],
+      ["employees","Employee Management","M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0.01 0","Maintain employee profiles, job details, managers, salary-sensitive records and status."],
+      ["recruitment","Recruitment","M12 5v14M5 12h14M4 7h16M6 3h12a2 2 0 0 1 2 2v14H4V5a2 2 0 0 1 2-2z","Create vacancies, receive applications, shortlist candidates and manage interviews."],
+      ["attendance","Attendance","M8 2v4M16 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01","Track attendance records, late arrivals, absences and manager verification."],
+      ["leave","Leave","M8 2v4M16 2v4M3 10h18M6 4h12a2 2 0 0 1 2 2v14H4V6a2 2 0 0 1 2-2z","Configure leave types, review requests and protect approval history."],
+      ["documents","Contracts & Documents","M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zM14 3v6h6","Store contracts, IDs, CVs, certificates and confidential employee files securely."],
+      ["performance","Performance","M4 19h16M7 16V9M12 16V5M17 16v-3","Schedule appraisals, scores, review outcomes and development actions."],
+      ["discipline","Discipline & Grievances","M12 2 3 6v6c0 5 4 8 9 8s9-3 9-8V8zM9 12h6","Manage disciplinary cases, grievances, evidence, outcomes and access restrictions."],
+      ["training","Training & Development","M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z","Record courses, certifications, student attachments and development programmes."],
+      ["consultancy","HR Consultancy","M21 15a4 4 0 0 1-4 4H7l-4 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z","Request Sir Adams HR Consultancy support, advisory work and case handling."],
+      ["reports","Reports","M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zM8 13h8M8 17h5","Review HR compliance, recruitment, attendance, leave and workforce summaries."]
+    ];
+    const metrics = [
+      ["organizations","Organizations","hrm_organizations"],["employees","Employees","hrm_employees"],["vacancies","Active Vacancies","hrm_job_vacancies"],["applications","Applications","hrm_applications"],["shortlisted","Shortlisted","hrm_applications"],["interviews","Interviews","hrm_interviews"],["leave","Employees on Leave","hrm_leave_requests"],["requests","Pending HR Requests","hrm_consultancy_requests"],["contracts","Expiring Contracts","hrm_contracts"],["reviews","Upcoming Reviews","hrm_performance_reviews"],["activity","Recent Activity","hrm_audit_logs"]
+    ];
+    const sampleCards = {
+      organizations:[["Organization directory","Add companies, organizations, departments and HR owners.","Ready after migration"],["Access control","Assign owners, HR managers, consultants and department managers.","RBAC protected"]],
+      employees:[["Employee records","Profile picture, contacts, role, department, manager and employment status.","Private"],["Documents","Attach contracts, certificates and identification documents.","Secure storage"]],
+      recruitment:[["Vacancy pipeline","Draft, publish, shortlist, interview, offer and close vacancies.","Hiring"],["Applicants","Students, graduates and professionals can be reviewed by authorized HR users.","Tracked"]],
+      attendance:[["Daily attendance","Clock-in, clock-out, status, notes and manager verification.","Operational"],["Exceptions","Flag absence, late arrival and unresolved records.","Review"]],
+      leave:[["Leave requests","Submit, approve, reject and audit leave requests.","Workflow"],["Leave types","Annual, sick, maternity, compassionate and custom leave types.","Configurable"]],
+      documents:[["Contracts","Track start dates, end dates, renewal status and expiring contracts.","Sensitive"],["Files","CVs, IDs, certificates and HR letters stored in hrm-documents.","Private"]],
+      performance:[["Reviews","Schedule appraisals and record scores, strengths and action plans.","Planned"],["Development","Connect performance outcomes to training records.","Growth"]],
+      discipline:[["Cases","Record allegations, evidence, hearings, outcomes and closure.","Restricted"],["Grievances","Track employee grievances confidentially from submission to resolution.","Protected"]],
+      training:[["Training records","Courses, providers, costs, certificates and completion dates.","Learning"],["Students","Support internships, attachments and graduate readiness programmes.","Youth"]],
+      consultancy:[["Consultancy requests","Organizations can ask Sir Adams HR Consultancy for professional support.","Managed"],["Case handling","Assign consultants, track priority, SLA and resolution.","Professional"]],
+      reports:[["Compliance","Workforce, contracts, attendance, leave and disciplinary summaries.","Reports"],["Audit trail","Sensitive changes are recorded in hrm_audit_logs.","Accountable"]]
+    };
+    function icon(path){return `<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="${path}"></path></svg>`}
+    function renderShell(){
+      $("tabs").innerHTML = sections.map(([key,label,path]) => `<button class="tab" type="button" data-tab="${esc(key)}">${icon(path)}${esc(label)}</button>`).join("");
+      $("panels").innerHTML = sections.map(([key,label,,description]) => `<section class="panel" data-panel="${esc(key)}"><div class="panel-head"><div><h2>${esc(label)}</h2><p>${esc(description)}</p></div><button class="ghost" type="button" data-refresh="${esc(key)}">Refresh</button></div><div class="tool-row"><input type="search" placeholder="Search ${esc(label.toLowerCase())}"><select><option>All organizations</option><option>My organization</option><option>Assigned to me</option></select><button class="primary" type="button">New</button></div><div class="cards" id="${esc(key)}Cards"></div></section>`).join("");
+      $("dashboardCards").innerHTML = `<div class="empty"><b>HRM dashboard</b>Use the section tabs to manage organizations, employees, recruitment, leave, documents and HR consultancy work.</div>`;
+      Object.keys(sampleCards).forEach((key)=>renderCards(key));
+      setActive("dashboard");
+    }
+    function renderMetrics(values={}){
+      $("metricsGrid").innerHTML = metrics.map(([key,label]) => `<article class="metric"><span>${esc(label)}</span><strong>${esc(values[key] ?? "-")}</strong><small>${values[key] === undefined ? "Waiting for data" : "Live count"}</small></article>`).join("");
+    }
+    function renderCards(key){
+      const target = $(`${key}Cards`);
+      if(!target) return;
+      const cards = sampleCards[key] || [];
+      target.innerHTML = cards.map(([title,body,status], index) => `<article class="record-card"><span class="status-pill ${index % 2 ? "violet" : "gold"}">${esc(status)}</span><b>${esc(title)}</b><span>${esc(body)}</span></article>`).join("") || `<div class="empty"><b>No records yet</b>Records will appear here after the HRM migration is run and authorized users add data.</div>`;
+    }
+    function setActive(key){
+      document.querySelectorAll("[data-tab]").forEach((tab)=>tab.classList.toggle("active",tab.dataset.tab===key));
+      document.querySelectorAll("[data-panel]").forEach((panel)=>panel.classList.toggle("active",panel.dataset.panel===key));
+      document.querySelectorAll(".bottom-nav button").forEach((button)=>button.classList.toggle("active",button.dataset.tabJump===key));
+      if(key !== "dashboard") location.hash = key;
+    }
+    async function countTable(table, filter){
+      if(!db) throw new Error("LAVIDA data connection is not available.");
+      let query = db.from(table).select("id",{count:"exact",head:true});
+      if(filter) query = filter(query);
+      const {count,error} = await query;
+      if(error) throw error;
+      return count ?? 0;
+    }
+    async function loadLiveCounts(){
+      renderMetrics();
+      try{
+        const values = {};
+        values.organizations = await countTable("hrm_organizations");
+        values.employees = await countTable("hrm_employees");
+        values.vacancies = await countTable("hrm_job_vacancies",(q)=>q.eq("status","open"));
+        values.applications = await countTable("hrm_applications");
+        values.shortlisted = await countTable("hrm_applications",(q)=>q.eq("status","shortlisted"));
+        values.interviews = await countTable("hrm_interviews");
+        values.leave = await countTable("hrm_leave_requests",(q)=>q.in("status",["approved","in_progress"]));
+        values.requests = await countTable("hrm_consultancy_requests",(q)=>q.in("status",["new","assigned","in_progress"]));
+        values.contracts = await countTable("hrm_contracts",(q)=>q.lte("end_date",new Date(Date.now()+1000*60*60*24*60).toISOString().slice(0,10)));
+        values.reviews = await countTable("hrm_performance_reviews",(q)=>q.gte("review_date",new Date().toISOString().slice(0,10)));
+        values.activity = await countTable("hrm_audit_logs");
+        renderMetrics(values);
+        $("connectionNotice").className = "notice good";
+        $("connectionNotice").textContent = "HRM 365 database tables are available. Live dashboard counts are loading with the signed-in user's permissions.";
+      }catch(error){
+        $("connectionNotice").className = "notice";
+        $("connectionNotice").textContent = "HRM 365 is installed. Run the HRM 365 database migration to activate live organizations, employees, recruitment, leave, documents and consultancy records.";
+      }
+    }
+    function goBack(){if(history.length > 1) history.back(); else location.href = "marketplace.html#home"}
+    document.addEventListener("click",(event)=>{
+      const tab = event.target.closest("[data-tab]");
+      const jump = event.target.closest("[data-tab-jump]");
+      const refresh = event.target.closest("[data-refresh]");
+      if(tab){setActive(tab.dataset.tab);return}
+      if(jump){setActive(jump.dataset.tabJump);window.scrollTo({top:0,behavior:"smooth"});return}
+      if(refresh){loadLiveCounts();return}
+    });
+    $("backButton").addEventListener("click",goBack);
+    window.Capacitor?.Plugins?.App?.addListener?.("backButton",()=>{location.href="marketplace.html#home"});
+    renderShell();
+    renderMetrics();
+    if(location.hash) setActive(location.hash.replace("#",""));
+    loadLiveCounts();
+    requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:"auto"}));
+  </script>
+</body>
+</html>
