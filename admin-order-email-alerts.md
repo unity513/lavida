@@ -42,10 +42,16 @@ alerts, can always manage the list, and cannot be removed.
 
 ## Required setup (one time)
 
-### 1. Apply the database migration
+### 1. Apply the database migrations
 
-Run `supabase/migrations/202610120001_admin_order_email_alerts.sql`. It creates
-the tables, the triggers, the recipient console RPCs and the cron dispatcher.
+Run both migrations, in order:
+
+1. `supabase/migrations/202610120001_admin_order_email_alerts.sql`
+2. `supabase/migrations/202610120002_admin_alert_email_automation.sql`
+
+The first creates the tables, triggers, console RPCs and cron dispatcher. The
+second adds the self-configuring helpers so the sender connection can be
+finished from inside the console with one button.
 
 ### 2. Deploy the email worker
 
@@ -53,31 +59,28 @@ Deploy the Edge Function `supabase/functions/send-admin-alert-email`.
 
 ### 3. Set the worker secrets
 
+The accounts email is used as the default sender, so a plain Gmail setup works
+with no domain verification step.
+
 | Secret | Purpose |
 | --- | --- |
 | `ADMIN_ALERT_EMAIL_PROVIDER` | `resend` (default), `sendgrid` or `postmark` |
 | `ADMIN_ALERT_EMAIL_API_KEY` | Provider API key |
-| `ADMIN_ALERT_FROM_EMAIL` | Verified sender, e.g. `info@lavida.agency` |
+| `ADMIN_ALERT_FROM_EMAIL` | Sender address, e.g. `giyanichirwa@gmail.com` |
 | `ADMIN_ALERT_FROM_NAME` | Sender display name |
 | `ADMIN_ALERT_REPLY_TO` | Optional reply-to address |
-| `ADMIN_ALERT_WORKER_SECRET` | Shared secret used by the dispatcher |
+| `ADMIN_ALERT_WORKER_SECRET` | Shared secret used by the dispatcher (any long random string) |
 
 Never place provider keys in frontend JavaScript.
 
-### 4. Store the dispatch secret and worker URL
+### 4. Finish the sender connection (one button)
 
-In the database vault, create a secret named:
+Open **Order Alert Emails** in the app and press **Finish Email Setup**. That
+button derives and stores the worker URL and connects the shared secret, so
+there is nothing to copy into the database by hand. The status banner at the
+top of the settings panel turns green when it is ready.
 
-```
-lavida_admin_alert_worker_secret
-```
-
-with the same value as `ADMIN_ALERT_WORKER_SECRET`. Then open the console and
-fill in **Email Worker URL**:
-
-```
-https://<project-ref>.supabase.co/functions/v1/send-admin-alert-email
-```
+If you ever rotate `ADMIN_ALERT_WORKER_SECRET`, press the button again.
 
 ### 5. Send something to confirm
 

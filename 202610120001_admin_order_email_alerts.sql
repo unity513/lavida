@@ -15,7 +15,7 @@ create table if not exists public.admin_alert_config (
   super_admin_email text not null default 'giyanichirwa@gmail.com',
   email_enabled boolean not null default true,
   from_name text not null default 'LAVIDA Connect',
-  from_email text not null default 'info@lavida.agency',
+  from_email text not null default 'giyanichirwa@gmail.com',
   reply_to_email text,
   send_worker_url text,
   app_base_url text not null default 'https://app.lavida.agency',

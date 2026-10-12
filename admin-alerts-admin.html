@@ -91,7 +91,7 @@
       <div class="grid three">
         <label>Emails Enabled<select id="cfgEnabled"><option value="true">On</option><option value="false">Off</option></select></label>
         <label>From Name<input id="cfgFromName" placeholder="LAVIDA Connect"></label>
-        <label>From Email<input id="cfgFromEmail" placeholder="info@lavida.agency"></label>
+        <label>From Email<input id="cfgFromEmail" placeholder="giyanichirwa@gmail.com"></label>
       </div>
       <div class="grid three" style="margin-top:10px">
         <label>Reply-To<input id="cfgReplyTo" placeholder="Optional"></label>
@@ -101,7 +101,9 @@
       <div class="actions" style="margin-top:14px">
         <button id="saveSettingsBtn" class="primary" type="button">Save Settings</button>
         <button id="runWorkerBtn" class="secondary" type="button">Send Queued Emails Now</button>
+        <button id="autoSetupBtn" class="secondary" type="button">Finish Email Setup</button>
       </div>
+      <div id="setupStatusBox" class="notice hidden" style="margin-top:12px"></div>
       <div id="settingsNotice" class="notice hidden" style="margin-top:12px"></div>
     </section>
 
@@ -157,6 +159,7 @@
       showPanels();
       renderRecipients();
       await Promise.all([loadSummary(),loadConfig(),loadActivity()]);
+      await loadSetupStatus();
     }
 
     function renderRecipients(){
@@ -286,6 +289,33 @@
       status("settingsStatus","Saved","ok");
       notice("settingsNotice","Settings saved.","ok");
       await loadConfig();
+      await loadSetupStatus();
+    }
+
+    async function loadSetupStatus(){
+      const box=$("setupStatusBox");
+      const {data,error}=await db.rpc("lavida_admin_alert_setup_status");
+      if(error){box.classList.add("hidden");return}
+      const ready=Boolean(data&&data.secret_configured&&data.worker_url_configured);
+      box.classList.remove("hidden");
+      box.className="notice "+(ready?"ok":"warn");
+      box.textContent=ready
+        ? "Email delivery is configured. Alerts will be sent from "+(data.from_email||"your sender")+"."
+        : "Email delivery is not finished yet. Press \"Finish Email Setup\" to connect the sender automatically.";
+    }
+
+    async function runAutoSetup(){
+      status("settingsStatus","Connecting...","warn");
+      const {data,error}=await db.rpc("lavida_admin_alert_autoconfigure");
+      if(error){
+        status("settingsStatus","Error","bad");
+        notice("settingsNotice",error.message||"Could not finish the email setup.","bad");
+        return;
+      }
+      await loadConfig();
+      await loadSetupStatus();
+      status("settingsStatus","Connected","ok");
+      notice("settingsNotice","Email delivery is connected. Fill in the sender name/email if you want to change it, then place a test order.","ok");
     }
 
     async function runWorker(){
@@ -324,6 +354,7 @@
     $("cancelEditBtn").addEventListener("click",clearForm);
     $("saveSettingsBtn").addEventListener("click",saveSettings);
     $("runWorkerBtn").addEventListener("click",runWorker);
+    $("autoSetupBtn").addEventListener("click",runAutoSetup);
     $("refreshBtn").addEventListener("click",boot);
     $("loginBtn").addEventListener("click",login);
     $("logoutBtn").addEventListener("click",async()=>{await window.LavidaAuth.signOut(db);location.href="./marketplace.html#home"});
