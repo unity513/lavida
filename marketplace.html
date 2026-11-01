@@ -633,6 +633,7 @@
       <div class="checkout">
         <select id="fulfilment"><option value="pickup">Shop pickup</option><option value="delivery">Delivery</option></select>
         <select id="paymentMethod"><option value="">Loading payment methods…</option></select>
+        <div id="marketPaymentInstructionCard" class="print-payment-card choose-method">Choose a payment method to view payment details.</div>
         <input id="customerName" placeholder="Full name"><input id="customerPhone" placeholder="Phone number"><input id="customerEmail" placeholder="Email optional">
         <textarea id="address" placeholder="Delivery address, if delivery"></textarea><textarea id="deliveryNotes" placeholder="Order notes optional"></textarea>
         <input id="paymentReference" aria-label="Transaction reference (optional)" placeholder="Enter reference if available"><label class="field-label" for="paymentProof">Upload proof of payment<input id="paymentProof" type="file" accept="image/*,.pdf"></label>
@@ -1045,6 +1046,7 @@
       printPaymentMethodOrder = Object.values(found).sort((a,b)=>Number(a.displayOrder||0)-Number(b.displayOrder||0) || String(a.label).localeCompare(String(b.label))).map((method)=>method.code);
       renderPrintPaymentMethodOptions();
       renderPrintPaymentInstructions();
+      renderMarketPaymentInstructions();
     }
     function renderPrintPaymentMethodOptions(){
       const methods = printPaymentMethodOrder.map((code)=>printPaymentMethods[code]).filter(Boolean);
@@ -1135,6 +1137,16 @@
         ${electronic ? `<div class="print-payment-detail"><div><span>Amount to send</span><b>${esc(amountText)}</b></div><button class="print-copy-button" type="button" data-print-copy="${esc(amountText)}">Copy amount</button></div>` : ""}
         <p class="print-payment-instruction">${esc(proofHint || "Follow the payment instructions for the selected method.")}</p>`;
       updatePrintNextState();
+    }
+    function renderMarketPaymentInstructions(){
+      const card=$("marketPaymentInstructionCard"); if(!card)return;
+      const method=$("paymentMethod")?.value||"";
+      if(!method){card.className="print-payment-card choose-method";card.textContent="Choose a payment method to view the recipient, number or code, and amount.";return;}
+      const config=printPaymentConfig(method), amountText=paymentAmount(cartTotal(),config.currency), destination=displayPrintPaymentDestination(config.number,method);
+      if(!config.recipient||!config.number){card.className="print-payment-card unavailable";card.textContent="This payment method is unavailable because its receiving details are incomplete.";return;}
+      const bank=config.bankName?`<div class="print-payment-detail"><div><span>Bank</span><b>${esc(config.bankName)}</b></div></div>`:"";
+      card.className="print-payment-card";
+      card.innerHTML=`<div class="print-payment-head"><span class="print-payment-brand"><span class="print-payment-logo">${esc(String(config.label).slice(0,6))}</span>${esc(config.label)}</span></div><div class="print-payment-detail"><div><span>Pay to</span><b>${esc(config.recipient)}</b></div></div>${bank}<div class="print-payment-detail"><div><span>${config.methodType==="bank_transfer"?"Account number":"Mobile number or payment code"}</span><b>${esc(destination)}</b></div><button class="print-copy-button" type="button" data-print-copy="${esc(destination)}">Copy</button></div><div class="print-payment-detail"><div><span>Amount to send</span><b>${esc(amountText)}</b></div><button class="print-copy-button" type="button" data-print-copy="${esc(amountText)}">Copy amount</button></div><p class="print-payment-instruction">${esc(config.instructions||"Send the exact amount shown, then upload proof of payment.")}</p>`;
     }
     function savePrintDraft(){
       sessionStorage.setItem(PRINT_DRAFT_KEY, JSON.stringify({
@@ -2995,6 +3007,7 @@ document.addEventListener("click",(event)=>{if(event.target.closest("#cryptoChan
     ["printDeliveryLocation","printDeliveryPhone","printCustomerName","printCustomerPhone","printCustomerEmail","printPaymentReference"].forEach((id)=>$(id)?.addEventListener("input",()=>{renderPrintSummary();savePrintDraft();}));
     $("printPaymentProof")?.addEventListener("change",()=>{renderPrintProofPreview();renderPrintSummary();});
     $("printPaymentMethod")?.addEventListener("change",()=>{renderPrintPaymentInstructions();updatePrintNextState();});
+    $("paymentMethod")?.addEventListener("change",renderMarketPaymentInstructions);
     $("printNextButton")?.addEventListener("click",()=>{if(printStep===6 && printStepComplete(6)) submitPrintOrder();});
     refreshLavidaAppShell();loadSettings().then(loadPrintPaymentMethods);loadMarketplaceVerification();loadProducts();renderCart();renderPrintServices();renderPrintUploads();updateAuthControls();refreshAuthSession();refreshPrintSession();checkAdminTools();setupOrdersRealtime();setupNativeBackButton();if(!location.hash&&!isDedicatedPrintingRoute())history.replaceState({route:"home"},"","#home");routeFromHash();
   </script>
