@@ -319,11 +319,15 @@
           <select id="detailStatusSelect"><option value="activate" ${status==="Active"?"selected":""}>Active</option><option value="disable" ${status==="Suspended"?"selected":""}>Suspended</option></select>
           <button id="saveRoleBtn" type="button">Change Role</button>
           <button id="saveStatusBtn" class="secondary" type="button">Change Status</button>
+          <button id="approveMarketAccessBtn" type="button">Approve restricted-product access</button>
+          <button id="rejectMarketAccessBtn" class="secondary" type="button">Reject restricted-product access</button>
         </div>
         <div id="detailMessage" class="notice hidden" style="margin-top:12px"></div>
       </div>`;
       $("saveRoleBtn").addEventListener("click",()=>changeRole(user));
       $("saveStatusBtn").addEventListener("click",()=>changeStatus(user));
+      $("approveMarketAccessBtn").addEventListener("click",()=>reviewMarketplaceAccess(user,"approved"));
+      $("rejectMarketAccessBtn").addEventListener("click",()=>reviewMarketplaceAccess(user,"rejected"));
     }
     function renderAll(){
       renderUsers();
@@ -356,6 +360,13 @@
       }finally{
         const btn = $("saveRoleBtn"); if(btn) btn.disabled = false;
       }
+    }
+    async function reviewMarketplaceAccess(user,status){
+      if(!user.id){detailNotice("This user has no profile ID, so marketplace access cannot be reviewed.","bad");return;}
+      const label=status==="approved"?"approve":"reject";
+      if(!confirm(`Confirm you want to ${label} restricted-product access for ${user.full_name || user.email}?`))return;
+      try{const {error}=await db.rpc("review_marketplace_account_verification",{p_user_id:user.id,p_status:status,p_note:null});if(error)throw error;detailNotice(status==="approved"?"Restricted-product access approved.":"Restricted-product access rejected.");}
+      catch(error){detailNotice(window.LavidaAuth.friendlyError(error,"Marketplace access could not be updated."),"bad");}
     }
     async function changeStatus(user){
       const action = $("detailStatusSelect").value;

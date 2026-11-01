@@ -110,6 +110,7 @@
         <label><input id="deliveryEnabled" type="checkbox"> Delivery available</label>
         <label><input id="featured" type="checkbox"> Featured</label>
         <label><input id="published" type="checkbox"> Publish</label>
+        <label><input id="requiresVerifiedAccount" type="checkbox"> Restricted: approved accounts only</label>
       </div>
       <div class="actions">
         <button id="saveProductBtn" type="button">Save Product</button>
@@ -613,6 +614,7 @@
       $("deliveryEnabled").checked=true;
       $("featured").checked=false;
       $("published").checked=false;
+      $("requiresVerifiedAccount").checked=false;
       $("posProduct").value="";
       $("imageFile").value = "";
       updateImagePreview("");
@@ -646,6 +648,7 @@
       $("deliveryEnabled").checked = true;
       $("featured").checked = false;
       $("published").checked = Boolean(p.published);
+      $("requiresVerifiedAccount").checked = Boolean(p.requires_verified_account);
       $("posProduct").value = p.linked_pos_product_id || "";
       updateImagePreview(p.image_url || "");
       toggleCryptoFields();
@@ -771,6 +774,7 @@
           status: $("published").checked ? "published" : $("status").value,
           is_active: $("status").value !== "inactive" && $("status").value !== "archived",
           published: $("published").checked || $("status").value === "published" || $("status").value === "active",
+          requires_verified_account: $("requiresVerifiedAccount").checked,
           updated_at: new Date().toISOString()
         };
         if(!selectedId) payload.created_by = session.user.id;

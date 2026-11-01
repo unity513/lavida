@@ -432,6 +432,7 @@
     </section>
     <section id="catalogue" class="page-panel" data-page="market">
       <div class="section-head market-head"><div class="market-title"><h1>Marketplace</h1><p>Buy digital assets and services securely through Connect.</p></div><button id="marketCartButton" class="market-cart-button" type="button"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.6L23 6H6"></path></svg>Cart <span id="marketCartBadge" class="cart-badge">0</span></button></div>
+      <div id="verificationNotice" class="notice hidden" style="margin-bottom:14px"></div>
       <div class="toolbar">
         <input id="search" type="search" placeholder="Search products">
         <select id="category"><option value="">All categories</option></select>
@@ -1169,7 +1170,8 @@
       printNotice("Sign in to upload your document and continue your printing order.","bad");
       requestSignIn(PRINT_DESTINATION);
     }
-    async function loadProducts(){$("products").innerHTML=`<div class="empty">Loading marketplace products...</div>`;try{const{data,error}=await db.from("marketplace_public_products").select("*").order("marketplace_sort_order",{ascending:true});if(error)throw error;products=data||[]}catch(e){$("products").innerHTML=`<div class="empty">The marketplace could not be loaded. Please check your connection and try again.</div>`;return}marketplaceCategories=[...new Set(products.map(productCategory).filter(Boolean))].sort();$("category").innerHTML=`<option value="">All categories</option>`+marketplaceCategories.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");renderCategoryScroller();renderProducts();openPendingCryptoProduct()}
+    async function loadMarketplaceVerification(){const box=$("verificationNotice");if(!box)return;const {data:{session:s}}=await db.auth.getSession();if(!s?.user){box.className="notice";box.innerHTML=`<b>Restricted products</b><br>Sign in and request account verification to access admin-approved products.`;return}const {data,error}=await db.from("marketplace_account_verifications").select("status").eq("user_id",s.user.id).maybeSingle();if(error)return;if(data?.status==="approved"){box.className="notice hidden";return}box.className="notice";if(data?.status==="pending"){box.innerHTML=`<b>Account verification pending</b><br>Restricted products will appear after an administrator approves your account.`;return}box.innerHTML=`<b>Restricted products need verification</b><br>Request review to access products reserved for approved accounts.<div class="actions"><button id="requestMarketplaceVerification" type="button">Request verification</button></div>`;$("requestMarketplaceVerification")?.addEventListener("click",async()=>{const {error:requestError}=await db.rpc("request_marketplace_account_verification");if(requestError)return showNotice(requestError.message,"bad");await loadMarketplaceVerification();showNotice("Verification request sent for administrator review.")})}
+    async function loadProducts(){$("products").innerHTML=`<div class="empty">Loading marketplace products...</div>`;try{const{data,error}=await db.rpc("get_visible_marketplace_products");if(error)throw error;products=data||[]}catch(e){$("products").innerHTML=`<div class="empty">The marketplace could not be loaded. Please check your connection and try again.</div>`;return}marketplaceCategories=[...new Set(products.map(productCategory).filter(Boolean))].sort();$("category").innerHTML=`<option value="">All categories</option>`+marketplaceCategories.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");renderCategoryScroller();renderProducts();openPendingCryptoProduct()}
     function renderCategoryScroller(){const scroller=$("categoryScroller");if(!scroller)return;const options=["",...marketplaceCategories];scroller.innerHTML=options.map((category)=>`<button class="category-chip" type="button" data-category-filter="${esc(category)}">${esc(categoryLabel(category))}</button>`).join("");updateCategoryScrollerActive()}
     function updateCategoryScrollerActive(){const scroller=$("categoryScroller");if(!scroller)return;const selected=$("category")?.value || "";scroller.querySelectorAll("[data-category-filter]").forEach((button)=>button.classList.toggle("active",button.dataset.categoryFilter===selected))}
     function setCategoryFilter(value){$("category").value=value;renderProducts();updateCategoryScrollerActive()}
@@ -1950,9 +1952,9 @@ ${diagnosticJson(diagnostic?.exception??null)}
     async function validateCartItems(){
       const ids=[...new Set(cart.map(item=>String(item.product_id)).filter(Boolean))];
       if(!ids.length)throw {userMessage:"Add products to your cart first."};
-      const{data,error}=await db.from("marketplace_public_products").select("*").in("id",ids);
+      const{data,error}=await db.rpc("get_visible_marketplace_products");
       if(error)throw error;
-      const byId=new Map((data||[]).map(product=>[String(product.id),product]));
+      const byId=new Map((data||[]).filter(product=>ids.includes(String(product.id))).map(product=>[String(product.id),product]));
       for(const item of cart){
         const product=byId.get(String(item.product_id));
         if(!product)throw {userMessage:`${item.product_name||"One product"} is no longer available.`};
@@ -2994,7 +2996,7 @@ document.addEventListener("click",(event)=>{if(event.target.closest("#cryptoChan
     $("printPaymentProof")?.addEventListener("change",()=>{renderPrintProofPreview();renderPrintSummary();});
     $("printPaymentMethod")?.addEventListener("change",()=>{renderPrintPaymentInstructions();updatePrintNextState();});
     $("printNextButton")?.addEventListener("click",()=>{if(printStep===6 && printStepComplete(6)) submitPrintOrder();});
-    refreshLavidaAppShell();loadSettings().then(loadPrintPaymentMethods);loadProducts();renderCart();renderPrintServices();renderPrintUploads();updateAuthControls();refreshAuthSession();refreshPrintSession();checkAdminTools();setupOrdersRealtime();setupNativeBackButton();if(!location.hash&&!isDedicatedPrintingRoute())history.replaceState({route:"home"},"","#home");routeFromHash();
+    refreshLavidaAppShell();loadSettings().then(loadPrintPaymentMethods);loadMarketplaceVerification();loadProducts();renderCart();renderPrintServices();renderPrintUploads();updateAuthControls();refreshAuthSession();refreshPrintSession();checkAdminTools();setupOrdersRealtime();setupNativeBackButton();if(!location.hash&&!isDedicatedPrintingRoute())history.replaceState({route:"home"},"","#home");routeFromHash();
   </script>
   <script src="./lavida-services.js"></script>
   <script src="./lavida-notifications.js"></script>
